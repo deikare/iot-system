@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  influxdb:
+    image: iot-influx:latest
+    volumes:
+      # Mount for influxdb data directory and configuration
+      - influxdbv2:/.influxdbv2
+    ports:
+      - "8086:8086"
+    environment: 
+      - INFLUXD_QUERY_CONCURRENCY=30
+      - INFLUXD_QUERY_QUEUE_SIZE=50
+      - INFLUXD_TLS_CERT=/etc/ssl/certs/influxdb.crt
+      - INFLUXD_TLS_KEY=/etc/ssl/private/influxdb.key
+      - INFLUXD_TLS_MIN_VERSION=1.2
+      - INFLUXD_TLS_STRICT_CIPHERS=false
+    entrypoint: influxd 
+# Use the influx cli to set up an influxdb instance. 
+  influxdb_cli:
+    links:
+      - influxdb
+    image: iot-influx.cli:latest
+# Use these same configurations parameters in your telegraf configuration, mytelegraf.conf.
+    entrypoint: influx setup --bucket mybucket -t mytoken -o myorg --username=admin --password=admin123 --host=https://influxdb:8086 -f
+      # Wait for the influxd service in the influxdb container has fully bootstrapped before trying to setup an influxdb instance with the influxdb_cli service. 
+    restart: on-failure:10
+    depends_on:
+      - influxdb
+  telegraf:
+    image: telegraf
+    links:
+      - influxdb
+    volumes:
+      # Mount for telegraf config
+      - ./telegraf/mytelegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      - influxdb_cli
+volumes:
+  influxdbv2:
