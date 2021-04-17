@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   influxdb:
+    hostname: influxdb
     image: iot-influx:latest
     volumes:
       # Mount for influxdb data directory and configuration
