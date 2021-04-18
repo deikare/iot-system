@@ -5,7 +5,7 @@ services:
     image: iot-influx:latest
     volumes:
       # Mount for influxdb data directory and configuration
-      - ./influxdbv2:/.influxdbv2
+      - influxdbv2:/.influxdbv2
     ports:
       - "8086:8086"
     environment: 
@@ -36,6 +36,7 @@ services:
       - ./telegraf/mytelegraf.conf:/etc/telegraf/telegraf.conf
     depends_on:
       - influxdb_cli
+<<<<<<< HEAD
 
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
@@ -150,3 +151,7 @@ services:
       - ./certs/kafka:/etc/kafka/secrets
     extra_hosts:
       - "moby:127.0.0.1"
+=======
+volumes:
+  influxdbv2:
+>>>>>>> parent of 23e6b25... Kafka is almost done, only custom hosts are needed
