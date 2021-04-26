@@ -5,7 +5,7 @@ services:
     image: iot-influx:latest
     volumes:
       # Mount for influxdb data directory and configuration
-      - influxdbv2:/.influxdbv2
+      - ./influxdbv2:/.influxdbv2
     ports:
       - "8086:8086"
     environment: 
@@ -36,59 +36,52 @@ services:
       - ./telegraf/mytelegraf.conf:/etc/telegraf/telegraf.conf
     depends_on:
       - influxdb_cli
-<<<<<<< HEAD
 
-  zookeeper-1:
-    image: confluentinc/cp-zookeeper:latest
+  zoo1:
+    image: zookeeper:latest
+    hostname: zoo1
     environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 22181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
-    network_mode: host
-    extra_hosts:
-      - "moby:127.0.0.1"
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+      - ./zk-multiple-kafka-multiple/zoo1/data:/data
+      - ./zk-multiple-kafka-multiple/zoo1/datalog:/datalog
 
-  zookeeper-2:
-    image: confluentinc/cp-zookeeper:latest
+  zoo2:
+    image: zookeeper:latest
+    hostname: zoo2
     environment:
-      ZOOKEEPER_SERVER_ID: 2
-      ZOOKEEPER_CLIENT_PORT: 32181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
-    network_mode: host
-    extra_hosts:
-      - "moby:127.0.0.1"
+      ZOO_MY_ID: 2
+      ZOO_PORT: 2182
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+      - ./zk-multiple-kafka-multiple/zoo2/data:/data
+      - ./zk-multiple-kafka-multiple/zoo2/datalog:/datalog
 
-  zookeeper-3:
-    image: confluentinc/cp-zookeeper:latest
+  zoo3:
+    image: zookeeper:latest
+    hostname: zoo3
     environment:
-      ZOOKEEPER_SERVER_ID: 3
-      ZOOKEEPER_CLIENT_PORT: 42181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
-    network_mode: host
-    extra_hosts:
-      - "moby:127.0.0.1"
+      ZOO_MY_ID: 3
+      ZOO_PORT: 2183
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
+    volumes:
+      - ./zk-multiple-kafka-multiple/zoo3/data:/data
+      - ./zk-multiple-kafka-multiple/zoo3/datalog:/datalog
 
-  kafka-ssl-1:
+  kafka1:
     image: confluentinc/cp-kafka:latest
-    #hostname: kafka1
-    network_mode: host
+    hostname: kafka1
     depends_on:
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
+      - zoo1
+      - zoo2
+      - zoo3
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:19092
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://localhost:19092
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 1_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 1_sslkey_creds
@@ -96,24 +89,25 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 1_truststore_creds
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      #KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
     volumes:
-      - ./certs/kafka:/etc/kafka/secrets
-    extra_hosts:
-      - "moby:127.0.0.1"
-
-  kafka-ssl-2:
+        - ./certs/kafka:/etc/kafka/secrets
+ 
+  kafka2:
     image: confluentinc/cp-kafka:latest
-    #hostname: kafka2
-    network_mode: host
+    hostname: kafka2
     depends_on:
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
+      - zoo1
+      - zoo2
+      - zoo3
     environment:
       KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://localhost:19093
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka2:19094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker2.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 2_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 2_sslkey_creds
@@ -121,24 +115,25 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 2_truststore_creds
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      #KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
-    extra_hosts:
-      - "moby:127.0.0.1"
 
-  kafka-ssl-3:
+  kafka3:
     image: confluentinc/cp-kafka:latest
-    #hostname: kafka3
-    network_mode: host
+    hostname: kafka3
     depends_on:
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
+      - zoo1
+      - zoo2
+      - zoo3
     environment:
       KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
-      KAFKA_ADVERTISED_LISTENERS: SSL://localhost:39092
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://localhost:19094
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka3:19094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker3.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 3_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 3_sslkey_creds
@@ -146,12 +141,9 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 3_truststore_creds
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      #KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
-    extra_hosts:
-      - "moby:127.0.0.1"
-=======
-volumes:
-  influxdbv2:
->>>>>>> parent of 23e6b25... Kafka is almost done, only custom hosts are needed
