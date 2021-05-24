@@ -1,10 +1,59 @@
 version: '3.8'
 services:
+  reverse-proxy:
+    image: traefik:v2.4
+    hostname: traefik
+    command: 
+      - --api.insecure=true 
+      - --api.dashboard=false
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+
+      - --log.level=DEBUG
+
+      - --serversTransport.rootCAs=/secrets/ca.crt
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+
+      - --providers.file.filename=/configs/traefik-dynamic.toml
+      - --providers.file.watch=true
+
+      #- --providers.file.directory=/etc/traefik/static-config
+      #- --providers.file.watch=true
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs/traefik:/configs
+      - ./certs/traefik:/secrets
+    labels: 
+      - "traefik.enable=true"
+
+
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    labels:
+      - "traefik.http.middlewares.whoami_https.redirectscheme.scheme=https"
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+      - "traefik.http.routers.whoami.middlewares=whoami_https@docker"
+      - "traefik.http.routers.whoami_https.rule=Host(`whoami.docker.localhost`)"
+      - "traefik.http.routers.whoami_https.tls=true"
+      - "traefik.http.routers.whoami_https.entrypoints=websecure"
+      - "traefik.enable=true"
+    
   influxdb:
     hostname: influxdb
-    image: iot-influx:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.influxdb
     volumes:
-      # Mount for influxdb data directory and configuration
       - ./influxdbv2:/.influxdbv2
     ports:
       - "8086:8086"
@@ -16,11 +65,26 @@ services:
       - INFLUXD_TLS_MIN_VERSION=1.2
       - INFLUXD_TLS_STRICT_CIPHERS=false
     entrypoint: influxd 
+    labels: 
+      - "traefik.http.middlewares.influxdb_https.redirectscheme.scheme=https"
+      - "traefik.http.routers.influxdb.entrypoints=web"
+      - "traefik.http.routers.influxdb.rule=Host(`influxdb.docker.localhost`)"
+      - "traefik.http.routers.influxdb.middlewares=influxdb_https@docker"
+      - "traefik.http.routers.influxdb_https.rule=Host(`influxdb.docker.localhost`)"
+      - "traefik.http.routers.influxdb_https.tls=true"
+      - "traefik.http.routers.influxdb_https.entrypoints=websecure"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
+
+
 # Use the influx cli to set up an influxdb instance. 
   influxdb_cli:
     links:
       - influxdb
-    image: iot-influx.cli:latest
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.influxdb_cli
 # Use these same configurations parameters in your telegraf configuration, mytelegraf.conf.
     entrypoint: influx setup --bucket mybucket -t mytoken -o myorg --username=admin --password=admin123 --host=https://influxdb:8086 -f
       # Wait for the influxd service in the influxdb container has fully bootstrapped before trying to setup an influxdb instance with the influxdb_cli service. 
@@ -38,76 +102,144 @@ services:
       - influxdb_cli
 
   zoo1:
-    image: zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     hostname: zoo1
     environment:
-      ZOO_MY_ID: 1
-      ZOO_PORT: 2181
-      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SECURE_CLIENT_PORT: 3181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+      ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;zoo3:2888:3888
+      ZOOKEEPER_SERVER_CNXN_FACTORY: "org.apache.zookeeper.server.NettyServerCnxnFactory"
+      ZOOKEEPER_AUTH_PROVIDER_X509: "org.apache.zookeeper.server.auth.X509AuthenticationProvider"
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zoo/secrets/zoo1.keystore.jks
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent1
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zoo/secrets/zoo1.truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent1
+
+      ZOOKEEPER_SSL_QUORUM: "true"
+      ZOOKEEPER_SSL_QUORUM_KEYSTORE_LOCATION: /etc/zoo/secrets/zoo1.keystore.jks
+      ZOOKEEPER_SSL_QUORUM_KEYSTORE_PASSWORD: confluent1
+      ZOOKEEPER_SSL_QUORUM_TRUSTSTORE_LOCATION: /etc/zoo/secrets/zoo1.truststore.jks
+      ZOOKEEPER_SSL_QUORUM_TRUSTSTORE_PASSWORD: confluent1
+      ZOOKEEPER_SSL_QUORUM_HOSTNAME_VERIFICATION: "false"
+
     volumes:
-      - ./zk-multiple-kafka-multiple/zoo1/data:/data
-      - ./zk-multiple-kafka-multiple/zoo1/datalog:/datalog
+      - ./certs/zoo:/etc/zoo/secrets
+      - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+
 
   zoo2:
-    image: zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     hostname: zoo2
     environment:
-      ZOO_MY_ID: 2
-      ZOO_PORT: 2182
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_SECURE_CLIENT_PORT: 3182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+      ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;zoo3:2888:3888
+      ZOOKEEPER_SERVER_CNXN_FACTORY: "org.apache.zookeeper.server.NettyServerCnxnFactory"
+      ZOOKEEPER_AUTH_PROVIDER_X509: "org.apache.zookeeper.server.auth.X509AuthenticationProvider"
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zoo/secrets/zoo2.keystore.jks
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent2
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zoo/secrets/zoo2.truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent2
+
+      ZOOKEEPER_SSL_QUORUM: "true"
+      ZOOKEEPER_SSL_QUORUM_KEYSTORE_LOCATION: /etc/zoo/secrets/zoo2.keystore.jks
+      ZOOKEEPER_SSL_QUORUM_KEYSTORE_PASSWORD: confluent2
+      ZOOKEEPER_SSL_QUORUM_TRUSTSTORE_LOCATION: /etc/zoo/secrets/zoo2.truststore.jks
+      ZOOKEEPER_SSL_QUORUM_TRUSTSTORE_PASSWORD: confluent2
+      ZOOKEEPER_SSL_QUORUM_HOSTNAME_VERIFICATION: "false"
+
     volumes:
-      - ./zk-multiple-kafka-multiple/zoo2/data:/data
-      - ./zk-multiple-kafka-multiple/zoo2/datalog:/datalog
+      - ./certs/zoo:/etc/zoo/secrets
+      - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
 
   zoo3:
-    image: zookeeper:latest
+    image: confluentinc/cp-zookeeper:latest
     hostname: zoo3
     environment:
-      ZOO_MY_ID: 3
-      ZOO_PORT: 2183
-      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 2183
+      ZOOKEEPER_SECURE_CLIENT_PORT: 3183
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+
+      ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;zoo3:2888:3888
+      ZOOKEEPER_SERVER_CNXN_FACTORY: "org.apache.zookeeper.server.NettyServerCnxnFactory"
+      ZOOKEEPER_AUTH_PROVIDER_X509: "org.apache.zookeeper.server.auth.X509AuthenticationProvider"
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/zoo/secrets/zoo3.keystore.jks
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent3
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/zoo/secrets/zoo3.truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent3
+
+      ZOOKEEPER_SSL_QUORUM: "true"
+      ZOOKEEPER_SSL_QUORUM_KEYSTORE_LOCATION: /etc/zoo/secrets/zoo3.keystore.jks
+      ZOOKEEPER_SSL_QUORUM_KEYSTORE_PASSWORD: confluent3
+      ZOOKEEPER_SSL_QUORUM_TRUSTSTORE_LOCATION: /etc/zoo/secrets/zoo3.truststore.jks
+      ZOOKEEPER_SSL_QUORUM_TRUSTSTORE_PASSWORD: confluent3
+      ZOOKEEPER_SSL_QUORUM_HOSTNAME_VERIFICATION: "false"
+
     volumes:
-      - ./zk-multiple-kafka-multiple/zoo3/data:/data
-      - ./zk-multiple-kafka-multiple/zoo3/datalog:/datalog
+      - ./certs/zoo:/etc/zoo/secrets
+      - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+
+
 
   kafka1:
     image: confluentinc/cp-kafka:latest
     hostname: kafka1
-    depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
+    ports:
+      - "9092:9092"
     environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL_SSL://kafka1:19092,LISTENER_DOCKER_EXTERNAL_SSL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL_SSL:SSL,LISTENER_DOCKER_EXTERNAL_SSL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL_SSL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka1:19092
-      #KAFKA_LISTENERS: SSL://kafka1:19092
+
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 1_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 1_truststore_creds
-      #KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
-      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:SSL
-      #KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: "org.apache.zookeeper.ClientCnxnSocketNetty"
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.broker1.keystore.jks
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent1
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker1.truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent1
+      
     volumes:
-        - ./certs/kafka:/etc/kafka/secrets
- 
-  kafka2:
-    image: confluentinc/cp-kafka:latest
-    hostname: kafka2
+      - ./certs/kafka:/etc/kafka/secrets
+      - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
     depends_on:
       - zoo1
       - zoo2
       - zoo3
+
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    ports:
+        - "9093:9093"
     environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL_SSL://kafka2:19093,LISTENER_DOCKER_EXTERNAL_SSL://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL_SSL:SSL,LISTENER_DOCKER_EXTERNAL_SSL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL_SSL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
       KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka2:19093
-      #KAFKA_LISTENERS: SSL://kafka2:19093
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker2.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 2_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 2_sslkey_creds
@@ -115,25 +247,34 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 2_truststore_creds
       #KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
-      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:SSL
-      #KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: "org.apache.zookeeper.ClientCnxnSocketNetty"
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.broker2.keystore.jks
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent2
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker2.truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent2
+      #KAFKA_ZOOKEEPER_SET_ACL: "true"
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
-
-  kafka3:
-    image: confluentinc/cp-kafka:latest
-    hostname: kafka3
+      - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
     depends_on:
       - zoo1
       - zoo2
       - zoo3
+
+  kafka3:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka3
+    ports:
+        - "9094:9094"
     environment:
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL_SSL://kafka3:19094,LISTENER_DOCKER_EXTERNAL_SSL://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL_SSL:SSL,LISTENER_DOCKER_EXTERNAL_SSL:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL_SSL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
       KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka3:19094
-      #KAFKA_LISTENERS: SSL://kafka3:19094
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker3.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 3_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 3_sslkey_creds
@@ -141,9 +282,20 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 3_truststore_creds
       #KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SSL
-      #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:SSL
-      #KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: "true"
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: "org.apache.zookeeper.ClientCnxnSocketNetty"
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.broker3.keystore.jks
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent3
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker3.truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent3
+      #KAFKA_ZOOKEEPER_SET_ACL: "true"
+
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
+      - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3

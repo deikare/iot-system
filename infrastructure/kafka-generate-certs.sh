@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CA_PATH="./certs"
+CA_PATH="./certs/ca"
 KAFKA_PATH="./certs/kafka"
 
 rm $KAFKA_PATH/*
@@ -15,7 +15,7 @@ ALIAS="kafka"
 
 CN="kafka"
 SAN="kafka"
-SERVER_DNS="iot-weiti.germanywestcentral.cloudapp.azure.com"
+SERVER_DNS="localhost"
 
 VALIDITY="365"
 KEYALG="RSA"
@@ -69,13 +69,9 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     echo "DNS.2 = $SERVER_DNS" >> $KAFKA_PATH/kafka-cert.conf
     
 
-
-    #openssl req -in $KAFKA_PATH/kafka$i.csr -noout -text 
-
     # Sign crt
     openssl x509 -req -CA $CA_PATH/ca.crt -CAkey $CA_PATH/ca.key -in $KAFKA_PATH/kafka$i.csr -out $KAFKA_PATH/kafka$i.signed.crt -days $VALIDITY -CAcreateserial  \
     -extfile $KAFKA_PATH/kafka-cert.conf -extensions v3_req
-    #openssl x509 -in $KAFKA_PATH/kafka$i.signed.crt -noout -text 
 
     # Add CA to keystore
     keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION

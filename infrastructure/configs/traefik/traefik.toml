@@ -1,0 +1,32 @@
+[log]
+  level = "DEBUG"
+
+[providers.docker]
+  exposedByDefault = false
+
+[providers.docker.tls]
+  ca = "/secrets/ca.crt"
+  caOptional = true
+  cert = "/secrets/traefik.crt"
+  key = "/secrets/traefik.key"
+
+[[tls.certificates]]
+  certFile = "/secrets/traefik.crt"
+  keyFile = "/secrets/traefik.key"
+
+[tls.options]
+  [tls.options.default]
+    [tls.options.default.clientAuth]
+       #in PEM format. each file can contain multiple CAs.
+      caFiles = ["/secrets/ca.crt"]
+      clientAuthType = "RequestClientCert"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http.redirections.entryPoint]
+      to = "websecure"
+      scheme = "https"
+
+  [entryPoints.websecure]
+    address = ":443"
