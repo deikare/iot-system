@@ -15,11 +15,12 @@ CN="CA"
 
 VALIDITY="365"
 
-ALIAS="CAroot"
+ALIAS=`openssl rand -base64 12` #some random string for alias
+STOREPASS="changeit"
 
 openssl genrsa -des3 -out $CA_PATH/ca.key 4096
 
 openssl req -x509 -new -nodes -key $CA_PATH/ca.key -sha256 -days $VALIDITY \
     -subj "/C=$COUNTRY/ST=$STATE/L=$LOCATION/O=$ORGANIZATION/OU=$ORGANIZATION_UNIT/CN=$CN" -out $CA_PATH/ca.crt
 
-keytool -import -keystore $JRE_CUSTOM_CERTS_PATH/cacerts -file $CA_PATH/ca.crt
+keytool -import -keystore $JRE_CUSTOM_CERTS_PATH/cacerts -alias $ALIAS -file $CA_PATH/ca.crt -storepass $STOREPASS

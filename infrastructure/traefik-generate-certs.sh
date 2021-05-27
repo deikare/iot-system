@@ -3,7 +3,7 @@
 CA_PATH="./certs/ca"
 TRAEFIK_PATH="./certs/traefik"
 
-#rm $INFLUXDB_PATH/*
+rm $TRAEFIK_PATH/*
 
 COUNTRY="PL"
 STATE="Mazowieckie"
@@ -11,17 +11,11 @@ LOCATION="Warsaw"
 ORGANIZATION="Warsaw University of Technology"
 ORGANIZATION_UNIT="Warsaw University of Technology"
 
-ALIAS="traefik"
-
 CN="reverse-proxy"
 SAN="traefik"
 SERVER_FQDN="localhost"
-DNS_EXTRA="whoami.docker.localhost"
-DNS_EXTRA2="influxdb.docker.localhost"
-SERVER_IP="127.0.0.1"
 
 VALIDITY="365"
-KEYALG="RSA"
 
 echo "[req]" > $TRAEFIK_PATH/traefik-cert.conf
 echo "distinguished_name = req_distinguished_name" >> $TRAEFIK_PATH/traefik-cert.conf
@@ -46,8 +40,6 @@ echo "" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "[alt_names]" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "DNS.1 = $SAN" >> $TRAEFIK_PATH/traefik-cert.conf  
 echo "DNS.2 = $SERVER_FQDN" >> $TRAEFIK_PATH/traefik-cert.conf 
-echo "DNS.3 = $DNS_EXTRA" >> $TRAEFIK_PATH/traefik-cert.conf 
-echo "IP.1 = $SERVER_IP" >> $TRAEFIK_PATH/traefik-cert.conf 
 
 
 openssl req -newkey rsa:2048 -nodes -keyout $TRAEFIK_PATH/traefik.key \

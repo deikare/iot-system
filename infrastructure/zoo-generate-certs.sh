@@ -37,7 +37,7 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
         -dname "C=$COUNTRY, ST=$STATE, L=$LOCATION, O=$ORGANIZATION, CN=$CN_ITERATION" -ext SAN=$SAN_ITERATION \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
-    # Generate csr # - keytool nie generuje SANów
+    # Generate csr
     keytool -keystore $ZOOKEEPER_PATH/zoo$i.keystore.jks -alias $ALIAS$i -certreq -file $ZOOKEEPER_PATH/zoo$i.csr -ext SAN=$SAN_ITERATION \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
@@ -78,10 +78,11 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     # Add CA to truststore
     keytool -keystore $ZOOKEEPER_PATH/zoo$i.truststore.jks -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
-    echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_sslkey_creds        
-    echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_keystore_creds
-    echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_truststore_creds
+    #echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_sslkey_creds        
+    #echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_keystore_creds
+    #echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_truststore_creds
 
     rm $ZOOKEEPER_PATH/zoo$i.csr
+    rm $ZOOKEEPER_PATH/zoo$i.signed.crt
     rm $ZOOKEEPER_PATH/zoo-cert.conf
 done

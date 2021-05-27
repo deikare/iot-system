@@ -39,7 +39,7 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
         
 
-    # Generate csr # - keytool nie generuje SANów
+    # Generate csr
     keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -alias $ALIAS$i -certreq -file $KAFKA_PATH/kafka$i.csr -ext SAN=$SAN_ITERATION \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
@@ -63,12 +63,10 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     echo "subjectAltName = @alt_names" >> $KAFKA_PATH/kafka-cert.conf
     echo "" >> $KAFKA_PATH/kafka-cert.conf
 
-
     echo "[alt_names]" >> $KAFKA_PATH/kafka-cert.conf
     echo "DNS.1 = $SAN$i" >> $KAFKA_PATH/kafka-cert.conf
     echo "DNS.2 = $SERVER_DNS" >> $KAFKA_PATH/kafka-cert.conf
     
-
     # Sign crt
     openssl x509 -req -CA $CA_PATH/ca.crt -CAkey $CA_PATH/ca.key -in $KAFKA_PATH/kafka$i.csr -out $KAFKA_PATH/kafka$i.signed.crt -days $VALIDITY -CAcreateserial  \
     -extfile $KAFKA_PATH/kafka-cert.conf -extensions v3_req
@@ -86,4 +84,8 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     echo "confluent${i}" > $KAFKA_PATH/${i}_sslkey_creds        
     echo "confluent${i}" > $KAFKA_PATH/${i}_keystore_creds
     echo "confluent${i}" > $KAFKA_PATH/${i}_truststore_creds
+
+    rm $KAFKA_PATH/kafka$i.csr
+    rm $KAFKA_PATH/kafka$i.signed.crt
+    rm $KAFKA_PATH/kafka-cert.conf
 done

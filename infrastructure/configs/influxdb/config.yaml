@@ -1,6 +1,0 @@
-query-concurrency: 30
-query-queue-size: 50
-tls-cert: 
-tls-key:
-tls-min-version: 1.2
-tls-strict-ciphers: false

@@ -20,12 +20,9 @@ services:
 
       - --providers.file.filename=/configs/traefik-dynamic.toml
       - --providers.file.watch=true
-
-      #- --providers.file.directory=/etc/traefik/static-config
-      #- --providers.file.watch=true
     ports:
       - "80:80"
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
       - "443:443"
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
@@ -33,73 +30,31 @@ services:
       - ./certs/traefik:/secrets
     labels: 
       - "traefik.enable=true"
-
-
-  whoami:
-    # A container that exposes an API to show its IP address
-    image: traefik/whoami
-    labels:
-      - "traefik.http.middlewares.whoami_https.redirectscheme.scheme=https"
-      - "traefik.http.routers.whoami.entrypoints=web"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
-      - "traefik.http.routers.whoami.middlewares=whoami_https@docker"
-      - "traefik.http.routers.whoami_https.rule=Host(`whoami.docker.localhost`)"
-      - "traefik.http.routers.whoami_https.tls=true"
-      - "traefik.http.routers.whoami_https.entrypoints=websecure"
-      - "traefik.enable=true"
     
   influxdb:
     hostname: influxdb
-    build:
-      context: ./Dockerfiles
-      dockerfile: Dockerfile.influxdb
+    image: influxdb:latest
     volumes:
-      - ./influxdbv2:/.influxdbv2
-    ports:
-      - "8086:8086"
+      - ./mounts/influxdbv2:/.influxdbv2
     environment: 
       - INFLUXD_QUERY_CONCURRENCY=30
       - INFLUXD_QUERY_QUEUE_SIZE=50
-      - INFLUXD_TLS_CERT=/etc/ssl/certs/influxdb.crt
-      - INFLUXD_TLS_KEY=/etc/ssl/private/influxdb.key
-      - INFLUXD_TLS_MIN_VERSION=1.2
-      - INFLUXD_TLS_STRICT_CIPHERS=false
-    entrypoint: influxd 
     labels: 
-      - "traefik.http.middlewares.influxdb_https.redirectscheme.scheme=https"
-      - "traefik.http.routers.influxdb.entrypoints=web"
       - "traefik.http.routers.influxdb.rule=Host(`influxdb.docker.localhost`)"
-      - "traefik.http.routers.influxdb.middlewares=influxdb_https@docker"
-      - "traefik.http.routers.influxdb_https.rule=Host(`influxdb.docker.localhost`)"
-      - "traefik.http.routers.influxdb_https.tls=true"
-      - "traefik.http.routers.influxdb_https.entrypoints=websecure"
+      - "traefik.http.routers.influxdb.tls=true"
+      - "traefik.http.routers.influxdb.entrypoints=websecure"
       - "traefik.enable=true"
 
       - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
 
-
-# Use the influx cli to set up an influxdb instance. 
   influxdb_cli:
+    image: influxdb:latest
     links:
       - influxdb
-    build:
-      context: ./Dockerfiles
-      dockerfile: Dockerfile.influxdb_cli
-# Use these same configurations parameters in your telegraf configuration, mytelegraf.conf.
-    entrypoint: influx setup --bucket mybucket -t mytoken -o myorg --username=admin --password=admin123 --host=https://influxdb:8086 -f
-      # Wait for the influxd service in the influxdb container has fully bootstrapped before trying to setup an influxdb instance with the influxdb_cli service. 
+    entrypoint: influx setup --bucket mybucket -t mytoken -o myorg --username=admin --password=admin123 --host=http://influxdb:8086 -f
     restart: on-failure:10
     depends_on:
       - influxdb
-  telegraf:
-    image: telegraf
-    links:
-      - influxdb
-    volumes:
-      # Mount for telegraf config
-      - ./telegraf/mytelegraf.conf:/etc/telegraf/telegraf.conf
-    depends_on:
-      - influxdb_cli
 
   zoo1:
     image: confluentinc/cp-zookeeper:latest
@@ -130,7 +85,6 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-
 
   zoo2:
     image: confluentinc/cp-zookeeper:latest
@@ -192,8 +146,6 @@ services:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
 
-
-
   kafka1:
     image: confluentinc/cp-kafka:latest
     hostname: kafka1
@@ -245,7 +197,6 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: 2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 2_truststore_creds
-      #KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
 
@@ -255,7 +206,6 @@ services:
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent2
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker2.truststore.jks
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent2
-      #KAFKA_ZOOKEEPER_SET_ACL: "true"
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
@@ -280,7 +230,6 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: 3_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker3.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: 3_truststore_creds
-      #KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: " "
       KAFKA_SSL_CLIENT_AUTH: required
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
 
@@ -290,8 +239,6 @@ services:
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent3
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker3.truststore.jks
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent3
-      #KAFKA_ZOOKEEPER_SET_ACL: "true"
-
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
