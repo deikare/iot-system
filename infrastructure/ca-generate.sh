@@ -3,6 +3,11 @@
 CA_PATH="./certs/ca"
 JRE_CUSTOM_CERTS_PATH="./certs/jre-custom-certs"
 
+if [ ! -d $CA_PATH ] 
+then
+    mkdir $CA_PATH
+fi
+
 rm $CA_PATH/*
 
 COUNTRY="PL"

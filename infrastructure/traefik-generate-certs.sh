@@ -3,6 +3,11 @@
 CA_PATH="./certs/ca"
 TRAEFIK_PATH="./certs/traefik"
 
+if [ ! -d $TRAEFIK_PATH ] 
+then
+    mkdir $TRAEFIK_PATH
+fi
+
 rm $TRAEFIK_PATH/*
 
 COUNTRY="PL"

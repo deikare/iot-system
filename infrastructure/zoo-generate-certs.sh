@@ -3,6 +3,11 @@
 CA_PATH="./certs/ca"
 ZOOKEEPER_PATH="./certs/zoo"
 
+if [ ! -d $ZOOKEEPER_PATH ] 
+then
+    mkdir $ZOOKEEPER_PATH
+fi
+
 rm $ZOOKEEPER_PATH/*
 
 COUNTRY="PL"

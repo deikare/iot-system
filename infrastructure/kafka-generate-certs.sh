@@ -3,6 +3,11 @@
 CA_PATH="./certs/ca"
 KAFKA_PATH="./certs/kafka"
 
+if [ ! -d $KAFKA_PATH ] 
+then
+    mkdir $KAFKA_PATH
+fi
+
 rm $KAFKA_PATH/*
 
 COUNTRY="PL"

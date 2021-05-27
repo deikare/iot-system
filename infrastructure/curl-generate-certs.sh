@@ -3,6 +3,11 @@
 CA_PATH="./certs/ca"
 CURL_PATH="./certs/curl"
 
+if [ ! -d $CURL_PATH ] 
+then
+    mkdir $CURL_PATH
+fi
+
 rm $CURL_PATH/*
 
 COUNTRY="PL"
