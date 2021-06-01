@@ -2,9 +2,8 @@
 
 ## Generowanie certyfikatów:
 
-* `./ca-generate-certs.sh` - skrypt generujący CA - certyfikat oraz klucz CA oraz dodaje cert CA do truststore'a montowanego we wszystkich składnikach Kafki
+* `./ca-generate-certs.sh` - skrypt generujący CA - certyfikat oraz klucz CA, a także dodaje cert CA do truststore'a montowanego we wszystkich składnikach Kafki
 * `./zoo-generate-certs.sh` - skrypt generujący certyfikat oraz klucz Zookeepera (procesów administrujących Kafką), a także tworzy keystore i truststore dla każdego node'a Zookeepera
-* `./zoo-generate-certs.sh` - skrypt generujący certyfikaty oraz klucze Zookeeperów (procesów administrujących Kafką), a także tworzy keystore i truststore dla każdego node'a Zookeepera
 * `./kafka-generate-certs.sh` - skrypt generujący certyfikaty oraz klucze brokerów Kafki, a także tworzy keystore i truststore dla każdego node'a Kafki
 * `./kafka-client-generate-certs.sh` - skrypt generujący certyfikaty oraz klucze klientów Kafki, a także tworzy keystore i truststore dla każdego klienta
 * `./traefik-generate-certs.sh` - skrypt generujący certyfikat oraz klucz Traefika
