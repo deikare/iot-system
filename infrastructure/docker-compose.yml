@@ -47,7 +47,7 @@ services:
 
       - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
 
-  influxdb_cli:
+  influxdb-init:
     image: influxdb:latest
     links:
       - influxdb
