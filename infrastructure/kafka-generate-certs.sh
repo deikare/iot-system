@@ -28,6 +28,8 @@ KEYALG="RSA"
 STOREPASS="confluent"
 KEYPASS="confluent"
 
+STORETYPE="JKS"
+
 NODES_NUMBER=3
 
 for ((i=1;i<=NODES_NUMBER;i++)); do
@@ -39,13 +41,13 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     KEYPASS_ITERATION="confluent"${i}
 
     # Create keystore
-    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -alias $ALIAS$i -validity $VALIDITY -genkey -keyalg $KEYALG \
+    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -validity $VALIDITY -genkey -keyalg $KEYALG \
         -dname "C=$COUNTRY, ST=$STATE, L=$LOCATION, O=$ORGANIZATION, CN=$CN_ITERATION" -ext SAN=$SAN_ITERATION \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
         
 
     # Generate csr
-    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -alias $ALIAS$i -certreq -file $KAFKA_PATH/kafka$i.csr -ext SAN=$SAN_ITERATION \
+    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -certreq -file $KAFKA_PATH/kafka$i.csr -ext SAN=$SAN_ITERATION \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     echo "[req]" > $KAFKA_PATH/kafka-cert.conf
@@ -77,14 +79,14 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     -extfile $KAFKA_PATH/kafka-cert.conf -extensions v3_req
 
     # Add CA to keystore
-    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
+    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     # Add signed cert to keystore
-    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -alias $ALIAS$i -import -file $KAFKA_PATH/kafka$i.signed.crt -ext SAN=$SAN_ITERATION \
+    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -import -file $KAFKA_PATH/kafka$i.signed.crt -ext SAN=$SAN_ITERATION \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     # Add CA to truststore
-    keytool -keystore $KAFKA_PATH/kafka.broker$i.truststore.jks -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
+    keytool -keystore $KAFKA_PATH/kafka.broker$i.truststore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     echo "confluent${i}" > $KAFKA_PATH/${i}_sslkey_creds        
     echo "confluent${i}" > $KAFKA_PATH/${i}_keystore_creds

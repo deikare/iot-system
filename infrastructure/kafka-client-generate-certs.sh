@@ -26,28 +26,30 @@ KEYALG="RSA"
 STOREPASS="confluent"
 KEYPASS="confluent"
 
+STORETYPE="JKS"
+
 # Create keystore
-keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -alias $ALIAS -validity $VALIDITY -genkey -keyalg $KEYALG \
+keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -storetype $STORETYPE -alias $ALIAS -validity $VALIDITY -genkey -keyalg $KEYALG \
     -dname "C=$COUNTRY, ST=$STATE, L=$LOCATION, O=$ORGANIZATION, CN=$CN" \
     -storepass $STOREPASS -keypass $KEYPASS
 
 # Generate csr
-keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -alias $ALIAS -certreq -file $KAFKA_CLIENT_PATH/kafka.client.csr \
+keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -storetype $STORETYPE -alias $ALIAS -certreq -file $KAFKA_CLIENT_PATH/kafka.client.csr \
     -storepass $STOREPASS -keypass $KEYPASS
 
 # Sign crt
 openssl x509 -req -CA $CA_PATH/ca.crt -CAkey $CA_PATH/ca.key -in $KAFKA_CLIENT_PATH/kafka.client.csr -out $KAFKA_CLIENT_PATH/kafka.client.crt -days $VALIDITY -CAcreateserial 
 
 # Add CA to keystore
-keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS -keypass $KEYPASS
+keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS -keypass $KEYPASS
 
 
 # Add signed cert to keystore
-keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -alias $ALIAS -import -file $KAFKA_CLIENT_PATH/kafka.client.crt \
+keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.keystore.jks -storetype $STORETYPE -alias $ALIAS -import -file $KAFKA_CLIENT_PATH/kafka.client.crt \
     -storepass $STOREPASS -keypass $KEYPASS
 
 # Add CA to truststore
-keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.truststore.jks -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS -keypass $KEYPASS
+keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.truststore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS -keypass $KEYPASS
 
 rm $KAFKA_CLIENT_PATH/kafka.client.csr 
 rm $KAFKA_CLIENT_PATH/kafka.client.crt
