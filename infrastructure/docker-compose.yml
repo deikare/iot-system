@@ -36,6 +36,8 @@ services:
     image: influxdb:latest
     volumes:
       - ./mounts/influxdbv2:/.influxdbv2
+    ports:
+      - "127.0.0.1:8086:8086"
     environment: 
       - INFLUXD_QUERY_CONCURRENCY=30
       - INFLUXD_QUERY_QUEUE_SIZE=50
@@ -51,7 +53,7 @@ services:
     image: influxdb:latest
     links:
       - influxdb
-    entrypoint: influx setup --bucket mybucket -t mytoken -o myorg --username=admin --password=admin123 --host=http://influxdb:8086 -f
+    entrypoint: influx setup --bucket data -t my-token -o my-org --username=admin --password=admin123 --host=http://influxdb:8086 -f
     restart: on-failure:10
     depends_on:
       - influxdb
@@ -246,3 +248,14 @@ services:
       - zoo1
       - zoo2
       - zoo3
+
+  sql-db:
+    image: postgres:latest
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres-db
+
