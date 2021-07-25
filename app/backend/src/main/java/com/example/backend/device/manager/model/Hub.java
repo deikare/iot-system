@@ -1,4 +1,4 @@
-package com.example.backend.device.config.model;
+package com.example.backend.device.manager.model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -41,5 +41,14 @@ public class Hub {
 
     public List<Device> getDevices() {
         return devices;
+    }
+
+    @Override
+    public String toString() {
+        return "Hub{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", devices=" + devices +
+                '}';
     }
 }

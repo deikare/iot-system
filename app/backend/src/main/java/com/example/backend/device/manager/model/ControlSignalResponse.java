@@ -1,4 +1,4 @@
-package com.example.backend.device.config.model;
+package com.example.backend.device.manager.model;
 
 import javax.persistence.*;
 
