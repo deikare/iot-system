@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.controllers.exceptions;
+package com.example.backend.device.manager.controllers.exceptions.device;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class HubNotFoundAdvice {
+public class DeviceNotFoundAdvice {
     @ResponseBody
-    @ExceptionHandler(HubNotFoundException.class)
+    @ExceptionHandler(DeviceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String hubNotFoundHandler (HubNotFoundException e) {
+    String deviceNotFoundHandler (DeviceNotFoundException e) {
         return e.getMessage();
     }
 }

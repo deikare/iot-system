@@ -1,0 +1,99 @@
+package com.example.backend.device.manager.service.implementation;
+
+import com.example.backend.device.manager.controllers.exceptions.device.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
+import com.example.backend.device.manager.model.Device;
+import com.example.backend.device.manager.model.Hub;
+import com.example.backend.device.manager.repositories.DeviceRepository;
+import com.example.backend.device.manager.service.interfaces.DeviceService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Service
+public class DeviceServiceImplementation implements DeviceService {
+    private final DeviceRepository deviceRepository;
+    private final HubServiceImplementation hubServiceImplementation;
+
+    public DeviceServiceImplementation(DeviceRepository deviceRepository, HubServiceImplementation hubServiceImplementation) {
+        this.deviceRepository = deviceRepository;
+        this.hubServiceImplementation = hubServiceImplementation;
+    }
+
+    @Override
+    public Device addDeviceAndBindItToHubById(Device device, Long hubId) throws HubNotFoundException {
+        Hub hub = hubServiceImplementation.findHubById(hubId);
+        return addDeviceAndBindItToHub(device, hub);
+    }
+    @Override
+    public Device addDeviceAndBindItToHub(Device device, Hub hub) {
+        Device addedDevice = deviceRepository.save(device);
+        addedDevice.setHub(hub);
+        return addedDevice;
+    }
+
+    @Override
+    public Page<Device> getAllDevices(Pageable pageable) {
+        return deviceRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Device> getAllDevicesByNameContaining(String name, Pageable pageable) {
+        return deviceRepository.findAllByNameContaining(name, pageable);
+    }
+
+    @Override
+    public Page<Device> getAllDevicesByHubId(Long hubId, Pageable pageable) {
+        return deviceRepository.findAllByHub_Id(hubId, pageable);
+    }
+
+    @Override
+    public Page<Device> getAllDevicesByNameContainingAndHubId(String name, Long hubId, Pageable pageable) {
+        return deviceRepository.findAllByNameContainingAndHub_Id(name, hubId, pageable);
+    }
+
+    @Override
+    public void removeDeviceById(Long deviceId) throws DeviceNotFoundException {
+        Device device = findDeviceById(deviceId);
+        removeDevice(device);
+    }
+
+    @Override
+    public boolean removeDevice(Device device) {
+        Hub hub = device.getHub();
+        boolean result = hubServiceImplementation.deleteDeviceFromDeviceListInHub(hub, device);
+        deviceRepository.delete(device);
+        return result;
+    }
+
+    @Override
+    public Device updateDeviceContentById(Long deviceId, Device newDevice) throws DeviceNotFoundException {
+        Device oldDevice = findDeviceById(deviceId);
+        return updateDeviceContent(oldDevice, newDevice);
+    }
+
+    @Override
+    public Device updateDeviceContent(Device oldDevice, Device newDevice) {
+        Hub hubOfOldDevice = oldDevice.getHub();
+        Hub hubOfNewDevice = newDevice.getHub();
+
+        Device result;
+        if (!(hubOfOldDevice.equals(hubOfNewDevice))) {
+            removeDevice(oldDevice);
+            addDeviceAndBindItToHub(newDevice, hubOfNewDevice);
+            result = newDevice;
+        }
+        else {
+            oldDevice.setDeviceType(newDevice.getDeviceType());
+            oldDevice.setName(newDevice.getName());
+            result = oldDevice;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Device findDeviceById(Long deviceId) throws DeviceNotFoundException {
+        return deviceRepository.findById(deviceId).orElseThrow(() -> new DeviceNotFoundException(deviceId));
+    }
+}

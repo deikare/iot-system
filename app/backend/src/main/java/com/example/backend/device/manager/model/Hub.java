@@ -43,6 +43,14 @@ public class Hub {
         return devices;
     }
 
+    public void addDeviceToDeviceList(Device device) {
+        devices.add(device);
+    }
+
+    public boolean removeDeviceFromDeviceList(Device device) {
+        return devices.remove(device);
+    }
+
     @Override
     public String toString() {
         return "Hub{" +

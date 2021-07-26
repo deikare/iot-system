@@ -1,7 +1,7 @@
 package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.assembler.HubModelAssembler;
-import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.HubServiceImplementation;
 import org.springframework.data.domain.Page;
@@ -28,14 +28,14 @@ public class HubController {
 
     @GetMapping
     public ResponseEntity all(
-            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Page<Hub> hubs;
         Pageable pageable = PageRequest.of(page, size);
-        if (name == null)
+        if (name.equals(""))
             hubs = hubServiceImplementation.getAllHubs(pageable);
-        else hubs = hubServiceImplementation.getAllHubsContainingName(name, pageable);
+        else hubs = hubServiceImplementation.getAllHubsByNameContaining(name, pageable);
 
         return ResponseEntity
                 .ok()
@@ -45,7 +45,7 @@ public class HubController {
 
     @GetMapping("/{id}")
     public EntityModel<Hub> one(@PathVariable Long id) {
-        Hub hub = null;
+        Hub hub;
         try {
             hub = hubServiceImplementation.findHubById(id);
         }
@@ -64,13 +64,26 @@ public class HubController {
     public EntityModel<Hub> addOrChangeNameOfHub(
             @PathVariable Long id,
             @RequestBody Hub newHub) {
-        Hub hub = null;
+        Hub hub;
         try {
-            hub = hubServiceImplementation.findHubById(id);
-            hub.setName(newHub.getName());
+            hub = hubServiceImplementation.updateHubNameById(id, newHub.getName());
         }
         catch (HubNotFoundException e) {
             hub = hubServiceImplementation.addHub(newHub);
+        }
+        return hubModelAssembler.toModel(hub);
+    }
+
+    @PatchMapping("/{id}")
+    public EntityModel<Hub> changeNameOfHub(
+            @PathVariable Long id,
+            @RequestBody String name) {
+        Hub hub;
+        try {
+            hub = hubServiceImplementation.updateHubNameById(id, name);
+        }
+        catch (HubNotFoundException e) {
+            throw e;
         }
         return hubModelAssembler.toModel(hub);
     }

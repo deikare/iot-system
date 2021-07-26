@@ -15,8 +15,9 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initializeHubs(HubRepository hubRepository) {
         return args -> {
-            for (int i = 0; i < 10; i++)
-                logger.info("Preloading: " + hubRepository.save(new Hub("H" + i)));
+            hubRepository.deleteAll();
+            for (int i = 0; i < 100; i++)
+                logger.info("Preloading: " + hubRepository.save(new Hub("H" + (i / 10))));
         };
     }
 }
