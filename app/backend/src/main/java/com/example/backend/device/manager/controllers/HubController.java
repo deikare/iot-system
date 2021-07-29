@@ -90,6 +90,16 @@ public class HubController {
 
     @DeleteMapping("/{id}")
     void deleteHub(@PathVariable Long id) {
-        hubServiceImplementation.deleteHubById(id);
+        try {
+            hubServiceImplementation.deleteHubById(id);
+        }
+        catch (HubNotFoundException e) {
+            throw e;
+        }
+    }
+
+    @DeleteMapping
+    void deleteAllHubs() {
+        hubServiceImplementation.deleteAllHubs();
     }
 }

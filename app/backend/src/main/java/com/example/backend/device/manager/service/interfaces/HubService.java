@@ -16,4 +16,5 @@ public interface HubService {
     Hub addDeviceToDeviceListInHub(Hub hub, Device device);
     boolean deleteDeviceFromDeviceListInHubByHubId(Long hubId, Device device);
     boolean deleteDeviceFromDeviceListInHub(Hub hub, Device device);
+    void deleteAllHubs();
 }

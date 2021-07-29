@@ -71,4 +71,9 @@ public class HubServiceImplementation implements HubService {
     public boolean deleteDeviceFromDeviceListInHub(Hub hub, Device device) {
         return hub.removeDeviceFromDeviceList(device);
     }
+
+    @Override
+    public void deleteAllHubs() {
+        hubRepository.deleteAll();
+    }
 }

@@ -27,9 +27,15 @@ public class DeviceServiceImplementation implements DeviceService {
     }
     @Override
     public Device addDeviceAndBindItToHub(Device device, Hub hub) {
-        Device addedDevice = deviceRepository.save(device);
-        addedDevice.setHub(hub);
+        Device addedDevice = addDevice(device);
+        //addedDevice.setHub(hub);
+        hubServiceImplementation.addDeviceToDeviceListInHub(hub, addedDevice);
         return addedDevice;
+    }
+
+    @Override
+    public Device addDevice(Device device) {
+        return deviceRepository.save(device);
     }
 
     @Override
@@ -53,13 +59,13 @@ public class DeviceServiceImplementation implements DeviceService {
     }
 
     @Override
-    public void removeDeviceById(Long deviceId) throws DeviceNotFoundException {
+    public void deleteDeviceById(Long deviceId) throws DeviceNotFoundException {
         Device device = findDeviceById(deviceId);
-        removeDevice(device);
+        deleteDevice(device);
     }
 
     @Override
-    public boolean removeDevice(Device device) {
+    public boolean deleteDevice(Device device) {
         Hub hub = device.getHub();
         boolean result = hubServiceImplementation.deleteDeviceFromDeviceListInHub(hub, device);
         deviceRepository.delete(device);
@@ -79,7 +85,7 @@ public class DeviceServiceImplementation implements DeviceService {
 
         Device result;
         if (!(hubOfOldDevice.equals(hubOfNewDevice))) {
-            removeDevice(oldDevice);
+            deleteDevice(oldDevice);
             addDeviceAndBindItToHub(newDevice, hubOfNewDevice);
             result = newDevice;
         }
@@ -95,5 +101,10 @@ public class DeviceServiceImplementation implements DeviceService {
     @Override
     public Device findDeviceById(Long deviceId) throws DeviceNotFoundException {
         return deviceRepository.findById(deviceId).orElseThrow(() -> new DeviceNotFoundException(deviceId));
+    }
+
+    @Override
+    public void deleteAllDevices() {
+        deviceRepository.deleteAll();
     }
 }
