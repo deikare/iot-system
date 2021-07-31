@@ -1,11 +1,16 @@
 package com.example.backend.device.manager.model;
 
+import com.example.backend.device.manager.model.properties.DeviceProperties;
+import com.example.backend.device.manager.service.interfaces.DependentTypeInterface;
+import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Entity
-public class Device {
+public class Device implements MasterTypeInterface<Device, ControlSignal>, DependentTypeInterface<Device, Hub> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "DEVICE_ID")
@@ -67,5 +72,34 @@ public class Device {
 
     public void setDeviceType(DeviceType deviceType) {
         this.deviceType = deviceType;
+    }
+
+    @Override
+    public Device update(Properties patch) {
+        this.updateName(patch);
+        this.updateHub(patch);
+        return this;
+    }
+
+    private void updateName(Properties patch) {
+        String newName = String.valueOf(patch.get(DeviceProperties.NAME));
+        if (!newName.isEmpty())
+            setName(newName);
+    }
+
+    private void updateHub(Properties patch) {
+        Hub newHub = (Hub) patch.get(DeviceProperties.HUB);
+        if (newHub instanceof Hub)
+            setHub(newHub);
+    }
+
+    @Override
+    public Device addDependentToDependentsList(ControlSignal dependent) {
+        return null;
+    }
+
+    @Override
+    public boolean removeDependentFromDependentsList(ControlSignal dependent) {
+        return false;
     }
 }

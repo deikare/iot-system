@@ -4,6 +4,7 @@ import com.example.backend.device.manager.controllers.assembler.HubModelAssemble
 import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.HubServiceImplementation;
+import com.example.backend.device.manager.service.implementation.HubServiceImplementation2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/hubs")
 public class HubController {
     private final HubServiceImplementation hubServiceImplementation;
+    private final HubServiceImplementation2 hubServiceImplementation2;
     private final HubModelAssembler hubModelAssembler;
     private final PagedResourcesAssembler<Hub> hubPagedResourcesAssembler;
 
-    public HubController(HubServiceImplementation hubServiceImplementation, HubModelAssembler hubModelAssembler, PagedResourcesAssembler<Hub> hubPagedResourcesAssembler) {
+    public HubController(HubServiceImplementation hubServiceImplementation, HubServiceImplementation2 hubServiceImplementation2, HubModelAssembler hubModelAssembler, PagedResourcesAssembler<Hub> hubPagedResourcesAssembler) {
         this.hubServiceImplementation = hubServiceImplementation;
+        this.hubServiceImplementation2 = hubServiceImplementation2;
         this.hubModelAssembler = hubModelAssembler;
         this.hubPagedResourcesAssembler = hubPagedResourcesAssembler;
     }

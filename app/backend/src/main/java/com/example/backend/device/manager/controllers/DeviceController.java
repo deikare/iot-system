@@ -37,7 +37,7 @@ public class DeviceController {
             @RequestParam(defaultValue = "5") int size) {
         Page<Device> devices;
         Pageable pageable = PageRequest.of(page, size);
-        if (name.equals("")) {
+        if (name.isEmpty()) {
             if (hubId == null)
                 devices = deviceServiceImplementation.getAllDevices(pageable);
             else devices = deviceServiceImplementation.getAllDevicesByHubId(hubId, pageable);

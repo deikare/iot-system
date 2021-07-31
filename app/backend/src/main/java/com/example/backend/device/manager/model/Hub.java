@@ -1,11 +1,16 @@
 package com.example.backend.device.manager.model;
 
+import com.example.backend.device.manager.model.properties.DeviceProperties;
+import com.example.backend.device.manager.model.properties.HubProperties;
+import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Entity
-public class Hub {
+public class Hub implements MasterTypeInterface<Hub, Device> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "HUB_ID")
@@ -58,5 +63,28 @@ public class Hub {
                 ", name='" + name + '\'' +
                 ", devices=" + devices +
                 '}';
+    }
+
+    @Override
+    public Hub update(Properties patch) {
+        updateName(patch);
+        return this;
+    }
+
+    private void updateName(Properties patch) {
+        String newName = String.valueOf(patch.get(DeviceProperties.NAME));
+        if (!newName.isEmpty())
+            setName(newName);
+    }
+
+    @Override
+    public Hub addDependentToDependentsList(Device dependent) {
+        addDeviceToDeviceList(dependent);
+        return this;
+    }
+
+    @Override
+    public boolean removeDependentFromDependentsList(Device dependent) {
+        return removeDeviceFromDeviceList(dependent);
     }
 }

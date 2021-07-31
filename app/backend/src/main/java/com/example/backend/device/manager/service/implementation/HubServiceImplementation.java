@@ -4,9 +4,13 @@ import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFound
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.HubRepository;
+import com.example.backend.device.manager.service.Builder;
+import com.example.backend.device.manager.service.interfaces.BaseService;
+import com.example.backend.device.manager.service.interfaces.BaseTypeInterface;
 import com.example.backend.device.manager.service.interfaces.HubService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -77,3 +81,73 @@ public class HubServiceImplementation implements HubService {
         hubRepository.deleteAll();
     }
 }
+/*
+// T = this class, S = dependent, R - repo, E - T not found exception
+public class xyz<B extends Object & BaseTypeInterface<B, D>, D, R extends JpaRepository<B, Long>, E extends RuntimeException> implements BaseService<B, D> {
+    private final R repository;
+    private final Builder<E> objectNotFoundExceptionBuilder; //exception builder
+
+    public BaseServiceImplementation(R repository, Builder<E> builder) {
+        this.repository = repository;
+        this.objectNotFoundExceptionBuilder = builder;
+    }
+
+    @Override
+    public B addObject(B t) {
+        return repository.save(t);
+    }
+
+    @Override
+    public Page<B> getAllObjects(Pageable pageable) { //TODO still needs custom query interface, dunno how to do it yet
+        return null;
+    }
+
+    @Override
+    public B findObjectById(Long id) throws E {
+        return repository.findById(id).orElseThrow(() -> objectNotFoundExceptionBuilder.newObject(id));
+    }
+
+    @Override
+    public B updateObjectById(Long id, B patch) throws E {
+        B patchedObject = findObjectById(id);
+        return updateObject(patchedObject, patch);
+    }
+
+    @Override
+    public B updateObject(B patchedObject, B patch) {
+        return patchedObject.update(patch);
+    }
+
+    @Override
+    public void deleteObjectById(Long id) throws E {
+        B objectToDelete = findObjectById(id);
+        repository.delete(objectToDelete);
+    }
+
+    @Override
+    public B addDependentToListInObjectById(Long objectId, D dependent) throws E {
+        B object = findObjectById(objectId);
+        return addDependentToListInObject(object, dependent);
+    }
+
+    @Override
+    public B addDependentToListInObject(B object, D dependent) {
+        return object.addDependentToDependentsList(dependent);
+    }
+
+    @Override
+    public boolean deleteDependentFromListInObjectById(Long objectId, D dependent) throws E {
+        B object = findObjectById(objectId);
+        return deleteDependentFromListInObject(object, dependent);
+    }
+
+    @Override
+    public boolean deleteDependentFromListInObject(B object, D dependent) {
+        return object.removeDependentFromDependentsList(dependent);
+    }
+
+    @Override
+    public void deleteAllObjects() {
+        repository.deleteAll();
+    }
+}*/
