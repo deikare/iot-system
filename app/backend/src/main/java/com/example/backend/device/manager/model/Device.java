@@ -3,6 +3,7 @@ package com.example.backend.device.manager.model;
 import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.service.interfaces.DependentTypeInterface;
 import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class Device implements MasterTypeInterface<Device, ControlSignal>, Depen
 
     private void updateHub(Properties patch) {
         Hub newHub = (Hub) patch.get(DeviceProperties.HUB);
-        if (newHub instanceof Hub)
+        if (newHub != null)
             setHub(newHub);
     }
 

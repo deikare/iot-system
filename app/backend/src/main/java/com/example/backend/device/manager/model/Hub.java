@@ -3,6 +3,7 @@ package com.example.backend.device.manager.model;
 import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.model.properties.HubProperties;
 import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;

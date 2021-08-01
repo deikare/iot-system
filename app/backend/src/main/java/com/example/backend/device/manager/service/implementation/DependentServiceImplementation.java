@@ -6,12 +6,11 @@ import com.example.backend.device.manager.service.interfaces.DependentTypeInterf
 import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+public class DependentServiceImplementation<B extends Object & DependentTypeInterface<B, M>, M extends Object & MasterTypeInterface<M, B>, R extends JpaRepository<B, Long>, R_M extends JpaRepository<M, Long>, E extends RuntimeException, E_M extends RuntimeException> extends BaseServiceImplementation<B, R, E> implements DependentService<B, M> {
 
-public class DependentServiceImplementation<B extends Object & DependentTypeInterface<B, M>, M extends Object & MasterTypeInterface<M, B>, R extends JpaRepository<B, Long>, R_M extends JpaRepository<M, Long>, E extends RuntimeException> extends BaseServiceImplementation<B, R, E> implements DependentService<B, M> {
+    private final MasterServiceImplementation<M, B, R_M, E_M> masterServiceImplementation;
 
-    private final MasterServiceImplementation<M, B, R_M, E> masterServiceImplementation;
-
-    public DependentServiceImplementation(R repository, Builder<E> builder, MasterServiceImplementation<M, B, R_M, E> masterServiceImplementation) {
+    public DependentServiceImplementation(R repository, Builder<E> builder, MasterServiceImplementation<M, B, R_M, E_M> masterServiceImplementation) {
         super(repository, builder);
         this.masterServiceImplementation = masterServiceImplementation;
     }

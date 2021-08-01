@@ -1,11 +1,11 @@
-package com.example.backend.device.manager.service.implementation;
+package com.example.backend.device.manager.service.implementation.old;
 
 import com.example.backend.device.manager.controllers.exceptions.device.DeviceNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.DeviceRepository;
-import com.example.backend.device.manager.service.interfaces.DeviceService;
+import com.example.backend.device.manager.service.interfaces.old.DeviceService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

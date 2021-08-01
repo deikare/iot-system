@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.service.interfaces;
+package com.example.backend.device.manager.service.interfaces.old;
 
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
