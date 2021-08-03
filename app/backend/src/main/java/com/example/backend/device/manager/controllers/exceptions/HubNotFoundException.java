@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.controllers.exceptions.hub;
+package com.example.backend.device.manager.controllers.exceptions;
 
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package com.example.backend.device.manager.service.wrapper;
 
-import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.HubRepository;

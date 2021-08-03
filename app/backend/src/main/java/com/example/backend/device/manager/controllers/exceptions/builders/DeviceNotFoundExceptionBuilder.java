@@ -1,6 +1,6 @@
 package com.example.backend.device.manager.controllers.exceptions.builders;
 
-import com.example.backend.device.manager.controllers.exceptions.device.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.service.Builder;
 import org.springframework.stereotype.Component;
 

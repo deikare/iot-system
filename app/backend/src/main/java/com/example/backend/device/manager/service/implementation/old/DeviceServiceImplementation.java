@@ -1,7 +1,7 @@
 package com.example.backend.device.manager.service.implementation.old;
 
-import com.example.backend.device.manager.controllers.exceptions.device.DeviceNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.DeviceRepository;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeviceServiceImplementation implements DeviceService {
     private final DeviceRepository deviceRepository;
-    private final HubServiceImplementation hubServiceImplementation;
+    private final HubServiceImplementation2 hubServiceImplementation;
 
-    public DeviceServiceImplementation(DeviceRepository deviceRepository, HubServiceImplementation hubServiceImplementation) {
+    public DeviceServiceImplementation(DeviceRepository deviceRepository, HubServiceImplementation2 hubServiceImplementation) {
         this.deviceRepository = deviceRepository;
         this.hubServiceImplementation = hubServiceImplementation;
     }

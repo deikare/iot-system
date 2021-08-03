@@ -4,7 +4,7 @@ import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.DeviceType;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.old.DeviceServiceImplementation;
-import com.example.backend.device.manager.service.implementation.old.HubServiceImplementation;
+import com.example.backend.device.manager.service.implementation.old.HubServiceImplementation2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -19,7 +19,7 @@ public class LoadDatabase {
 
     @Bean
     CommandLineRunner initializeHubs(
-            HubServiceImplementation hubServiceImplementation,
+            HubServiceImplementation2 hubServiceImplementation,
             DeviceServiceImplementation deviceServiceImplementation) {
         return args -> {
             hubServiceImplementation.deleteAllHubs();

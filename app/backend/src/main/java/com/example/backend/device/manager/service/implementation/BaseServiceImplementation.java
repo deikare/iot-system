@@ -1,7 +1,7 @@
 package com.example.backend.device.manager.service.implementation;
 
 import com.example.backend.device.manager.service.Builder;
-import com.example.backend.device.manager.service.interfaces.BaseService;
+import com.example.backend.device.manager.service.interfaces.BaseServiceInterface;
 import com.example.backend.device.manager.service.interfaces.BaseTypeInterface;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +10,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Properties;
 
 // T = this class, S = dependent, R - repo, E - T not found exception
-public class BaseServiceImplementation<B extends Object & BaseTypeInterface<B>, R extends JpaRepository<B, Long>, E extends RuntimeException> implements BaseService<B> {
+public class BaseServiceImplementation<
+        B extends BaseTypeInterface<B>,
+        R extends JpaRepository<B, Long>,
+        E extends RuntimeException>
+        implements BaseServiceInterface<B> {
     private final R repository;
     private final Builder<E> objectNotFoundExceptionBuilder; //exception builder
 

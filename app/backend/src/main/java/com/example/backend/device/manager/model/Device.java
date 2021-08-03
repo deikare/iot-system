@@ -2,6 +2,7 @@ package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.service.interfaces.DependentTypeInterface;
+import com.example.backend.device.manager.service.interfaces.MasterAndDependentTypeInterface;
 import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 @Entity
-public class Device implements MasterTypeInterface<Device, ControlSignal>, DependentTypeInterface<Device, Hub> {
+public class Device implements MasterAndDependentTypeInterface<Device, ControlSignal, Hub> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "DEVICE_ID")
@@ -96,11 +97,12 @@ public class Device implements MasterTypeInterface<Device, ControlSignal>, Depen
 
     @Override
     public Device addDependentToDependentsList(ControlSignal dependent) {
-        return null;
+        controlSignals.add(dependent);
+        return this;
     }
 
     @Override
     public boolean removeDependentFromDependentsList(ControlSignal dependent) {
-        return false;
+        return controlSignals.remove(dependent);
     }
 }

@@ -1,7 +1,7 @@
 package com.example.backend.device.manager.service.wrapper;
 
-import com.example.backend.device.manager.controllers.exceptions.device.DeviceNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;

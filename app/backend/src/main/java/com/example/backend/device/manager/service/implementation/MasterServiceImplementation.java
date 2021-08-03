@@ -1,14 +1,12 @@
 package com.example.backend.device.manager.service.implementation;
 
 import com.example.backend.device.manager.service.Builder;
-import com.example.backend.device.manager.service.interfaces.BaseService;
-import com.example.backend.device.manager.service.interfaces.BaseTypeInterface;
-import com.example.backend.device.manager.service.interfaces.MasterService;
+import com.example.backend.device.manager.service.interfaces.DependentTypeInterface;
+import com.example.backend.device.manager.service.interfaces.MasterServiceInterface;
 import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
 
-public class MasterServiceImplementation<B extends Object & MasterTypeInterface<B, D>, D, R extends JpaRepository<B, Long>, E extends RuntimeException> extends BaseServiceImplementation<B, R, E> implements MasterService<B, D> {
+public class MasterServiceImplementation<B extends MasterTypeInterface<B, D>, D extends DependentTypeInterface<D, B>, R extends JpaRepository<B, Long>, E extends RuntimeException> extends BaseServiceImplementation<B, R, E> implements MasterServiceInterface<B, D> {
     public MasterServiceImplementation(R repository, Builder<E> builder) {
         super(repository, builder);
     }

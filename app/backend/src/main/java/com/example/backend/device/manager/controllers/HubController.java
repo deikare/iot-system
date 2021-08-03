@@ -1,9 +1,9 @@
 package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.assembler.HubModelAssembler;
-import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.Hub;
-import com.example.backend.device.manager.service.implementation.old.HubServiceImplementation;
+import com.example.backend.device.manager.service.implementation.old.HubServiceImplementation2;
 import com.example.backend.device.manager.service.wrapper.HubServiceImplementationWrapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/hubs")
 public class HubController {
-    private final HubServiceImplementation hubServiceImplementation;
+    private final HubServiceImplementation2 hubServiceImplementation;
     private final HubServiceImplementationWrapper hubServiceImplementation2;
     private final HubModelAssembler hubModelAssembler;
     private final PagedResourcesAssembler<Hub> hubPagedResourcesAssembler;
 
-    public HubController(HubServiceImplementation hubServiceImplementation, HubServiceImplementationWrapper hubServiceImplementation2, HubModelAssembler hubModelAssembler, PagedResourcesAssembler<Hub> hubPagedResourcesAssembler) {
+    public HubController(HubServiceImplementation2 hubServiceImplementation, HubServiceImplementationWrapper hubServiceImplementation2, HubModelAssembler hubModelAssembler, PagedResourcesAssembler<Hub> hubPagedResourcesAssembler) {
         this.hubServiceImplementation = hubServiceImplementation;
         this.hubServiceImplementation2 = hubServiceImplementation2;
         this.hubModelAssembler = hubModelAssembler;

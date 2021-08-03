@@ -1,7 +1,7 @@
-package com.example.backend.device.manager.service.configs;
+package com.example.backend.device.manager.service.configs.hub;
 
 import com.example.backend.device.manager.controllers.exceptions.builders.HubNotFoundExceptionBuilder;
-import com.example.backend.device.manager.controllers.exceptions.hub.HubNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.HubRepository;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class HubServiceImplementationConfig {
+public class HubServiceImplementationConfig{
     private final HubRepository repository;
     private final HubNotFoundExceptionBuilder builder;
 
@@ -20,7 +20,7 @@ public class HubServiceImplementationConfig {
     }
 
     @Bean
-    MasterServiceImplementation<Hub, Device, HubRepository, HubNotFoundException> masterHubServiceImplementation() {
-        return new MasterServiceImplementation<Hub, Device, HubRepository, HubNotFoundException>(repository, builder);
+    public MasterServiceImplementation<Hub, Device, HubRepository, HubNotFoundException> hubServiceImplementation() {
+        return new MasterServiceImplementation<>(repository, builder);
     }
 }

@@ -49,10 +49,7 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
         return devices;
     }
 
-    public void addDeviceToDeviceList(Device device) {
-        devices.add(device);
-    }
-
+    //TODO delete this method
     public boolean removeDeviceFromDeviceList(Device device) {
         return devices.remove(device);
     }
@@ -80,12 +77,12 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
 
     @Override
     public Hub addDependentToDependentsList(Device dependent) {
-        addDeviceToDeviceList(dependent);
+        devices.add(dependent);
         return this;
     }
 
     @Override
     public boolean removeDependentFromDependentsList(Device dependent) {
-        return removeDeviceFromDeviceList(dependent);
+        return devices.remove(dependent);
     }
 }

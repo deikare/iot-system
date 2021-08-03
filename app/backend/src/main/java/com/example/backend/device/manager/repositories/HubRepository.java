@@ -7,6 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface HubRepository extends JpaRepository<Hub, Long> {
     Page<Hub> findAllByNameContaining(String name, Pageable pageable);
-    Page<Hub> findByNameContaining(String name, Pageable pageable);
-    Page<Hub> findAllByName(String name, Pageable pageable);
 }

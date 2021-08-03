@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Properties;
 
 //T - base, S - dependent
-public interface BaseService<B> {
+public interface BaseServiceInterface<B> {
     B addObject(B t);
     Page<B> getAllObjects(Pageable pageable);
     B findObjectById(Long id);

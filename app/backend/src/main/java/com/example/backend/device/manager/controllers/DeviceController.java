@@ -1,8 +1,8 @@
 package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.assembler.DeviceModelAssembler;
-import com.example.backend.device.manager.controllers.exceptions.device.DeviceNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.device.HubInDeviceNotSpecifiedException;
+import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubInDeviceNotSpecifiedException;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.service.implementation.old.DeviceServiceImplementation;
 import org.springframework.data.domain.Page;

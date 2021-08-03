@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ControlSignalResponseRepository extends JpaRepository<ControlSignalResponse, Long> {
-    Page<ControlSignalResponse> findControlSignalResponseByNameContains(String text, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseBySentControlSignal(ControlSignal sentControlSignal, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalByMessageContentContaining(String text, Pageable pageable);
-    //Page<ControlSignalResponse> fi
+    Page<ControlSignalResponse> findControlSignalResponseByNameContaining(String name, Pageable pageable);
+    Page<ControlSignalResponse> findControlSignalResponseBySentControlSignal_Id(Long id, Pageable pageable);
+    Page<ControlSignalResponse> findControlSignalResponseByMessageContentContaining(String messageContent, Pageable pageable);
+    Page<ControlSignalResponse> findControlSignalResponseByNameContainingAndMessageContentContaining(String name, String messageContent, Pageable pageable);
+    Page<ControlSignalResponse> findControlSignalResponseByMessageContentContainingAndSentControlSignal_Id(String messageContent, Long id, Pageable pageable);
+    Page<ControlSignalResponse> findControlSignalResponseByNameContainingAndSentControlSignal_Id(String name, Long id, Pageable pageable);
+    Page<ControlSignalResponse> findControlSignalResponseByNameContainingAndMessageContentContainingAndSentControlSignal_Id(String name, String messageContent, Long id, Pageable pageable);
 }
