@@ -5,7 +5,9 @@ import com.example.backend.device.manager.service.interfaces.filtering.BasePagin
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface HubRepository extends JpaRepository<Hub, Long>, BasePaginationAndFilteringInterface<Hub> {
     Page<Hub> findByNameContaining(String name, Pageable pageable);
 

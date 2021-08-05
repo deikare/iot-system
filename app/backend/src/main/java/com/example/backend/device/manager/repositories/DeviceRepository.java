@@ -6,7 +6,9 @@ import com.example.backend.device.manager.service.interfaces.filtering.ByMasterP
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface DeviceRepository extends JpaRepository<Device, Long>, ByMasterPaginationAndFilteringInterface<Device> {
     Page<Device> findByNameContaining(String name, Pageable pageable);
     Page<Device> findByHub_Id(Long id, Pageable pageable);

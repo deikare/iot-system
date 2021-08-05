@@ -3,6 +3,7 @@ package com.example.backend.device.manager.controllers;
 import com.example.backend.device.manager.controllers.assembler.HubModelAssembler;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.Hub;
+import com.example.backend.device.manager.service.implementation.filtering.BasePaginationAndFilteringServiceImplementation;
 import com.example.backend.device.manager.service.implementation.old.HubServiceImplementation2;
 import com.example.backend.device.manager.service.wrapper.HubServiceImplementationWrapper;
 import org.springframework.data.domain.Page;
@@ -21,12 +22,14 @@ public class HubController {
     private final HubServiceImplementationWrapper hubServiceImplementation2;
     private final HubModelAssembler hubModelAssembler;
     private final PagedResourcesAssembler<Hub> hubPagedResourcesAssembler;
+    private final BasePaginationAndFilteringServiceImplementation<Hub> filteringServiceImplementation;
 
-    public HubController(HubServiceImplementation2 hubServiceImplementation, HubServiceImplementationWrapper hubServiceImplementation2, HubModelAssembler hubModelAssembler, PagedResourcesAssembler<Hub> hubPagedResourcesAssembler) {
+    public HubController(HubServiceImplementation2 hubServiceImplementation, HubServiceImplementationWrapper hubServiceImplementation2, HubModelAssembler hubModelAssembler, PagedResourcesAssembler<Hub> hubPagedResourcesAssembler, BasePaginationAndFilteringServiceImplementation<Hub> filteringServiceImplementation) {
         this.hubServiceImplementation = hubServiceImplementation;
         this.hubServiceImplementation2 = hubServiceImplementation2;
         this.hubModelAssembler = hubModelAssembler;
         this.hubPagedResourcesAssembler = hubPagedResourcesAssembler;
+        this.filteringServiceImplementation = filteringServiceImplementation;
     }
 
     @GetMapping
@@ -34,12 +37,19 @@ public class HubController {
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        Page<Hub> hubs;
+        Page<Hub> hubs = null;
         Pageable pageable = PageRequest.of(page, size);
-        if (name.equals(""))
-            hubs = hubServiceImplementation.getAllHubs(pageable);
-        else hubs = hubServiceImplementation.getAllHubsByNameContaining(name, pageable);
 
+        /*if (name.equals(""))
+            hubs = hubServiceImplementation.getAllHubs(pageable);
+        else hubs = hubServiceImplementation.getAllHubsByNameContaining(name, pageable);*/
+
+        if (name.equals(""))
+            hubs = filteringServiceImplementation.findAll(pageable);
+        else hubs = filteringServiceImplementation.findAllByNameContaining(name, pageable);
+
+
+//        assert hubs != null;
         return ResponseEntity
                 .ok()
                 .contentType(MediaTypes.HAL_JSON)

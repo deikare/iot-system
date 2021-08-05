@@ -6,15 +6,16 @@ import com.example.backend.device.manager.service.interfaces.filtering.ByMasterA
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public class ControlSignalPaginationAndFilteringServiceImplementation implements ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignal> {
-    private final ControlSignalRepository repository;
+public class ControlSignalPaginationAndFilteringServiceImplementation /*implements ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignal> */{
+/*    private final ControlSignalRepository repository;
 
     public ControlSignalPaginationAndFilteringServiceImplementation(ControlSignalRepository repository) {
         this.repository = repository;
     }
 
+
     @Override
-    public Page<ControlSignal> findAll(Pageable pageable) {
+    public Page<ControlSignal> getAll(Pageable pageable) {
         return null;
     }
 
@@ -51,5 +52,5 @@ public class ControlSignalPaginationAndFilteringServiceImplementation implements
     @Override
     public Page<ControlSignal> findAllByNameContainingAndMaster_Id(String name, Long id, Pageable pageable) {
         return repository.findByNameContainingAndDevice_Id(name, id, pageable);
-    }
+    }*/
 }

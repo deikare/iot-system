@@ -5,7 +5,9 @@ import com.example.backend.device.manager.service.interfaces.filtering.ByMasterA
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ControlSignalRepository extends JpaRepository<ControlSignal, Long>, ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignal> {
     Page<ControlSignal> findByNameContaining(String name, Pageable pageable);
     Page<ControlSignal> findByDevice_Id(Long deviceId, Pageable pageable);

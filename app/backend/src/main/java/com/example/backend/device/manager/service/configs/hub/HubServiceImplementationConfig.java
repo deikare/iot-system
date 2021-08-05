@@ -6,6 +6,7 @@ import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.HubRepository;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.filtering.BasePaginationAndFilteringServiceImplementation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,5 +23,10 @@ public class HubServiceImplementationConfig{
     @Bean
     public MasterServiceImplementation<Hub, Device, HubRepository, HubNotFoundException> hubServiceImplementation() {
         return new MasterServiceImplementation<>(repository, builder);
+    }
+
+    @Bean
+    public BasePaginationAndFilteringServiceImplementation<Hub> hubFilteringServiceImplementation() {
+        return new BasePaginationAndFilteringServiceImplementation<>(repository);
     }
 }
