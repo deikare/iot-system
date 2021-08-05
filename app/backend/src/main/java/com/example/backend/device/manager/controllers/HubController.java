@@ -42,7 +42,6 @@ public class HubController {
             hubs = hubFilteringServiceImplementation.findAll(pageable);
         else hubs = hubFilteringServiceImplementation.findAllByNameContaining(name, pageable);
 
-
         return ResponseEntity
                 .ok()
                 .contentType(MediaTypes.HAL_JSON)

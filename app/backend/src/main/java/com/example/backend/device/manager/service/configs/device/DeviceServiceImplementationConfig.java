@@ -10,6 +10,7 @@ import com.example.backend.device.manager.repositories.DeviceRepository;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.filtering.ByMasterPaginationAndFilteringServiceImplementation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,5 +33,10 @@ public class DeviceServiceImplementationConfig {
     @Bean
     MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceMasterAndDependentServiceImplementation() {
         return new MasterAndDependentServiceImplementation<>(deviceRepository, builder, deviceMasterServiceImplementation, deviceDependentServiceImplementation);
+    }
+
+    @Bean
+    ByMasterPaginationAndFilteringServiceImplementation<Device> deviceFilteringServiceImplementation() {
+        return new ByMasterPaginationAndFilteringServiceImplementation<>(deviceRepository);
     }
 }

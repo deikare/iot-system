@@ -8,6 +8,7 @@ import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.repositories.ControlSignalResponseRepository;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,9 +25,13 @@ public class ControlSignalResponseServiceImplementationConfig {
         this.controlSignalServiceImplementation = controlSignalServiceImplementation;
     }
 
-
     @Bean
     DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlSignalResponseServiceImplementation() {
         return new DependentServiceImplementation<>(controlSignalResponseRepository, builder, controlSignalServiceImplementation);
+    }
+
+    @Bean
+    ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> controlSignalResponseFilteringServiceImplementation() {
+        return new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalResponseRepository);
     }
 }
