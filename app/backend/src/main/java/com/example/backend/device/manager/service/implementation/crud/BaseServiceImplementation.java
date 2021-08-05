@@ -3,26 +3,23 @@ package com.example.backend.device.manager.service.implementation.crud;
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
 import com.example.backend.device.manager.model.interfaces.BaseTypeInterface;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Properties;
 
-// T = this class, S = dependent, R - repo, E - T not found exception
 public class BaseServiceImplementation<
         B extends BaseTypeInterface<B>,
-        R extends JpaRepository<B, Long>,
         E extends RuntimeException>
         implements BaseServiceInterface<B> {
-    private final R repository;
+    private final JpaRepository<B, Long> repository;
     private final Builder<E> objectNotFoundExceptionBuilder; //exception builder
 
-    public BaseServiceImplementation(R repository, Builder<E> builder) {
+    public BaseServiceImplementation(JpaRepository<B, Long> repository, Builder<E> objectNotFoundExceptionBuilder) {
         this.repository = repository;
-        this.objectNotFoundExceptionBuilder = builder;
+        this.objectNotFoundExceptionBuilder = objectNotFoundExceptionBuilder;
     }
+
 
     @Override
     public B addObject(B t) {

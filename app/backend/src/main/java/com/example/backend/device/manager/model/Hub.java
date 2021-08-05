@@ -47,11 +47,6 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
         return devices;
     }
 
-    //TODO delete this method
-    public boolean removeDeviceFromDeviceList(Device device) {
-        return devices.remove(device);
-    }
-
     @Override
     public String toString() {
         return "Hub{" +

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+//remember to implement in-place all of methods from own filtering interface
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long>, ByMasterPaginationAndFilteringInterface<Device> {
     Page<Device> findByNameContaining(String name, Pageable pageable);

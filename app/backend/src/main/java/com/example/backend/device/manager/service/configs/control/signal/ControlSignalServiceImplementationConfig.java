@@ -7,7 +7,6 @@ import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.repositories.ControlSignalRepository;
-import com.example.backend.device.manager.repositories.DeviceRepository;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
@@ -19,18 +18,18 @@ public class ControlSignalServiceImplementationConfig {
     private final ControlSignalRepository controlSignalRepository;
     private final ControlSignalNotFoundExceptionBuilder builder;
 
-    private final MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalRepository, ControlSignalNotFoundException> controlSignalMasterServiceImplementation;
-    private final DependentServiceImplementation<ControlSignal, Device, ControlSignalRepository, DeviceRepository, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation;
+    private final MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalMasterServiceImplementation;
+    private final DependentServiceImplementation<ControlSignal, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation;
 
-    public ControlSignalServiceImplementationConfig(ControlSignalRepository controlSignalRepository, ControlSignalNotFoundExceptionBuilder builder, DependentServiceImplementation<ControlSignal, Device, ControlSignalRepository, DeviceRepository, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation, MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalRepository, ControlSignalNotFoundException> controlSignalMasterServiceImplementation) {
+    public ControlSignalServiceImplementationConfig(ControlSignalRepository controlSignalRepository, ControlSignalNotFoundExceptionBuilder builder, MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalMasterServiceImplementation, DependentServiceImplementation<ControlSignal, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation) {
         this.controlSignalRepository = controlSignalRepository;
         this.builder = builder;
-        this.controlSignalDependentServiceImplementation = controlSignalDependentServiceImplementation;
         this.controlSignalMasterServiceImplementation = controlSignalMasterServiceImplementation;
+        this.controlSignalDependentServiceImplementation = controlSignalDependentServiceImplementation;
     }
 
     @Bean
-    MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalRepository, DeviceRepository, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalMasterAndDependentServiceImplementation() {
+    MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalMasterAndDependentServiceImplementation() {
         return new MasterAndDependentServiceImplementation<>(controlSignalRepository, builder, controlSignalMasterServiceImplementation, controlSignalDependentServiceImplementation);
     }
 }

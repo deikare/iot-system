@@ -6,8 +6,13 @@ import com.example.backend.device.manager.service.interfaces.crud.MasterServiceI
 import com.example.backend.device.manager.model.interfaces.MasterTypeInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class MasterServiceImplementation<B extends MasterTypeInterface<B, D>, D extends DependentTypeInterface<D, B>, R extends JpaRepository<B, Long>, E extends RuntimeException> extends BaseServiceImplementation<B, R, E> implements MasterServiceInterface<B, D> {
-    public MasterServiceImplementation(R repository, Builder<E> builder) {
+public class MasterServiceImplementation<B extends MasterTypeInterface<B, D>,
+        D extends DependentTypeInterface<D, B>,
+        E extends RuntimeException>
+        extends BaseServiceImplementation<B, E>
+        implements MasterServiceInterface<B, D> {
+
+    public MasterServiceImplementation(JpaRepository<B, Long> repository, Builder<E> builder) {
         super(repository, builder);
     }
 

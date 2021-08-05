@@ -3,7 +3,6 @@ package com.example.backend.device.manager.service.implementation.filtering;
 import com.example.backend.device.manager.service.interfaces.filtering.ByMasterAndMessageContentPaginationAndFilteringInterface;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 public class ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<B> extends ByMasterPaginationAndFilteringServiceImplementation<B> implements ByMasterAndMessageContentPaginationAndFilteringInterface<B> {
     private final ByMasterAndMessageContentPaginationAndFilteringInterface<B> repository;

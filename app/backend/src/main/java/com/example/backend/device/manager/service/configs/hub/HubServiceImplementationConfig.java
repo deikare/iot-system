@@ -21,7 +21,7 @@ public class HubServiceImplementationConfig{
     }
 
     @Bean
-    public MasterServiceImplementation<Hub, Device, HubRepository, HubNotFoundException> hubServiceImplementation() {
+    public MasterServiceImplementation<Hub, Device, HubNotFoundException> hubServiceImplementation() {
         return new MasterServiceImplementation<>(repository, builder);
     }
 
