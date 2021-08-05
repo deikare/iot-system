@@ -1,12 +1,13 @@
-package com.example.backend.device.manager.service.implementation;
+package com.example.backend.device.manager.service.implementation.crud;
 
 import com.example.backend.device.manager.service.Builder;
-import com.example.backend.device.manager.service.interfaces.BaseServiceInterface;
-import com.example.backend.device.manager.service.interfaces.BaseTypeInterface;
+import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
+import com.example.backend.device.manager.model.interfaces.BaseTypeInterface;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Properties;
 
 // T = this class, S = dependent, R - repo, E - T not found exception
@@ -29,8 +30,8 @@ public class BaseServiceImplementation<
     }
 
     @Override
-    public Page<B> getAllObjects(Pageable pageable) { //TODO still needs custom query interface, dunno how to do it yet
-        return null;
+    public List<B> getAllObjects() {
+        return repository.findAll();
     }
 
     @Override

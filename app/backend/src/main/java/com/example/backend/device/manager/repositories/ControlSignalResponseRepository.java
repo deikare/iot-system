@@ -1,6 +1,5 @@
 package com.example.backend.device.manager.repositories;
 
-import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

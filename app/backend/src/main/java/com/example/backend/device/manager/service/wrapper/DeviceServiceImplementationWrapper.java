@@ -7,8 +7,8 @@ import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.DeviceRepository;
 import com.example.backend.device.manager.repositories.HubRepository;
-import com.example.backend.device.manager.service.implementation.DependentServiceImplementation;
-import com.example.backend.device.manager.service.implementation.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import org.springframework.stereotype.Service;
 
 @Service

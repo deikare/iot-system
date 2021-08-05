@@ -2,17 +2,14 @@ package com.example.backend.device.manager.service.configs.control.signal;
 
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.builders.ControlSignalNotFoundExceptionBuilder;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.model.Device;
-import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.ControlSignalRepository;
 import com.example.backend.device.manager.repositories.DeviceRepository;
-import com.example.backend.device.manager.repositories.HubRepository;
-import com.example.backend.device.manager.service.implementation.DependentServiceImplementation;
-import com.example.backend.device.manager.service.implementation.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,8 +1,7 @@
 package com.example.backend.device.manager.model;
 
-import com.example.backend.device.manager.model.properties.ControlSignalProperties;
 import com.example.backend.device.manager.model.properties.ControlSignalResponseProperties;
-import com.example.backend.device.manager.service.interfaces.DependentTypeInterface;
+import com.example.backend.device.manager.model.interfaces.DependentTypeInterface;
 
 import javax.persistence.*;
 import java.util.Properties;

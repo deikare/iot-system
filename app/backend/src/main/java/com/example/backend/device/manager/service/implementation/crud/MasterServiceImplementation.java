@@ -1,9 +1,9 @@
-package com.example.backend.device.manager.service.implementation;
+package com.example.backend.device.manager.service.implementation.crud;
 
 import com.example.backend.device.manager.service.Builder;
-import com.example.backend.device.manager.service.interfaces.DependentTypeInterface;
-import com.example.backend.device.manager.service.interfaces.MasterServiceInterface;
-import com.example.backend.device.manager.service.interfaces.MasterTypeInterface;
+import com.example.backend.device.manager.model.interfaces.DependentTypeInterface;
+import com.example.backend.device.manager.service.interfaces.crud.MasterServiceInterface;
+import com.example.backend.device.manager.model.interfaces.MasterTypeInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public class MasterServiceImplementation<B extends MasterTypeInterface<B, D>, D extends DependentTypeInterface<D, B>, R extends JpaRepository<B, Long>, E extends RuntimeException> extends BaseServiceImplementation<B, R, E> implements MasterServiceInterface<B, D> {

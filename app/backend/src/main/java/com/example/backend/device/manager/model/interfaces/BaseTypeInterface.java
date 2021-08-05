@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.service.interfaces;
+package com.example.backend.device.manager.model.interfaces;
 
 import java.util.List;
 import java.util.Properties;

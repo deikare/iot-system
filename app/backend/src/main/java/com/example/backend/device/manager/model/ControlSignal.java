@@ -1,7 +1,7 @@
 package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.model.properties.ControlSignalProperties;
-import com.example.backend.device.manager.service.interfaces.MasterAndDependentTypeInterface;
+import com.example.backend.device.manager.model.interfaces.MasterAndDependentTypeInterface;
 
 import javax.persistence.*;
 import java.util.ArrayList;

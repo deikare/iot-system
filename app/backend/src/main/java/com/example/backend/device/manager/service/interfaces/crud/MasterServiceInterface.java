@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.service.interfaces;
+package com.example.backend.device.manager.service.interfaces.crud;
 
 public interface MasterServiceInterface<B, D> extends BaseServiceInterface<B> {
     B addDependentToListInObjectById(Long objectId, D dependent);

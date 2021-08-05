@@ -7,8 +7,8 @@ import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.repositories.ControlSignalRepository;
 import com.example.backend.device.manager.repositories.ControlSignalResponseRepository;
-import com.example.backend.device.manager.service.implementation.DependentServiceImplementation;
-import com.example.backend.device.manager.service.implementation.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
