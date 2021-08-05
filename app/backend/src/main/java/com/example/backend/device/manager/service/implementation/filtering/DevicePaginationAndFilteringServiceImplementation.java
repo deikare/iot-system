@@ -14,17 +14,22 @@ public class DevicePaginationAndFilteringServiceImplementation implements ByMast
     }
 
     @Override
-    public Page<Device> findByNameContaining(String name, Pageable pageable) {
+    public Page<Device> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Page<Device> findAllByNameContaining(String name, Pageable pageable) {
         return repository.findByNameContaining(name, pageable);
     }
 
     @Override
-    public Page<Device> findByMaster_Id(Long id, Pageable pageable) {
+    public Page<Device> findAllByMaster_Id(Long id, Pageable pageable) {
         return repository.findByHub_Id(id, pageable);
     }
 
     @Override
-    public Page<Device> findByNameContainingAndMaster_Id(String name, Long id, Pageable pageable) {
+    public Page<Device> findAllByNameContainingAndMaster_Id(String name, Long id, Pageable pageable) {
         return repository.findByNameContainingAndHub_Id(name, id, pageable);
     }
 }

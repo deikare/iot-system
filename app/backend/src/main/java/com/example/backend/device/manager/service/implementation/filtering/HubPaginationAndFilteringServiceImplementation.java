@@ -14,7 +14,12 @@ public class HubPaginationAndFilteringServiceImplementation implements BasePagin
     }
 
     @Override
-    public Page<Hub> findByNameContaining(String name, Pageable pageable) {
+    public Page<Hub> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Page<Hub> findAllByNameContaining(String name, Pageable pageable) {
         return repository.findAllByNameContaining(name, pageable);
     }
 }

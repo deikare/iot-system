@@ -4,6 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BasePaginationAndFilteringInterface<T> {
-    Page<T> find(Pageable pageable);
-    Page<T> findByNameContaining(String name, Pageable pageable);
+    Page<T> findAll(Pageable pageable);
+    Page<T> findAllByNameContaining(String name, Pageable pageable);
 }
