@@ -45,17 +45,17 @@ public class DeviceServiceImplementation implements DeviceService {
 
     @Override
     public Page<Device> getAllDevicesByNameContaining(String name, Pageable pageable) {
-        return deviceRepository.findAllByNameContaining(name, pageable);
+        return deviceRepository.findByNameContaining(name, pageable);
     }
 
     @Override
     public Page<Device> getAllDevicesByHubId(Long hubId, Pageable pageable) {
-        return deviceRepository.findAllByHub_Id(hubId, pageable);
+        return deviceRepository.findByHub_Id(hubId, pageable);
     }
 
     @Override
     public Page<Device> getAllDevicesByNameContainingAndHubId(String name, Long hubId, Pageable pageable) {
-        return deviceRepository.findAllByNameContainingAndHub_Id(name, hubId, pageable);
+        return deviceRepository.findByNameContainingAndHub_Id(name, hubId, pageable);
     }
 
     @Override

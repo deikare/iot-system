@@ -7,11 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ControlSignalResponseRepository extends JpaRepository<ControlSignalResponse, Long> {
-    Page<ControlSignalResponse> findControlSignalResponseByNameContaining(String name, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseBySentControlSignal_Id(Long id, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseByMessageContentContaining(String messageContent, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseByNameContainingAndMessageContentContaining(String name, String messageContent, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseByMessageContentContainingAndSentControlSignal_Id(String messageContent, Long id, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseByNameContainingAndSentControlSignal_Id(String name, Long id, Pageable pageable);
-    Page<ControlSignalResponse> findControlSignalResponseByNameContainingAndMessageContentContainingAndSentControlSignal_Id(String name, String messageContent, Long id, Pageable pageable);
+    Page<ControlSignalResponse> findByNameContaining(String name, Pageable pageable);
+    Page<ControlSignalResponse> findBySentControlSignal_Id(Long id, Pageable pageable);
+    Page<ControlSignalResponse> findByMessageContentContaining(String messageContent, Pageable pageable);
+    Page<ControlSignalResponse> findByNameContainingAndMessageContentContaining(String name, String messageContent, Pageable pageable);
+    Page<ControlSignalResponse> findByMessageContentContainingAndSentControlSignal_Id(String messageContent, Long id, Pageable pageable);
+    Page<ControlSignalResponse> findByNameContainingAndSentControlSignal_Id(String name, Long id, Pageable pageable);
+    Page<ControlSignalResponse> findByNameContainingAndMessageContentContainingAndSentControlSignal_Id(String name, String messageContent, Long id, Pageable pageable);
 }
