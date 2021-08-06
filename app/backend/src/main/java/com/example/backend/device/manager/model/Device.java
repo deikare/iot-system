@@ -1,13 +1,16 @@
 package com.example.backend.device.manager.model;
 
+import com.example.backend.device.manager.model.listeners.DeviceEntityListener;
 import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.model.interfaces.MasterAndDependentTypeInterface;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+@EntityListeners(DeviceEntityListener.class)
 @Entity
 public class Device implements MasterAndDependentTypeInterface<Device, ControlSignal, Hub> {
     @Id
@@ -21,6 +24,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     @JoinColumn(name = "HUB_ID")
     private Hub hub;
 
+    @JsonIgnore //used to avoid recursive call
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     private final List<ControlSignal> controlSignals = new ArrayList<>();
 

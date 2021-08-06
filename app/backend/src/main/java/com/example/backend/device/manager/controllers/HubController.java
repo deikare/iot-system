@@ -65,6 +65,7 @@ public class HubController {
         return hubModelAssembler.toModel(hubCrudServiceImplementation.addObject(newHub));
     }
 
+    //TODO Hub to properties converter needed
     @PutMapping("/{id}")
     public EntityModel<Hub> addOrChangeNameOfHub(
             @PathVariable Long id,

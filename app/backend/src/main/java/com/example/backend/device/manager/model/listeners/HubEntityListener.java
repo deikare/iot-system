@@ -1,34 +1,40 @@
 package com.example.backend.device.manager.model.listeners;
 
+import com.example.backend.device.manager.kafka.producer.KafkaEntitySender;
+import com.example.backend.device.manager.kafka.record.KafkaRecordWrapper;
+import com.example.backend.device.manager.kafka.record.OperationType;
 import com.example.backend.device.manager.model.Hub;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import javax.persistence.PrePersist;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
 
 public class HubEntityListener {
     @Autowired
-    private KafkaTemplate<Long, String> template;
+    private KafkaEntitySender<Hub> sender;
 
-    @PrePersist
-    public void preSaveCallback(Hub hub) {
-        final ProducerRecord<Long, String> record = new ProducerRecord<>("hubs", hub.getId(), hub.toString());
-        ListenableFuture<SendResult<Long, String>> future = template.send(record);
-        future.addCallback(new ListenableFutureCallback<SendResult<Long, String>>() {
-            @Override
-            public void onFailure(Throwable throwable) {
+    private final String topic = "hubs";
 
-            }
-
-            @Override
-            public void onSuccess(SendResult<Long, String> result) {
-
-            }
-        });
+    @PostRemove
+    public void postRemove(Hub hub) {
+        final ProducerRecord<Long, KafkaRecordWrapper<Hub>> record = new ProducerRecord<>(topic, hub.getId(),
+                new KafkaRecordWrapper<>(hub, OperationType.DELETE));
+        sender.sendKafkaRecord(record);
     }
 
+    @PostUpdate
+    public void postUpdate(Hub hub) {
+        final ProducerRecord<Long, KafkaRecordWrapper<Hub>> record = new ProducerRecord<>(topic, hub.getId(),
+                new KafkaRecordWrapper<>(hub, OperationType.UPDATE));
+        sender.sendKafkaRecord(record);
+    }
+
+    @PostPersist
+    public void postPersist(Hub hub) {
+        final ProducerRecord<Long, KafkaRecordWrapper<Hub>> record = new ProducerRecord<>(topic, hub.getId(),
+                new KafkaRecordWrapper<>(hub, OperationType.CREATE));
+        sender.sendKafkaRecord(record);
+    }
 }

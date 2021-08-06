@@ -1,7 +1,8 @@
 package com.example.backend.device.manager.model;
 
-import com.example.backend.device.manager.model.properties.ControlSignalProperties;
 import com.example.backend.device.manager.model.interfaces.MasterAndDependentTypeInterface;
+import com.example.backend.device.manager.model.properties.ControlSignalProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
     @JoinColumn(name = "DEVICE_ID")
     private Device device;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "sentControlSignal", cascade = CascadeType.ALL)
     private final List<ControlSignalResponse> responses = new ArrayList<>();
 

@@ -3,6 +3,7 @@ package com.example.backend.device.manager.model;
 import com.example.backend.device.manager.model.listeners.HubEntityListener;
 import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.model.interfaces.MasterTypeInterface;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL)
     private final List<Device> devices = new ArrayList<>();
 
