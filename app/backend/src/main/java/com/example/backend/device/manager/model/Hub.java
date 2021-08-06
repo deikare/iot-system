@@ -1,5 +1,6 @@
 package com.example.backend.device.manager.model;
 
+import com.example.backend.device.manager.model.listeners.HubEntityListener;
 import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.model.interfaces.MasterTypeInterface;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+@EntityListeners(HubEntityListener.class)
 @Entity
 public class Hub implements MasterTypeInterface<Hub, Device> {
     @Id
