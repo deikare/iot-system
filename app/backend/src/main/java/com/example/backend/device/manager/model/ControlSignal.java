@@ -1,6 +1,7 @@
 package com.example.backend.device.manager.model;
 
-import com.example.backend.device.manager.model.interfaces.MasterAndDependentTypeInterface;
+import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
+import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
 import com.example.backend.device.manager.model.properties.ControlSignalProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 @Entity
-public class ControlSignal implements MasterAndDependentTypeInterface<ControlSignal, ControlSignalResponse, Device> {
+public class ControlSignal implements MasterAndDependentTypeInterface<ControlSignal, ControlSignalResponse, Device>, KafkaRecordInterface<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "CONTROL_SIGNAL_ID")

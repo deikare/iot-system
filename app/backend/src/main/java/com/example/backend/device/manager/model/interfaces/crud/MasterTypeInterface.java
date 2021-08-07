@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.model.interfaces;
+package com.example.backend.device.manager.model.interfaces.crud;
 
 public interface MasterTypeInterface<B, D> extends BaseTypeInterface<B> {
     B addDependentToDependentsList(D dependent);

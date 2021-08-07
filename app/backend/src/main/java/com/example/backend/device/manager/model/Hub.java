@@ -1,8 +1,9 @@
 package com.example.backend.device.manager.model;
 
-import com.example.backend.device.manager.model.listeners.HubEntityListener;
+import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
+import com.example.backend.device.manager.model.listeners.implementations.HubEntityListener;
 import com.example.backend.device.manager.model.properties.DeviceProperties;
-import com.example.backend.device.manager.model.interfaces.MasterTypeInterface;
+import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterface;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.util.Properties;
 
 @EntityListeners(HubEntityListener.class)
 @Entity
-public class Hub implements MasterTypeInterface<Hub, Device> {
+public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterface<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "HUB_ID")

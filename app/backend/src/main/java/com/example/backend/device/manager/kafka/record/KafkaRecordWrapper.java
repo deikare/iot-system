@@ -1,15 +1,15 @@
 package com.example.backend.device.manager.kafka.record;
 
-public class KafkaRecordWrapper<B> {
-    private final B object;
+public class KafkaRecordWrapper<V> {
+    private final V object;
     private final OperationType operationType;
 
-    public KafkaRecordWrapper(B object, OperationType operationType) {
+    public KafkaRecordWrapper(V object, OperationType operationType) {
         this.object = object;
         this.operationType = operationType;
     }
 
-    public B getObject() {
+    public V getObject() {
         return object;
     }
 

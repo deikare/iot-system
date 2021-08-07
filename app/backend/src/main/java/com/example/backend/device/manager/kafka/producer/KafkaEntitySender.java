@@ -7,15 +7,15 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-public class KafkaEntitySender<B> {
-    private final KafkaTemplate<Long, KafkaRecordWrapper<B>> template;
+public class KafkaEntitySender<K, V> {
+    private final KafkaTemplate<K, KafkaRecordWrapper<V>> template;
 
-    public KafkaEntitySender(KafkaTemplate<Long, KafkaRecordWrapper<B>> template) {
+    public KafkaEntitySender(KafkaTemplate<K, KafkaRecordWrapper<V>> template) {
         this.template = template;
     }
 
-    public void sendKafkaRecord(ProducerRecord<Long, KafkaRecordWrapper<B>> record) {
-        ListenableFuture<SendResult<Long, KafkaRecordWrapper<B>>> future = template.send(record);
+    public void sendKafkaRecord(ProducerRecord<K, KafkaRecordWrapper<V>> record) {
+        ListenableFuture<SendResult<K, KafkaRecordWrapper<V>>> future = template.send(record);
 
         future.addCallback(new ListenableFutureCallback<>() {
             @Override
@@ -24,7 +24,7 @@ public class KafkaEntitySender<B> {
             }
 
             @Override
-            public void onSuccess(SendResult<Long, KafkaRecordWrapper<B>> result) {
+            public void onSuccess(SendResult<K, KafkaRecordWrapper<V>> result) {
 
             }
         });

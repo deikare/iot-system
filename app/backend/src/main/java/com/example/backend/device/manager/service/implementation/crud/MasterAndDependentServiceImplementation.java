@@ -1,8 +1,8 @@
 package com.example.backend.device.manager.service.implementation.crud;
 
-import com.example.backend.device.manager.model.interfaces.DependentTypeInterface;
-import com.example.backend.device.manager.model.interfaces.MasterAndDependentTypeInterface;
-import com.example.backend.device.manager.model.interfaces.MasterTypeInterface;
+import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
+import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
+import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterface;
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.MasterAndDependentServiceInterface;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,13 +1,14 @@
 package com.example.backend.device.manager.model;
 
+import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.properties.ControlSignalResponseProperties;
-import com.example.backend.device.manager.model.interfaces.DependentTypeInterface;
+import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
 
 import javax.persistence.*;
 import java.util.Properties;
 
 @Entity
-public class ControlSignalResponse implements DependentTypeInterface<ControlSignalResponse, ControlSignal> {
+public class ControlSignalResponse implements DependentTypeInterface<ControlSignalResponse, ControlSignal>, KafkaRecordInterface<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "CONTROL_SIGNAL_RESPONSE_ID")

@@ -17,10 +17,11 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO split into for configs based on type {HUB, DEVICE, ...}
 @Configuration
 public class ProducerConfig {
     @Bean
-    public KafkaEntitySender<Hub> hubKafkaEntitySender() {
+    public KafkaEntitySender<Long, Hub> hubKafkaEntitySender() {
         return new KafkaEntitySender<>(hubKafkaTemplate());
     }
 
@@ -36,7 +37,7 @@ public class ProducerConfig {
 
 
     @Bean
-    public KafkaEntitySender<Device> deviceKafkaEntitySender() {
+    public KafkaEntitySender<Long, Device> deviceKafkaEntitySender() {
         return new KafkaEntitySender<>(deviceKafkaTemplate());
     }
 
@@ -50,8 +51,9 @@ public class ProducerConfig {
         return new DefaultKafkaProducerFactory<>(properties());
     }
 
+
     @Bean
-    public KafkaEntitySender<ControlSignal> controlSignalKafkaEntitySender() {
+    public KafkaEntitySender<Long, ControlSignal> controlSignalKafkaEntitySender() {
         return new KafkaEntitySender<>(controlSignalKafkaTemplate());
     }
 
@@ -68,7 +70,7 @@ public class ProducerConfig {
 
 
     @Bean
-    public KafkaEntitySender<ControlSignalResponse> controlSignalResponseKafkaEntitySender() {
+    public KafkaEntitySender<Long, ControlSignalResponse> controlSignalResponseKafkaEntitySender() {
         return new KafkaEntitySender<>(controlSignalResponseKafkaTemplate());
     }
 
