@@ -53,7 +53,6 @@ public class LoadDatabase {
             }
 
             String flux2 = "from(bucket:\"logs\") |> range(start: 0)";
-            //List<InfluxLogPojo> influxLogPojos = queryApi.query(flux2, InfluxLogPojo.class);
             List<InfluxLogPojo> influxLogPojos = influxQueryService.query(flux2, InfluxLogPojo.class);
             for (var logPojo : influxLogPojos) {
                 logger.info("logPojo: " + logPojo);

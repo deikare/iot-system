@@ -24,7 +24,7 @@ public class DataRepresentationAssembler extends RepresentationModelAssemblerSup
 
         model.add(
                 linkTo(methodOn(DataController.class).one(entity.getTime())).withSelfRel(),
-                linkTo(methodOn(DataController.class).all("data", "0", "", "", "", "", "")).withRel("all-data"));
+                linkTo(methodOn(DataController.class).all("data", "start: 0", "", "", "", "", "")).withRel("all-data"));
 
         return model;
     }
@@ -34,7 +34,7 @@ public class DataRepresentationAssembler extends RepresentationModelAssemblerSup
     public CollectionModel<DataRepresentationModel> toCollectionModel(@NotNull Iterable<? extends InfluxDataPojo> entities) {
         CollectionModel<DataRepresentationModel> dataRepresentationModels = super.toCollectionModel(entities);
 
-        dataRepresentationModels.add(linkTo(methodOn(DataController.class).all("data", "0", "", "", "", "", "")).withSelfRel());
+        dataRepresentationModels.add(linkTo(methodOn(DataController.class).all("data", "start: 0", "", "", "", "", "")).withSelfRel());
 
         return dataRepresentationModels;
     }

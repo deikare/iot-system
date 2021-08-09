@@ -36,7 +36,7 @@ public class DataController {
     @GetMapping
     public CollectionModel<DataRepresentationModel> all(
             @RequestParam(defaultValue = "data") String bucket,
-            @RequestParam(defaultValue = "0") String range,
+            @RequestParam(defaultValue = "start: 0") String range,
             @RequestParam(required = false) String hubId,
             @RequestParam(required = false) String deviceId,
             @RequestParam(required = false) String sort,
