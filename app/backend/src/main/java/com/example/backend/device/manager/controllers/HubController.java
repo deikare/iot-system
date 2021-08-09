@@ -67,7 +67,7 @@ public class HubController {
 
     //TODO Hub to properties converter needed
     @PutMapping("/{id}")
-    public EntityModel<Hub> addOrChangeNameOfHub(
+    public EntityModel<Hub> addOrChangeHub(
             @PathVariable Long id,
             @RequestBody Hub newHub) {
         Hub hub;
@@ -81,9 +81,9 @@ public class HubController {
     }
 
     @PatchMapping("/{id}")
-    public EntityModel<Hub> changeNameOfHub(
+    public EntityModel<Hub> changeHub(
             @PathVariable Long id,
-            @RequestBody String name) {
+            @RequestBody Hub newHub) {
         Hub hub;
         try {
             hub = hubCrudServiceImplementation.updateObjectById(id, null);

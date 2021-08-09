@@ -4,11 +4,13 @@ import random
 import time
 import logging
 
-bucket = "data"
-
 logging.basicConfig(level=logging.INFO)
 
 client = InfluxDBClient(url="http://localhost:8086", token="my-token", org="my-org")
+buckets_api = client.buckets_api()
+
+#buckets_api.create_bucket(bucket="logs")
+
 write_api = client.write_api(write_options=ASYNCHRONOUS)
 
 hubIDs = ["A", "B", "C"]
@@ -21,29 +23,31 @@ measurementTypes = ["temperature [K]", "humidity [%]", "pressure [hPa]"]
 logTypes = ["health", "status"]
 logValues = ["OK", "NOT_OK"]
 
-while True:
-    messageType = random.choice(messageTypes)
-    hubID = random.choice(hubIDs)
-    deviceID = random.choice(deviceIDs)
+buckets = ["data", "logs"]
 
-    if messageType == "log":
+while True:
+    bucket = random.choice(buckets)
+    hubId = random.choice(hubIDs)
+    deviceId = random.choice(deviceIDs)
+
+    if bucket == "logs":
         logType = random.choice(logTypes)
         logValue = random.choice(logValues)
-        p = Point(messageType).tag("hubID", hubID).tag("deviceID", deviceID).tag("logType", logType).field("value", logValue)
+        p = Point("log").tag("hubId", hubId).tag("deviceId", deviceId).tag("logType", logType).field("value", logValue)
 
-        logging.info("Updating point \n" + \
-            "hudID: " + hubID + "\n" + \
-            "deviceID: " + deviceID + "\n" + \
+        logging.info("Updating logs \n" + \
+            "hudId: " + hubId + "\n" + \
+            "deviceId: " + deviceId + "\n" + \
             "logType: " + logType + "\n" + \
             "value: " + logValue)
     else :
         measurementType = random.choice(measurementTypes)
         measurementValue = random.uniform(0, 100)
-        p = Point(messageType).tag("hubID", hubID).tag("deviceID", deviceID).tag("measurementType", measurementType).field("value", measurementValue)
+        p = Point("data").tag("hubId", hubId).tag("deviceId", deviceId).tag("measurementType", measurementType).field("value", measurementValue)
 
-        logging.info("Updating point \n" + \
-            "hudID: " + hubID + "\n" + \
-            "deviceID: " + deviceID + "\n" + \
+        logging.info("Updating data \n" + \
+            "hudId: " + hubId + "\n" + \
+            "deviceId: " + deviceId + "\n" + \
             "measurementType: " + measurementType + "\n" + \
             "value: " + str(measurementValue))
 
