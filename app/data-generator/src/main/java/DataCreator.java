@@ -44,7 +44,7 @@ public class DataCreator {
             }
             else {
                 String measurementType = randomElement(measurementTypes);
-                double measurementValue = 0.01D;
+                double measurementValue = 100.0D * (new Random().nextDouble());
 
                 InfluxDataPojo dataPojo = new InfluxDataPojo(Instant.now(), hubId, deviceId, measurementValue, measurementType);
                 writeApiData.writeMeasurement(WritePrecision.MS, dataPojo);
