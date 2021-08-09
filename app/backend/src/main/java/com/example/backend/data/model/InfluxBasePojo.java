@@ -17,13 +17,6 @@ public class InfluxBasePojo<V> {
     @Column
     private V value;
 
-    public InfluxBasePojo(Instant timestamp, String hubId, String deviceId, V value) {
-        this.timestamp = timestamp;
-        this.hubId = hubId;
-        this.deviceId = deviceId;
-        this.value = value;
-    }
-
     public Instant getTimestamp() {
         return timestamp;
     }

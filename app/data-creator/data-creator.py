@@ -39,7 +39,7 @@ while True:
             "hudId: " + hubId + "\n" + \
             "deviceId: " + deviceId + "\n" + \
             "logType: " + logType + "\n" + \
-            "value: " + logValue)
+            "value: " + logValue + "\n")
     else :
         measurementType = random.choice(measurementTypes)
         measurementValue = random.uniform(0, 100)
@@ -49,7 +49,7 @@ while True:
             "hudId: " + hubId + "\n" + \
             "deviceId: " + deviceId + "\n" + \
             "measurementType: " + measurementType + "\n" + \
-            "value: " + str(measurementValue))
+            "value: " + str(measurementValue) + "\n")
 
     result = write_api.write(bucket=bucket, record=p)
     result.get()
