@@ -1,4 +1,4 @@
-package com.example.backend.data.model;
+package model;
 
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;

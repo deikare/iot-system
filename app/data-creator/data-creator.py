@@ -16,8 +16,6 @@ write_api = client.write_api(write_options=ASYNCHRONOUS)
 hubIDs = ["A", "B", "C"]
 deviceIDs = ["X", "Y", "Z"]
 
-messageTypes = ["log", "measurement"]
-
 measurementTypes = ["temperature [K]", "humidity [%]", "pressure [hPa]"]
 
 logTypes = ["health", "status"]
