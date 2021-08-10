@@ -1,15 +1,13 @@
 package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
-import com.example.backend.device.manager.model.listeners.implementations.HubEntityListener;
-import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterface;
+import com.example.backend.device.manager.model.listeners.implementations.HubEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 @EntityListeners(HubEntityListener.class)
 @Entity
@@ -62,14 +60,15 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
     }
 
     @Override
-    public Hub update(Properties patch) {
-        updateName(patch);
+    public Hub update(Hub patch) {
+        if (patch != null)
+            updateName(patch);
         return this;
     }
 
-    private void updateName(Properties patch) {
-        String newName = String.valueOf(patch.get(DeviceProperties.NAME));
-        if (!newName.isEmpty())
+    private void updateName(Hub patch) {
+        String newName = String.valueOf(patch.getName());
+        if (newName != null && !newName.isEmpty())
             setName(newName);
     }
 

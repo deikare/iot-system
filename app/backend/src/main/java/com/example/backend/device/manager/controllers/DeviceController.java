@@ -6,9 +6,10 @@ import com.example.backend.device.manager.controllers.exceptions.HubInDeviceNotS
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Device;
+import com.example.backend.device.manager.model.DeviceType;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
-import com.example.backend.device.manager.service.interfaces.filtering.ByMasterPaginationAndFilteringInterface;
+import com.example.backend.device.manager.service.interfaces.filtering.ByMasterAndDeviceTypePaginationAndFilteringInterface;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,10 @@ import org.springframework.web.bind.annotation.*;
 public class DeviceController {
     private final DeviceModelAssembler deviceModelAssembler;
     private final PagedResourcesAssembler<Device> devicePagedResourcesAssembler;
-    private final ByMasterPaginationAndFilteringInterface<Device> deviceFilteringServiceImplementation;
+    private final ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> deviceFilteringServiceImplementation;
     private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceCrudServiceImplementation;
 
-    public DeviceController(DeviceModelAssembler deviceModelAssembler, PagedResourcesAssembler<Device> devicePagedResourcesAssembler, ByMasterPaginationAndFilteringInterface<Device> deviceFilteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceCrudServiceImplementation) {
+    public DeviceController(DeviceModelAssembler deviceModelAssembler, PagedResourcesAssembler<Device> devicePagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> deviceFilteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceCrudServiceImplementation) {
         this.deviceModelAssembler = deviceModelAssembler;
         this.devicePagedResourcesAssembler = devicePagedResourcesAssembler;
         this.deviceFilteringServiceImplementation = deviceFilteringServiceImplementation;
@@ -35,21 +36,36 @@ public class DeviceController {
 
     @GetMapping
     public ResponseEntity all(
-            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) Long hubId,
+            @RequestParam(required = false) DeviceType deviceType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Page<Device> devices;
         Pageable pageable = PageRequest.of(page, size);
-        if (name.isEmpty()) {
-            if (hubId == null)
-                devices = deviceFilteringServiceImplementation.findAll(pageable);
-            else devices = deviceFilteringServiceImplementation.findAllByMaster_Id(hubId, pageable);
+        if (name == null || name.isEmpty()) {
+            if (hubId == null) {
+                if (deviceType == null)
+                    devices = deviceFilteringServiceImplementation.findAll(pageable);
+                else devices = deviceFilteringServiceImplementation.findAllByDeviceType(deviceType, pageable);
+            }
+            else { //hubId not null
+                if (deviceType == null)
+                    devices = deviceFilteringServiceImplementation.findAllByMaster_Id(hubId, pageable);
+                else devices = deviceFilteringServiceImplementation.findAllByDeviceTypeAndMaster_Id(deviceType, hubId, pageable);
+            }
         }
-        else {
-            if (hubId == null)
-                devices = deviceFilteringServiceImplementation.findAllByNameContaining(name, pageable);
-            else devices = deviceFilteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, hubId, pageable);
+        else { //name not null
+            if (hubId == null) {
+                if (deviceType == null)
+                    devices = deviceFilteringServiceImplementation.findAllByNameContaining(name, pageable);
+                else devices = deviceFilteringServiceImplementation.findAllByNameContainingAndDeviceType(name, deviceType, pageable);
+            }
+            else { //hubId not null
+                if (deviceType == null)
+                    devices = deviceFilteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, hubId, pageable);
+                else devices = deviceFilteringServiceImplementation.findAllByNameContainingAndDeviceTypeAndMaster_Id(name, deviceType, hubId, pageable);
+            }
         }
 
         return ResponseEntity
@@ -85,6 +101,34 @@ public class DeviceController {
         else result = deviceCrudServiceImplementation.addDependentAndBindItToMasterById(device, hubId);
 
         return deviceModelAssembler.toModel(result);
+    }
+
+    @PutMapping("/{id}")
+    public EntityModel<Device> addOrChangeDevice(
+            @PathVariable Long id,
+            @RequestBody Device newDevice) {
+        Device device;
+        try {
+            device = deviceCrudServiceImplementation.updateObjectById(id, newDevice);
+        }
+        catch (DeviceNotFoundException e) {
+            device = deviceCrudServiceImplementation.addObject(newDevice);
+        }
+        return deviceModelAssembler.toModel(device);
+    }
+
+    @PatchMapping("/{id}")
+    public EntityModel<Device> changeDevice(
+            @PathVariable Long id,
+            @RequestBody Device newDevice) {
+        Device device;
+        try {
+            device = deviceCrudServiceImplementation.updateObjectById(id, newDevice);
+        }
+        catch (DeviceNotFoundException e) {
+            throw e;
+        }
+        return deviceModelAssembler.toModel(device);
     }
 
     @DeleteMapping("/{id}")

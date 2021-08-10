@@ -37,13 +37,13 @@ public class BaseServiceImplementation<
     }
 
     @Override
-    public B updateObjectById(Long id, Properties patch) throws E {
+    public B updateObjectById(Long id, B patch) throws E {
         B patchedObject = findObjectById(id);
         return updateObject(patchedObject, patch);
     }
 
     @Override
-    public B updateObject(B patchedObject, Properties patch) {
+    public B updateObject(B patchedObject, B patch) {
         return patchedObject.update(patch);
     }
 

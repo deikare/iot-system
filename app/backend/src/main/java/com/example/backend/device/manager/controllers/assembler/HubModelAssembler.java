@@ -18,7 +18,7 @@ public class HubModelAssembler implements RepresentationModelAssembler<Hub, Enti
     public EntityModel<Hub> toModel(@NotNull Hub hub) {
         return EntityModel.of(hub,
                 linkTo(methodOn(HubController.class).one(hub.getId())).withSelfRel(),
-                linkTo(methodOn(HubController.class).all("", 0, 5)).withRel("hubs"),
-                linkTo(methodOn(DeviceController.class).all("", hub.getId(), 0, 5)).withRel("devices"));
+                linkTo(methodOn(HubController.class).all(null, 0, 5)).withRel("hubs"),
+                linkTo(methodOn(DeviceController.class).all(null, hub.getId(), null, 0, 5)).withRel("devices"));
     }
 }

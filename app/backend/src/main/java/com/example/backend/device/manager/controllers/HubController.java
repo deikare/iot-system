@@ -38,7 +38,7 @@ public class HubController {
         Page<Hub> hubs;
         Pageable pageable = PageRequest.of(page, size);
 
-        if (name.equals(""))
+        if (name == null || name.equals(""))
             hubs = hubFilteringServiceImplementation.findAll(pageable);
         else hubs = hubFilteringServiceImplementation.findAllByNameContaining(name, pageable);
 
@@ -65,14 +65,13 @@ public class HubController {
         return hubModelAssembler.toModel(hubCrudServiceImplementation.addObject(newHub));
     }
 
-    //TODO Hub to properties converter needed
     @PutMapping("/{id}")
     public EntityModel<Hub> addOrChangeHub(
             @PathVariable Long id,
             @RequestBody Hub newHub) {
         Hub hub;
         try {
-            hub = hubCrudServiceImplementation.updateObjectById(id, null);
+            hub = hubCrudServiceImplementation.updateObjectById(id, newHub);
         }
         catch (HubNotFoundException e) {
             hub = hubCrudServiceImplementation.addObject(newHub);

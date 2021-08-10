@@ -1,15 +1,13 @@
 package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
-import com.example.backend.device.manager.model.listeners.implementations.DeviceEntityListener;
-import com.example.backend.device.manager.model.properties.DeviceProperties;
 import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
+import com.example.backend.device.manager.model.listeners.implementations.DeviceEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 @EntityListeners(DeviceEntityListener.class)
 @Entity
@@ -79,22 +77,31 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     }
 
     @Override
-    public Device update(Properties patch) {
-        this.updateName(patch);
-        this.updateHub(patch);
+    public Device update(Device patch) {
+        if (patch != null) {
+            this.updateName(patch);
+            this.updateHub(patch);
+            this.updateDeviceType(patch);
+        }
         return this;
     }
 
-    private void updateName(Properties patch) {
-        String newName = String.valueOf(patch.get(DeviceProperties.NAME));
-        if (!newName.isEmpty())
+    private void updateName(Device patch) {
+        String newName = String.valueOf(patch.getName());
+        if (newName != null && !newName.isEmpty())
             setName(newName);
     }
 
-    private void updateHub(Properties patch) {
-        Hub newHub = (Hub) patch.get(DeviceProperties.HUB);
+    private void updateHub(Device patch) {
+        Hub newHub = patch.getHub();
         if (newHub != null)
             setHub(newHub);
+    }
+
+    private void updateDeviceType(Device patch) {
+        DeviceType newDeviceType = patch.getDeviceType();
+        if (newDeviceType != null)
+            setDeviceType(newDeviceType);
     }
 
     @Override

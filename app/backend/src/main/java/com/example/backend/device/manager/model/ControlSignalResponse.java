@@ -1,12 +1,10 @@
 package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
-import com.example.backend.device.manager.model.listeners.implementations.ControlSignalResponseEntityListener;
-import com.example.backend.device.manager.model.properties.ControlSignalResponseProperties;
 import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
+import com.example.backend.device.manager.model.listeners.implementations.ControlSignalResponseEntityListener;
 
 import javax.persistence.*;
-import java.util.Properties;
 
 @EntityListeners(ControlSignalResponseEntityListener.class)
 @Entity
@@ -63,27 +61,29 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
     }
 
     @Override
-    public ControlSignalResponse update(Properties patch) {
-        updateName(patch);
-        updateMessageContent(patch);
-        updateControlSignal(patch);
+    public ControlSignalResponse update(ControlSignalResponse patch) {
+        if (patch != null) {
+            updateName(patch);
+            updateMessageContent(patch);
+            updateControlSignal(patch);
+        }
         return this;
     }
 
-    private void updateName(Properties patch) {
-        String newName = String.valueOf(patch.get(ControlSignalResponseProperties.NAME));
-        if (!newName.isEmpty())
+    private void updateName(ControlSignalResponse patch) {
+        String newName = String.valueOf(patch.getName());
+        if (newName != null && !newName.isEmpty())
             setName(newName);
     }
 
-    private void updateMessageContent(Properties patch) {
-        String newMessageContent = String.valueOf(patch.get(ControlSignalResponseProperties.MESSAGE));
-        if (!newMessageContent.isEmpty())
+    private void updateMessageContent(ControlSignalResponse patch) {
+        String newMessageContent = String.valueOf(patch.getMessageContent());
+        if (newMessageContent != null && !newMessageContent.isEmpty())
             setName(newMessageContent);
     }
 
-    private void updateControlSignal(Properties patch) {
-        ControlSignal newControlSignal = (ControlSignal) patch.get(ControlSignalResponseProperties.CONTROL_SIGNAL);
+    private void updateControlSignal(ControlSignalResponse patch) {
+        ControlSignal newControlSignal = patch.getSentControlSignal();
         if (newControlSignal != null)
             setSentControlSignal(newControlSignal);
     }
