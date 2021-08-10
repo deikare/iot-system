@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
+//TODO may add pagination based on start, stop and limit flux functions
 public class InfluxQueryService {
     private final Logger logger = LoggerFactory.getLogger(InfluxQueryService.class);
 
@@ -16,24 +16,24 @@ public class InfluxQueryService {
         this.queryApi = queryApi;
     }
 
-    public <M> List<M> query(String flux, Class<M> measurementType) {
+    public <M> List<M> query(String flux, Class<M> classToMapRecords) {
         logger.info("Starting query");
-        return queryApi.query(flux, measurementType);
+        return queryApi.query(flux, classToMapRecords);
     }
 
     public String produceQuery(@NotNull String bucket, @NotNull String range, @NotNull String measurement,
-                               @NotNull String field, String hubId, String deviceId, String sort, String limit,
+                               @NotNull String field, String hubId, String deviceId, String type, String sort, String limit,
                                String aggregateWindow) {
         String result = "from(bucket: \"" + bucket + "\") " +
                 addFunctionToQuery("range", range) + " " +
                 "|> filter(fn: (r) => r._measurement == \"" + measurement + "\"" +
-                addTagToQuery("_field", field) +
-//                "and r._field == \"" + field + "\"" +
-                addTagToQuery("hubId", hubId) + "".stripTrailing() +
-                addTagToQuery("deviceId", deviceId) + "".stripTrailing() + ") " +
-                addFunctionToQuery("sort", sort) + "".stripTrailing() + " " +
-                addFunctionToQuery("limit", limit) + "".stripTrailing() + " " +
-                addFunctionToQuery("aggregateWindow", aggregateWindow) + "".stripTrailing();
+                addTagToQuery("_field", field).stripTrailing() +
+                addTagToQuery("hubId", hubId).stripTrailing() +
+                addTagToQuery("deviceId", deviceId).stripTrailing() +
+                addTagToQuery("type", type).stripTrailing() + ") " +
+                addFunctionToQuery("sort", sort).stripTrailing() + " " +
+                addFunctionToQuery("limit", limit).stripTrailing() + " " +
+                addFunctionToQuery("aggregateWindow", aggregateWindow).stripTrailing();
         logger.info("Producing query: " + result);
         return result;
     }

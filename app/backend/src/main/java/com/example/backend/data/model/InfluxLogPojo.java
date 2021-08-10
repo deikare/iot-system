@@ -7,24 +7,16 @@ import java.time.Instant;
 
 @Measurement(name = "log")
 public class InfluxLogPojo extends InfluxBasePojo {
-    @Column(tag = true)
-    private String logType;
-
     @Column
     private String value;
 
     public InfluxLogPojo(Instant time, String hubId, String deviceId, String value, String logType) {
-        super(time, hubId, deviceId);
-        this.logType = logType;
+        super(time, hubId, deviceId, logType);
         this.value = value;
     }
 
     // default constructor for query result mapping
     public InfluxLogPojo() {
-    }
-
-    public String getLogType() {
-        return logType;
     }
 
     public String getValue() {
@@ -37,7 +29,7 @@ public class InfluxLogPojo extends InfluxBasePojo {
                 "time=" + time +
                 ", hubId='" + hubId + '\'' +
                 ", deviceId='" + deviceId + '\'' +
-                ", logType='" + logType + '\'' +
+                ", type='" + type + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }
