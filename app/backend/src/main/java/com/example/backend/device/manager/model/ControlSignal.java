@@ -2,6 +2,7 @@ package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
+import com.example.backend.device.manager.model.listeners.implementations.ControlSignalEntityListener;
 import com.example.backend.device.manager.model.properties.ControlSignalProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+@EntityListeners(ControlSignalEntityListener.class)
 @Entity
 public class ControlSignal implements MasterAndDependentTypeInterface<ControlSignal, ControlSignalResponse, Device>, KafkaRecordInterface<Long> {
     @Id

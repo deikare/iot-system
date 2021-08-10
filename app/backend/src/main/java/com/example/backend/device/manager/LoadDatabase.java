@@ -3,12 +3,12 @@ package com.example.backend.device.manager;
 import com.example.backend.data.model.InfluxDataPojo;
 import com.example.backend.data.model.InfluxLogPojo;
 import com.example.backend.data.service.InfluxQueryService;
+import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
-import com.example.backend.device.manager.model.ControlSignal;
-import com.example.backend.device.manager.model.Device;
-import com.example.backend.device.manager.model.DeviceType;
-import com.example.backend.device.manager.model.Hub;
+import com.example.backend.device.manager.model.*;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import org.slf4j.Logger;
@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,10 +27,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class LoadDatabase {
     Logger logger = LoggerFactory.getLogger(LoadDatabase.class);
 
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static SecureRandom rnd = new SecureRandom();
+
     @Bean
     CommandLineRunner initializeHubs(
             MasterServiceImplementation<Hub, Device, HubNotFoundException> hubServiceImplementation,
             MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceServiceImplementation,
+            MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation,
+            DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlResponseServiceImplementation,
             InfluxQueryService influxQueryService) {
         return args -> {
             hubServiceImplementation.deleteAllObjects();
@@ -42,6 +48,18 @@ public class LoadDatabase {
                 for (int j = 0; j < amountOfDevices; j++) {
                     Device device = new Device("D" + j, hub, DeviceType.BOTH);
                     logger.info("Preloading devices: " + deviceServiceImplementation.addDependentAndBindItToMaster(device, hub));
+
+                    int amountOfControls = ThreadLocalRandom.current().nextInt(0, 5);
+                    for (int k = 0; k < amountOfControls; k++) {
+                        ControlSignal controlSignal = new ControlSignal("Cs" + j, randomString(5), device);
+                        logger.info("Preloading controlSignals: " + controlSignalServiceImplementation.addDependentAndBindItToMaster(controlSignal, device));
+
+                        int amountOfResponses = ThreadLocalRandom.current().nextInt(0, 3);
+                        for(int l = 0; l < amountOfResponses; l++) {
+                            ControlSignalResponse controlSignalResponse = new ControlSignalResponse("Csr" + l, randomString(4), controlSignal);
+                            logger.info("Preloading responses: " + controlResponseServiceImplementation.addDependentAndBindItToMaster(controlSignalResponse, controlSignal));
+                        }
+                    }
                 }
                 logger.info("Hub after preloading devices: " + hub);
             }
@@ -58,5 +76,12 @@ public class LoadDatabase {
                 logger.info("logPojo: " + logPojo);
             }
         };
+    }
+
+    private String randomString(int len){
+        StringBuilder sb = new StringBuilder(len);
+        for(int i = 0; i < len; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.backend.device.manager.kafka.config;
 
-import com.example.backend.device.manager.kafka.producer.KafkaEntitySender;
+import com.example.backend.device.manager.kafka.producer.KafkaControlSignalSender;
+import com.example.backend.device.manager.kafka.producer.KafkaCrudEntitySender;
 import com.example.backend.device.manager.kafka.record.KafkaRecordWrapper;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
@@ -21,8 +22,8 @@ import java.util.Map;
 @Configuration
 public class ProducerConfig {
     @Bean
-    public KafkaEntitySender<Long, Hub> hubKafkaEntitySender() {
-        return new KafkaEntitySender<>(hubKafkaTemplate());
+    public KafkaCrudEntitySender<Long, Hub> hubKafkaCrudEntitySender() {
+        return new KafkaCrudEntitySender<>(hubKafkaTemplate());
     }
 
     @Bean
@@ -37,8 +38,8 @@ public class ProducerConfig {
 
 
     @Bean
-    public KafkaEntitySender<Long, Device> deviceKafkaEntitySender() {
-        return new KafkaEntitySender<>(deviceKafkaTemplate());
+    public KafkaCrudEntitySender<Long, Device> deviceKafkaCrudEntitySender() {
+        return new KafkaCrudEntitySender<>(deviceKafkaTemplate());
     }
 
     @Bean
@@ -52,13 +53,31 @@ public class ProducerConfig {
     }
 
 
+    //for control signal sending
     @Bean
-    public KafkaEntitySender<Long, ControlSignal> controlSignalKafkaEntitySender() {
-        return new KafkaEntitySender<>(controlSignalKafkaTemplate());
+    public KafkaControlSignalSender controlSignalSender() {
+        return new KafkaControlSignalSender(controlSignalSenderKafkaTemplate());
     }
 
     @Bean
-    public KafkaTemplate<Long, KafkaRecordWrapper<ControlSignal>> controlSignalKafkaTemplate() {
+    public KafkaTemplate<Long, ControlSignal> controlSignalSenderKafkaTemplate() {
+        return new KafkaTemplate<>(controlSignalSenderProducerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<Long, ControlSignal> controlSignalSenderProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(properties());
+    }
+
+
+    //for Crud
+    @Bean
+    public KafkaCrudEntitySender<Long, ControlSignal> controlSignalKafkaCrudEntitySender() {
+        return new KafkaCrudEntitySender<>(controlSignalCrudKafkaTemplate());
+    }
+
+    @Bean
+    public KafkaTemplate<Long, KafkaRecordWrapper<ControlSignal>> controlSignalCrudKafkaTemplate() {
         return new KafkaTemplate<>(controlSignalProducerFactory());
     }
 
@@ -68,10 +87,9 @@ public class ProducerConfig {
     }
 
 
-
     @Bean
-    public KafkaEntitySender<Long, ControlSignalResponse> controlSignalResponseKafkaEntitySender() {
-        return new KafkaEntitySender<>(controlSignalResponseKafkaTemplate());
+    public KafkaCrudEntitySender<Long, ControlSignalResponse> controlSignalResponseCrudKafkaEntitySender() {
+        return new KafkaCrudEntitySender<>(controlSignalResponseKafkaTemplate());
     }
 
     @Bean

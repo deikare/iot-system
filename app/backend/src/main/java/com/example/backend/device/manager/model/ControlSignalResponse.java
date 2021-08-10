@@ -1,12 +1,14 @@
 package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
+import com.example.backend.device.manager.model.listeners.implementations.ControlSignalResponseEntityListener;
 import com.example.backend.device.manager.model.properties.ControlSignalResponseProperties;
 import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
 
 import javax.persistence.*;
 import java.util.Properties;
 
+@EntityListeners(ControlSignalResponseEntityListener.class)
 @Entity
 public class ControlSignalResponse implements DependentTypeInterface<ControlSignalResponse, ControlSignal>, KafkaRecordInterface<Long> {
     @Id

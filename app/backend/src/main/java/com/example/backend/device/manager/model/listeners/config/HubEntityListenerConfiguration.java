@@ -1,6 +1,6 @@
 package com.example.backend.device.manager.model.listeners.config;
 
-import com.example.backend.device.manager.kafka.producer.KafkaEntitySender;
+import com.example.backend.device.manager.kafka.producer.KafkaCrudEntitySender;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.model.listeners.generic.implementations.EntityListenerImplementation;
 import org.springframework.context.annotation.Bean;
@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class HubEntityListenerConfiguration {
-    private final KafkaEntitySender<Long, Hub> sender;
+    private final KafkaCrudEntitySender<Long, Hub> sender;
     private final String topic = "hubs";
 
-    public HubEntityListenerConfiguration(KafkaEntitySender<Long, Hub> sender) {
+    public HubEntityListenerConfiguration(KafkaCrudEntitySender<Long, Hub> sender) {
         this.sender = sender;
     }
 

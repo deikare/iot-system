@@ -1,6 +1,6 @@
 package com.example.backend.device.manager.model.listeners.generic.implementations;
 
-import com.example.backend.device.manager.kafka.producer.KafkaEntitySender;
+import com.example.backend.device.manager.kafka.producer.KafkaCrudEntitySender;
 import com.example.backend.device.manager.kafka.record.KafkaRecordWrapper;
 import com.example.backend.device.manager.kafka.record.OperationType;
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
@@ -12,10 +12,10 @@ import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
 public class EntityListenerImplementation <K, V extends KafkaRecordInterface<K>> implements EntityListenerInterface<V> {
-    private final KafkaEntitySender<K, V> sender;
+    private final KafkaCrudEntitySender<K, V> sender;
     private final String topic;
 
-    public EntityListenerImplementation(KafkaEntitySender<K, V> sender, String topic) {
+    public EntityListenerImplementation(KafkaCrudEntitySender<K, V> sender, String topic) {
         this.sender = sender;
         this.topic = topic;
     }
