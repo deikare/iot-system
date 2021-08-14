@@ -63,7 +63,7 @@ public class Hub implements MasterTypeInterface<Hub, com.example.backend.device.
         if (patch != null)
             updateName(patch);
         return this;
-    }
+    } //lol
 
     private void updateName(Hub patch) {
         String newName = String.valueOf(patch.getName());
