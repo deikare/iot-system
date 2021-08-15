@@ -1,16 +1,12 @@
 package com.example.backend.device.manager.service.configs.device;
 
-import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.builders.DeviceNotFoundExceptionBuilder;
 import com.example.backend.device.manager.model.ControlSignal;
-import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.DeviceRepository;
-import com.example.backend.device.manager.service.configs.control.response.ControlSignalResponseServiceImplementationConfig;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import com.example.backend.loggers.abstracts.ConfigLogger;
@@ -41,14 +37,14 @@ public class DeviceServiceImplementationAuxiliaryConfig {
     @Bean
     MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> deviceMasterServiceImplementation() {
         MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> result = new MasterServiceImplementation<>(deviceRepository, builder);
-        ConfigLogger.configBeanCreationLog(logger, result, "DeviceMasterAuxiliaryServiceImplementation");
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceMasterAuxiliaryServiceImplementation");
         return result;
     }
 
     @Bean
     DependentServiceImplementation<Device, Hub, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation() {
         DependentServiceImplementation<Device, Hub, DeviceNotFoundException, HubNotFoundException> result = new DependentServiceImplementation<>(deviceRepository, builder, hubServiceImplementation);
-        ConfigLogger.configBeanCreationLog(logger, result, "DeviceDependentAuxiliaryServiceImplementation");
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceDependentAuxiliaryServiceImplementation");
         return result;
     }
 }

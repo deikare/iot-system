@@ -19,7 +19,7 @@ public class InfluxDBConfig {
     @Bean
     public InfluxDBClient influxDBClient() {
         InfluxDBClient result = InfluxDBClientFactory.create(url, token, org);
-        ConfigLogger.configBeanCreationLog(logger, result);
+        ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }
 }

@@ -5,11 +5,17 @@ import org.slf4j.Logger;
 
 public class ConfigLogger {
 
-    public static void configBeanCreationLog(Logger logger, @NotNull Object configBean) {
-        logger.info("Create configuration Bean: " + configBean);
+    public static void produceConfigBeanCreationLog(Logger logger, @NotNull Object configBean) {
+        String message = "Create configuration Bean: " + configBean;
+        produceLog(logger, message);
     }
 
-    public static void configBeanCreationLog(Logger logger, @NotNull Object configBean, String name) {
-        logger.info("Create configuration " + name + " Bean: " + configBean);
+    public static void produceConfigBeanCreationLog(Logger logger, @NotNull Object configBean, String name) {
+        String message = "Create configuration " + name + " Bean: " + configBean;
+        produceLog(logger, message);
+    }
+
+    private static void produceLog(Logger logger, String message) {
+        logger.info(message);
     }
 }

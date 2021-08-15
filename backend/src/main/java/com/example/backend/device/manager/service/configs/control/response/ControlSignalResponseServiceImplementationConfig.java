@@ -1,6 +1,5 @@
 package com.example.backend.device.manager.service.configs.control.response;
 
-import com.example.backend.data.config.InfluxDBConfig;
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.builders.ControlSignalResponseNotFoundExceptionBuilder;
@@ -11,8 +10,6 @@ import com.example.backend.device.manager.service.implementation.crud.DependentS
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
 import com.example.backend.loggers.abstracts.ConfigLogger;
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.InfluxDBClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -36,14 +33,14 @@ public class ControlSignalResponseServiceImplementationConfig {
     @Bean
     DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlSignalResponseServiceImplementation() {
         DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> result = new DependentServiceImplementation<>(controlSignalResponseRepository, builder, controlSignalServiceImplementation);
-        ConfigLogger.configBeanCreationLog(logger, result, "ControlSignalResponseCrudServiceImplementation");
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseCrudServiceImplementation");
         return result;
     }
 
     @Bean
     ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> controlSignalResponseFilteringServiceImplementation() {
         ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalResponseRepository);
-        ConfigLogger.configBeanCreationLog(logger, result, "ControlSignalResponseFilteringServiceImplementation");
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseFilteringServiceImplementation");
         return result;
     }
 }

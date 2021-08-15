@@ -3,7 +3,6 @@ package com.example.backend.data.config;
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.loggers.abstracts.ConfigLogger;
 import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.QueryApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +22,14 @@ public class InfluxDBQueryConfig {
     @Bean
     public InfluxQueryService influxQueryService() {
         InfluxQueryService result = new InfluxQueryService(queryApi());
-        ConfigLogger.configBeanCreationLog(logger, result);
+        ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }
 
     @Bean
     public QueryApi queryApi() {
         QueryApi result = influxDBClient.getQueryApi();
-        ConfigLogger.configBeanCreationLog(logger, result);
+        ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }
 }

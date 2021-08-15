@@ -1,7 +1,6 @@
 package com.example.backend.device.manager.service.configs.control.signal;
 
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.builders.ControlSignalNotFoundExceptionBuilder;
 import com.example.backend.device.manager.model.ControlSignal;
@@ -39,14 +38,14 @@ public class ControlSignalServiceImplementationConfig {
     @Bean
     MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalMasterAndDependentServiceImplementation() {
         MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> result = new MasterAndDependentServiceImplementation<>(controlSignalRepository, builder, controlSignalMasterServiceImplementation, controlSignalDependentServiceImplementation);
-        ConfigLogger.configBeanCreationLog(logger, result, "ControlSignalCrudServiceImplementation");
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalCrudServiceImplementation");
         return result;
     }
 
     @Bean
     ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal> controlSignalFilteringServiceImplementation() {
         ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalRepository);
-        ConfigLogger.configBeanCreationLog(logger, result, "ControlSignalFilteringServiceImplementation");
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalFilteringServiceImplementation");
         return result;
     }
 }

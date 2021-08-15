@@ -1,7 +1,6 @@
 package com.example.backend.data.config;
 
 import com.example.backend.data.service.InfluxBucketsService;
-import com.example.backend.device.manager.LoadDatabase;
 import com.example.backend.loggers.abstracts.ConfigLogger;
 import com.influxdb.client.BucketsApi;
 import com.influxdb.client.InfluxDBClient;
@@ -24,14 +23,14 @@ public class InfluxDBBucketAPIConfig {
     @Bean
     public InfluxBucketsService influxBucketsService() {
         InfluxBucketsService result = new InfluxBucketsService(bucketsApi());
-        ConfigLogger.configBeanCreationLog(logger, result);
+        ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }
 
     @Bean
     public BucketsApi bucketsApi() {
         BucketsApi result = influxDBClient.getBucketsApi();
-        ConfigLogger.configBeanCreationLog(logger, result);
+        ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }
 }
