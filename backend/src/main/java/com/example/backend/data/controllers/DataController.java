@@ -1,6 +1,6 @@
 package com.example.backend.data.controllers;
 
-import com.example.backend.data.controllers.representation.assembler.DataRepresentationAssembler;
+import com.example.backend.data.controllers.representation.assemblers.DataRepresentationAssembler;
 import com.example.backend.data.controllers.exceptions.InfluxRecordNotFoundException;
 import com.example.backend.data.controllers.representation.models.DataRepresentationModel;
 import com.example.backend.data.model.InfluxDataPojo;

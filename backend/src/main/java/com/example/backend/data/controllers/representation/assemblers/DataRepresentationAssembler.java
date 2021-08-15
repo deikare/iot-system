@@ -1,4 +1,4 @@
-package com.example.backend.data.controllers.representation.assembler;
+package com.example.backend.data.controllers.representation.assemblers;
 
 import com.example.backend.data.controllers.DataController;
 import com.example.backend.data.controllers.representation.models.DataRepresentationModel;

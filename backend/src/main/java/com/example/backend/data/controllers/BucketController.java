@@ -1,6 +1,6 @@
 package com.example.backend.data.controllers;
 
-import com.example.backend.data.controllers.representation.assembler.BucketRepresentationAssembler;
+import com.example.backend.data.controllers.representation.assemblers.BucketRepresentationAssembler;
 import com.example.backend.data.controllers.representation.models.BucketRepresentationModel;
 import com.example.backend.data.service.InfluxBucketsService;
 import com.influxdb.client.domain.Bucket;

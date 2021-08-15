@@ -1,6 +1,6 @@
 package com.example.backend.data.controllers;
 
-import com.example.backend.data.controllers.representation.assembler.LogRepresentationAssembler;
+import com.example.backend.data.controllers.representation.assemblers.LogRepresentationAssembler;
 import com.example.backend.data.controllers.exceptions.InfluxRecordNotFoundException;
 import com.example.backend.data.controllers.representation.models.LogRepresentationModel;
 import com.example.backend.data.model.InfluxLogPojo;

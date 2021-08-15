@@ -1,7 +1,10 @@
 package com.example.backend.data.config;
 
+import com.example.backend.loggers.abstracts.ConfigLogger;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,8 +14,12 @@ public class InfluxDBConfig {
     private final char[] token = "my-token".toCharArray();
     private final String org = "my-org";
 
+    private final Logger logger = LoggerFactory.getLogger(InfluxDBConfig.class);
+
     @Bean
     public InfluxDBClient influxDBClient() {
-        return InfluxDBClientFactory.create(url, token, org);
+        InfluxDBClient result = InfluxDBClientFactory.create(url, token, org);
+        ConfigLogger.configBeanCreationLog(logger, result);
+        return result;
     }
 }
