@@ -32,6 +32,13 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
 
     }
 
+    @Override
+    public String toString() {
+        return "ControlSignalResponse{" +
+                "id=" + id +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }

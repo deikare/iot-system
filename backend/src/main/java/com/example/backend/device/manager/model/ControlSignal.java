@@ -35,6 +35,13 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
         this.device = device;
     }
 
+    @Override
+    public String toString() {
+        return "ControlSignal{" +
+                "id=" + id +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }

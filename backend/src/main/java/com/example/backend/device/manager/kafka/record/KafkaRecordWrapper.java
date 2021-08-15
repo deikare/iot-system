@@ -16,4 +16,12 @@ public class KafkaRecordWrapper<V> {
     public OperationType getOperationType() {
         return operationType;
     }
+
+    @Override
+    public String toString() {
+        return "KafkaRecordWrapper{" +
+                "object=" + object +
+                ", operationType=" + operationType +
+                '}';
+    }
 }

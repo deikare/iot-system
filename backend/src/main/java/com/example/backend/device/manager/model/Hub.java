@@ -54,8 +54,6 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
     public String toString() {
         return "Hub{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", devices=" + devices +
                 '}';
     }
 

@@ -77,6 +77,13 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     }
 
     @Override
+    public String toString() {
+        return "Device{" +
+                "id=" + id +
+                '}';
+    }
+
+    @Override
     public Device update(Device patch) {
         if (patch != null) {
             this.updateName(patch);
