@@ -1,7 +1,7 @@
 package com.example.backend.data.config;
 
 import com.example.backend.data.service.InfluxBucketsService;
-import com.example.backend.loggers.abstracts.ConfigLogger;
+import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import com.influxdb.client.BucketsApi;
 import com.influxdb.client.InfluxDBClient;
 import org.slf4j.Logger;

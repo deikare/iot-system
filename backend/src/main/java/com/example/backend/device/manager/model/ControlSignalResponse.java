@@ -18,7 +18,7 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
 
     private String messageContent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "CONTROL_SIGNAL_ID")
     private ControlSignal sentControlSignal;
 

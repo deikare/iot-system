@@ -19,7 +19,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "HUB_ID")
     private Hub hub;
 

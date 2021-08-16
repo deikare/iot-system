@@ -36,9 +36,9 @@ public class DataController {
             @RequestParam(required = false) String limit,
             @RequestParam(required = false) String aggregateWindow) {
         String fluxQuery = influxQueryService.produceQuery(bucket, range, measurement, field, hubId, deviceId, measurementType, sort, limit, aggregateWindow);
-        List<InfluxDataPojo> queryResult = influxQueryService.query(fluxQuery, InfluxDataPojo.class);
+        List<InfluxDataPojo> result = influxQueryService.query(fluxQuery, InfluxDataPojo.class);
 
-        return assembler.toCollectionModelConsideringBucket(queryResult, bucket);
+        return assembler.toCollectionModelConsideringBucket(result, bucket);
     }
 
     @GetMapping("/{timestamp}")

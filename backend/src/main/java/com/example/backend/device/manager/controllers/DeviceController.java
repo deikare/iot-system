@@ -10,6 +10,10 @@ import com.example.backend.device.manager.model.DeviceType;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.interfaces.filtering.ByMasterAndDeviceTypePaginationAndFilteringInterface;
+import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
+import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,16 +26,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/devices")
 public class DeviceController {
-    private final DeviceModelAssembler deviceModelAssembler;
-    private final PagedResourcesAssembler<Device> devicePagedResourcesAssembler;
-    private final ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> deviceFilteringServiceImplementation;
-    private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceCrudServiceImplementation;
+    private final DeviceModelAssembler modelAssembler;
+    private final PagedResourcesAssembler<Device> pagedResourcesAssembler;
+    private final ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> filteringServiceImplementation;
+    private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation;
 
-    public DeviceController(DeviceModelAssembler deviceModelAssembler, PagedResourcesAssembler<Device> devicePagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> deviceFilteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceCrudServiceImplementation) {
-        this.deviceModelAssembler = deviceModelAssembler;
-        this.devicePagedResourcesAssembler = devicePagedResourcesAssembler;
-        this.deviceFilteringServiceImplementation = deviceFilteringServiceImplementation;
-        this.deviceCrudServiceImplementation = deviceCrudServiceImplementation;
+    private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
+
+
+    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation) {
+        this.modelAssembler = modelAssembler;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.filteringServiceImplementation = filteringServiceImplementation;
+        this.crudServiceImplementation = crudServiceImplementation;
     }
 
     @GetMapping
@@ -41,49 +48,56 @@ public class DeviceController {
             @RequestParam(required = false) DeviceType deviceType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        Page<Device> devices;
+        Page<Device> result;
         Pageable pageable = PageRequest.of(page, size);
+
         if (name == null || name.isEmpty()) {
             if (hubId == null) {
                 if (deviceType == null)
-                    devices = deviceFilteringServiceImplementation.findAll(pageable);
-                else devices = deviceFilteringServiceImplementation.findAllByDeviceType(deviceType, pageable);
+                    result = filteringServiceImplementation.findAll(pageable);
+                else result = filteringServiceImplementation.findAllByDeviceType(deviceType, pageable);
             }
             else { //hubId not null
                 if (deviceType == null)
-                    devices = deviceFilteringServiceImplementation.findAllByMaster_Id(hubId, pageable);
-                else devices = deviceFilteringServiceImplementation.findAllByDeviceTypeAndMaster_Id(deviceType, hubId, pageable);
+                    result = filteringServiceImplementation.findAllByMaster_Id(hubId, pageable);
+                else result = filteringServiceImplementation.findAllByDeviceTypeAndMaster_Id(deviceType, hubId, pageable);
             }
         }
         else { //name not null
             if (hubId == null) {
                 if (deviceType == null)
-                    devices = deviceFilteringServiceImplementation.findAllByNameContaining(name, pageable);
-                else devices = deviceFilteringServiceImplementation.findAllByNameContainingAndDeviceType(name, deviceType, pageable);
+                    result = filteringServiceImplementation.findAllByNameContaining(name, pageable);
+                else result = filteringServiceImplementation.findAllByNameContainingAndDeviceType(name, deviceType, pageable);
             }
             else { //hubId not null
                 if (deviceType == null)
-                    devices = deviceFilteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, hubId, pageable);
-                else devices = deviceFilteringServiceImplementation.findAllByNameContainingAndDeviceTypeAndMaster_Id(name, deviceType, hubId, pageable);
+                    result = filteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, hubId, pageable);
+                else result = filteringServiceImplementation.findAllByNameContainingAndDeviceTypeAndMaster_Id(name, deviceType, hubId, pageable);
             }
         }
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.GET, "devices", result);
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaTypes.HAL_JSON)
-                .body(devicePagedResourcesAssembler.toModel(devices, deviceModelAssembler));
+                .body(pagedResourcesAssembler.toModel(result, modelAssembler));
     }
 
     @GetMapping("/{id}")
     public EntityModel<Device> one(@PathVariable Long id) {
-        Device device;
+        Device result;
         try {
-            device = deviceCrudServiceImplementation.findObjectById(id);
+            result = crudServiceImplementation.findObjectById(id);
         }
         catch (DeviceNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.GET, e.getMessage());
             throw e;
         }
-        return deviceModelAssembler.toModel(device);
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.GET, "device", result);
+
+        return modelAssembler.toModel(result);
     }
 
     @PostMapping
@@ -93,56 +107,73 @@ public class DeviceController {
 
         if (hubId == null)
             try {
-                result = deviceCrudServiceImplementation.addDependentAndBindItToMaster(device, device.getHub());
+                result = crudServiceImplementation.addDependentAndBindItToMaster(device, device.getHub());
             }
             catch (IllegalArgumentException e) {
-                throw new HubInDeviceNotSpecifiedException(device.getId());
+                HubInDeviceNotSpecifiedException hubNotSpecifiedException = new HubInDeviceNotSpecifiedException(device.getId());
+                CrudControllerLogger.produceErrorLog(logger, HttpMethodType.POST, hubNotSpecifiedException.getMessage());
+                throw hubNotSpecifiedException;
             }
-        else result = deviceCrudServiceImplementation.addDependentAndBindItToMasterById(device, hubId);
+        else result = crudServiceImplementation.addDependentAndBindItToMasterById(device, hubId);
 
-        return deviceModelAssembler.toModel(result);
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "device", result);
+
+        return modelAssembler.toModel(result);
     }
 
     @PutMapping("/{id}")
     public EntityModel<Device> addOrChangeDevice(
             @PathVariable Long id,
             @RequestBody Device newDevice) {
-        Device device;
+        Device result;
+
         try {
-            device = deviceCrudServiceImplementation.updateObjectById(id, newDevice);
+            result = crudServiceImplementation.updateObjectById(id, newDevice);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "device", result);
         }
         catch (DeviceNotFoundException e) {
-            device = deviceCrudServiceImplementation.addObject(newDevice);
+            result = crudServiceImplementation.addObject(newDevice);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "device", result);
         }
-        return deviceModelAssembler.toModel(device);
+
+        return modelAssembler.toModel(result);
     }
 
     @PatchMapping("/{id}")
     public EntityModel<Device> changeDevice(
             @PathVariable Long id,
             @RequestBody Device newDevice) {
-        Device device;
+        Device result;
+
         try {
-            device = deviceCrudServiceImplementation.updateObjectById(id, newDevice);
+            result = crudServiceImplementation.updateObjectById(id, newDevice);
         }
         catch (DeviceNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
             throw e;
         }
-        return deviceModelAssembler.toModel(device);
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "device", result);
+
+        return modelAssembler.toModel(result);
     }
 
     @DeleteMapping("/{id}")
     void deleteDevice(@PathVariable Long id) {
         try {
-            deviceCrudServiceImplementation.deleteObjectById(id);
+            crudServiceImplementation.deleteObjectById(id);
         }
         catch (DeviceNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
             throw e;
         }
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "device", "true");
     }
 
     @DeleteMapping
     void deleteAllDevices() {
-        deviceCrudServiceImplementation.deleteAllObjects();
+        crudServiceImplementation.deleteAllObjects();
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "devices", "true");
     }
 }

@@ -9,7 +9,7 @@ import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.DeviceRepository;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
-import com.example.backend.loggers.abstracts.ConfigLogger;
+import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

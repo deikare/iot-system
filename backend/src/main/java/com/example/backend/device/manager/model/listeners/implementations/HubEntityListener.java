@@ -2,8 +2,8 @@ package com.example.backend.device.manager.model.listeners.implementations;
 
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.model.listeners.generic.implementations.EntityListenerImplementation;
-import com.example.backend.device.manager.service.configs.control.response.ControlSignalResponseServiceImplementationConfig;
-import com.example.backend.loggers.abstracts.CrudServiceLogger;
+import com.example.backend.utilities.loggers.abstracts.CrudOperationType;
+import com.example.backend.utilities.loggers.abstracts.CrudServiceLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +22,23 @@ public class HubEntityListener {
     @PostPersist
     public void postPersist(Hub hub) {
         hubListener.postPersist(hub);
-        CrudServiceLogger.produceCrudServiceLog(logger, hub, "create");
+        CrudServiceLogger.produceCrudServiceLog(logger, hub, CrudOperationType.CREATE);
     }
 
     @PostLoad
     public void postLoad(Hub hub) {
-        CrudServiceLogger.produceCrudServiceLog(logger, hub, "read");
+        CrudServiceLogger.produceCrudServiceLog(logger, hub, CrudOperationType.READ);
     }
 
     @PostUpdate
     public void postUpdate(Hub hub) {
         hubListener.postUpdate(hub);
-        CrudServiceLogger.produceCrudServiceLog(logger, hub, "update");
+        CrudServiceLogger.produceCrudServiceLog(logger, hub, CrudOperationType.UPDATE);
     }
 
     @PostRemove
     public void postRemove(Hub hub) {
         hubListener.postRemove(hub);
-        CrudServiceLogger.produceCrudServiceLog(logger, hub, "delete");
+        CrudServiceLogger.produceCrudServiceLog(logger, hub, CrudOperationType.DELETE);
     }
 }

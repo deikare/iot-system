@@ -21,7 +21,9 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     private String messageContent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //eager fetch is imposed, because kafka couldn't serialize properly sending controls -
+    // workaround is custom serializer
+    @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "DEVICE_ID")
     private Device device;
 

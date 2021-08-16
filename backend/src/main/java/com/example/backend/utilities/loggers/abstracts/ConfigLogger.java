@@ -1,4 +1,4 @@
-package com.example.backend.loggers.abstracts;
+package com.example.backend.utilities.loggers.abstracts;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;

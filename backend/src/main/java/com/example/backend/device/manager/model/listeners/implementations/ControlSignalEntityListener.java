@@ -1,9 +1,9 @@
 package com.example.backend.device.manager.model.listeners.implementations;
 
 import com.example.backend.device.manager.model.ControlSignal;
-import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.model.listeners.generic.implementations.EntityListenerImplementation;
-import com.example.backend.loggers.abstracts.CrudServiceLogger;
+import com.example.backend.utilities.loggers.abstracts.CrudOperationType;
+import com.example.backend.utilities.loggers.abstracts.CrudServiceLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +22,23 @@ public class ControlSignalEntityListener {
     @PostPersist
     public void postPersist(ControlSignal controlSignal) {
         controlSignalListenerImplementation.postPersist(controlSignal);
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, "create");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, CrudOperationType.CREATE);
     }
 
     @PostLoad
     public void postLoad(ControlSignal controlSignal) {
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, "read");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, CrudOperationType.READ);
     }
 
     @PostUpdate
     public void postUpdate(ControlSignal controlSignal) {
         controlSignalListenerImplementation.postUpdate(controlSignal);
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, "update");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, CrudOperationType.UPDATE);
     }
 
     @PostRemove
     public void postRemove(ControlSignal controlSignal) {
         controlSignalListenerImplementation.postRemove(controlSignal);
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, "delete");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignal, CrudOperationType.DELETE);
     }
 }

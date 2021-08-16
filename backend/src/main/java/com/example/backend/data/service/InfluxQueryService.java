@@ -17,7 +17,9 @@ public class InfluxQueryService {
     }
 
     public <M> List<M> query(String flux, Class<M> classToMapRecords) {
-        logger.info("Starting query");
+        logger.info("Starting query: " + flux);
+        List<M> result = queryApi.query(flux, classToMapRecords);
+        logger.info("Query result: " + result);
         return queryApi.query(flux, classToMapRecords);
     }
 
@@ -34,7 +36,7 @@ public class InfluxQueryService {
                 addFunctionToQuery("sort", sort).stripTrailing() + " " +
                 addFunctionToQuery("limit", limit).stripTrailing() + " " +
                 addFunctionToQuery("aggregateWindow", aggregateWindow).stripTrailing();
-        logger.info("Producing query: " + result);
+        logger.info("Created query: " + result);
         return result;
     }
 

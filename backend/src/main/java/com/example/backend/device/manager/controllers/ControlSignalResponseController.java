@@ -6,6 +6,10 @@ import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
+import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
+import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,16 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("control_responses")
 public class ControlSignalResponseController {
-    private final ControlSignalResponseModelAssembler controlSignalResponseModelAssembler;
-    private final PagedResourcesAssembler<ControlSignalResponse> controlSignalResponsePagedResourcesAssembler;
-    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> controlSignalResponseFilteringServiceImplementation;
-    private final DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlSignalResponseCrudServiceImplementation;
+    private final ControlSignalResponseModelAssembler modelAssembler;
+    private final PagedResourcesAssembler<ControlSignalResponse> pagedResourcesAssembler;
+    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> filteringServiceImplementation;
+    private final DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> crudServiceImplementation;
 
-    public ControlSignalResponseController(ControlSignalResponseModelAssembler controlSignalResponseModelAssembler, PagedResourcesAssembler<ControlSignalResponse> controlSignalResponsePagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> controlSignalResponseFilteringServiceImplementation, DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlSignalResponseCrudServiceImplementation) {
-        this.controlSignalResponseModelAssembler = controlSignalResponseModelAssembler;
-        this.controlSignalResponsePagedResourcesAssembler = controlSignalResponsePagedResourcesAssembler;
-        this.controlSignalResponseFilteringServiceImplementation = controlSignalResponseFilteringServiceImplementation;
-        this.controlSignalResponseCrudServiceImplementation = controlSignalResponseCrudServiceImplementation;
+    private final Logger logger = LoggerFactory.getLogger(ControlSignalResponseController.class);
+
+    public ControlSignalResponseController(ControlSignalResponseModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignalResponse> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> filteringServiceImplementation, DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> crudServiceImplementation) {
+        this.modelAssembler = modelAssembler;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.filteringServiceImplementation = filteringServiceImplementation;
+        this.crudServiceImplementation = crudServiceImplementation;
     }
 
 
@@ -38,49 +44,57 @@ public class ControlSignalResponseController {
             @RequestParam(required = false) String messageContent,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        Page<ControlSignalResponse> controlSignalResponses;
+        Page<ControlSignalResponse> result;
         Pageable pageable = PageRequest.of(page, size);
+
         if (name == null || name.isEmpty()) {
             if (controlSignalResponseId == null) {
                 if (messageContent == null || messageContent.isEmpty())
-                    controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAll(pageable);
-                else controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByMessageContentContaining(messageContent, pageable);
+                    result = filteringServiceImplementation.findAll(pageable);
+                else result = filteringServiceImplementation.findAllByMessageContentContaining(messageContent, pageable);
             }
             else { //controlSignalId not null
                 if (messageContent == null)
-                    controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByMaster_Id(controlSignalResponseId, pageable);
-                else controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByMessageContentContainingAndMaster_Id(messageContent, controlSignalResponseId, pageable);
+                    result = filteringServiceImplementation.findAllByMaster_Id(controlSignalResponseId, pageable);
+                else result = filteringServiceImplementation.findAllByMessageContentContainingAndMaster_Id(messageContent, controlSignalResponseId, pageable);
             }
         }
         else { //name not null
             if (controlSignalResponseId == null) {
                 if (messageContent == null || messageContent.isEmpty())
-                    controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByNameContaining(name, pageable);
-                else controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByNameContainingAndMessageContentContaining(name, messageContent, pageable);
+                    result = filteringServiceImplementation.findAllByNameContaining(name, pageable);
+                else result = filteringServiceImplementation.findAllByNameContainingAndMessageContentContaining(name, messageContent, pageable);
             }
             else { //controlSignalId not null
                 if (messageContent == null || messageContent.isEmpty())
-                    controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, controlSignalResponseId, pageable);
-                else controlSignalResponses = controlSignalResponseFilteringServiceImplementation.findAllByNameContainingAndMessageContentContainingAndMaster_Id(name, messageContent, controlSignalResponseId, pageable);
+                    result = filteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, controlSignalResponseId, pageable);
+                else result = filteringServiceImplementation.findAllByNameContainingAndMessageContentContainingAndMaster_Id(name, messageContent, controlSignalResponseId, pageable);
             }
         }
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.GET, "controlResponses", result);
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaTypes.HAL_JSON)
-                .body(controlSignalResponsePagedResourcesAssembler.toModel(controlSignalResponses, controlSignalResponseModelAssembler));
+                .body(pagedResourcesAssembler.toModel(result, modelAssembler));
     }
 
     @GetMapping("/{id}")
     public EntityModel<ControlSignalResponse> one(@PathVariable Long id) {
-        ControlSignalResponse controlSignalResponse;
+        ControlSignalResponse result;
+
         try {
-            controlSignalResponse = controlSignalResponseCrudServiceImplementation.findObjectById(id);
+            result = crudServiceImplementation.findObjectById(id);
         }
         catch (ControlSignalResponseNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.GET, e.getMessage());
             throw e;
         }
-        return controlSignalResponseModelAssembler.toModel(controlSignalResponse);
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.GET, "controlResponse", result);
+
+        return modelAssembler.toModel(result);
     }
 
     @PostMapping
@@ -88,58 +102,76 @@ public class ControlSignalResponseController {
                                                        @RequestBody ControlSignalResponse newControlSignalResponse) {
         ControlSignalResponse result;
 
-        if (controlSignalResponseId == null)
+        if (controlSignalResponseId == null) {
             try {
-                result = controlSignalResponseCrudServiceImplementation.addDependentAndBindItToMaster(newControlSignalResponse, newControlSignalResponse.getSentControlSignal());
+                result = crudServiceImplementation.addDependentAndBindItToMaster(newControlSignalResponse, newControlSignalResponse.getSentControlSignal());
             }
             catch (IllegalArgumentException e) {
-                throw new ControlSignalInResponseNotSpecifiedException(newControlSignalResponse.getId());
+                ControlSignalInResponseNotSpecifiedException controlSignalNotSpecifiedException = new ControlSignalInResponseNotSpecifiedException(newControlSignalResponse.getId());
+                CrudControllerLogger.produceErrorLog(logger, HttpMethodType.POST, controlSignalNotSpecifiedException.getMessage());
+                throw controlSignalNotSpecifiedException;
             }
-        else result = controlSignalResponseCrudServiceImplementation.addDependentAndBindItToMasterById(newControlSignalResponse, controlSignalResponseId);
+        }
+        else result = crudServiceImplementation.addDependentAndBindItToMasterById(newControlSignalResponse, controlSignalResponseId);
 
-        return controlSignalResponseModelAssembler.toModel(result);
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "controlResponse", result);
+
+        return modelAssembler.toModel(result);
     }
 
     @PutMapping("/{id}")
     public EntityModel<ControlSignalResponse> addOrChangeControlSignalResponse(
             @PathVariable Long id,
             @RequestBody ControlSignalResponse newControlSignalResponse) {
-        ControlSignalResponse controlSignalResponse;
+        ControlSignalResponse result;
+
         try {
-            controlSignalResponse = controlSignalResponseCrudServiceImplementation.updateObjectById(id, newControlSignalResponse);
+            result = crudServiceImplementation.updateObjectById(id, newControlSignalResponse);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlResponse", result);
         }
         catch (ControlSignalResponseNotFoundException e) {
-            controlSignalResponse = controlSignalResponseCrudServiceImplementation.addObject(newControlSignalResponse);
+            result = crudServiceImplementation.addObject(newControlSignalResponse);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlResponse", result);
         }
-        return controlSignalResponseModelAssembler.toModel(controlSignalResponse);
+
+        return modelAssembler.toModel(result);
     }
 
     @PatchMapping("/{id}")
     public EntityModel<ControlSignalResponse> changeControlSignalResponse(
             @PathVariable Long id,
             @RequestBody ControlSignalResponse newControlSignalResponse) {
-        ControlSignalResponse controlSignalResponse;
+        ControlSignalResponse result;
+
         try {
-            controlSignalResponse = controlSignalResponseCrudServiceImplementation.updateObjectById(id, newControlSignalResponse);
+            result = crudServiceImplementation.updateObjectById(id, newControlSignalResponse);
         }
         catch (ControlSignalResponseNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
             throw e;
         }
-        return controlSignalResponseModelAssembler.toModel(controlSignalResponse);
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlResponse", result);
+
+        return modelAssembler.toModel(result);
     }
 
     @DeleteMapping("/{id}")
     void deleteControlSignalResponse(@PathVariable Long id) {
         try {
-            controlSignalResponseCrudServiceImplementation.deleteObjectById(id);
+            crudServiceImplementation.deleteObjectById(id);
         }
         catch (ControlSignalResponseNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
             throw e;
         }
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "controlResponse", "true");
     }
 
     @DeleteMapping
     void deleteAllControlSignalResponses() {
-        controlSignalResponseCrudServiceImplementation.deleteAllObjects();
+        crudServiceImplementation.deleteAllObjects();
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "controlResponses", "true");
     }
 }

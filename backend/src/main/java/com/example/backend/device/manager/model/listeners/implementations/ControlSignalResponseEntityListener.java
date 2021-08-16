@@ -1,9 +1,9 @@
 package com.example.backend.device.manager.model.listeners.implementations;
 
 import com.example.backend.device.manager.model.ControlSignalResponse;
-import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.model.listeners.generic.implementations.EntityListenerImplementation;
-import com.example.backend.loggers.abstracts.CrudServiceLogger;
+import com.example.backend.utilities.loggers.abstracts.CrudOperationType;
+import com.example.backend.utilities.loggers.abstracts.CrudServiceLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,24 +22,24 @@ public class ControlSignalResponseEntityListener {
     @PostPersist
     public void postPersist(ControlSignalResponse controlSignalResponse) {
         controlSignalResponseListenerImplementation.postPersist(controlSignalResponse);
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, "create");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, CrudOperationType.CREATE);
     }
 
     @PostLoad
     public void postLoad(ControlSignalResponse controlSignalResponse) {
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, "read");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, CrudOperationType.READ);
     }
 
 
     @PostUpdate
     public void postUpdate(ControlSignalResponse controlSignalResponse) {
         controlSignalResponseListenerImplementation.postUpdate(controlSignalResponse);
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, "update");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, CrudOperationType.UPDATE);
     }
 
     @PostRemove
     public void postRemove(ControlSignalResponse controlSignalResponse) {
         controlSignalResponseListenerImplementation.postRemove(controlSignalResponse);
-        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, "delete");
+        CrudServiceLogger.produceCrudServiceLog(logger, controlSignalResponse, CrudOperationType.DELETE);
     }
 }

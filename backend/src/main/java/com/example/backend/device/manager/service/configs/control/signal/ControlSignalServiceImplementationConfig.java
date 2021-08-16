@@ -12,7 +12,7 @@ import com.example.backend.device.manager.service.implementation.crud.DependentS
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
-import com.example.backend.loggers.abstracts.ConfigLogger;
+import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

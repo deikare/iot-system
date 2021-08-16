@@ -22,7 +22,7 @@ public class BucketRepresentationAssembler extends RepresentationModelAssemblerS
     public CollectionModel<BucketRepresentationModel> toCollectionModel(@NotNull Iterable<? extends Bucket> entities) {
         CollectionModel<BucketRepresentationModel> bucketRepresentationModels = super.toCollectionModel(entities);
 
-        bucketRepresentationModels.add(linkTo(methodOn(BucketController.class).all()).withSelfRel());
+        bucketRepresentationModels.add(linkTo(methodOn(BucketController.class).all(0, 5)).withSelfRel());
 
         return bucketRepresentationModels;
     }
@@ -33,7 +33,7 @@ public class BucketRepresentationAssembler extends RepresentationModelAssemblerS
         BucketRepresentationModel model = new BucketRepresentationModel(entity);
 
         model.add(
-                linkTo(methodOn(BucketController.class).all()).withRel("buckets"));
+                linkTo(methodOn(BucketController.class).all(0, 5)).withRel("buckets"));
 
         return model;
     }

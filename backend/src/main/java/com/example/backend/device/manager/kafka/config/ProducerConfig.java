@@ -7,7 +7,7 @@ import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
-import com.example.backend.loggers.abstracts.ConfigLogger;
+import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

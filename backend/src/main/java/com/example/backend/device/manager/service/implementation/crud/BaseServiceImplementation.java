@@ -1,19 +1,11 @@
 package com.example.backend.device.manager.service.implementation.crud;
 
-import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
-import com.example.backend.device.manager.model.ControlSignal;
-import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
 import com.example.backend.device.manager.model.interfaces.crud.BaseTypeInterface;
-import com.example.backend.loggers.abstracts.ConfigLogger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Properties;
 
 public class BaseServiceImplementation<
         B extends BaseTypeInterface<B>,
