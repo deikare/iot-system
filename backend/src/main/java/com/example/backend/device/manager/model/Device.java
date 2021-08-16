@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 public class Device implements MasterAndDependentTypeInterface<Device, ControlSignal, Hub>, KafkaRecordInterface<Long> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "DEVICE_ID")
     private Long id;
 

@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterface<Long> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "HUB_ID")
     private Long id;
 

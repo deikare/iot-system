@@ -35,10 +35,7 @@ public class HubController {
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
     }
-    //TODO make Custom pagedAssembler that returns links to pagination WITH FILTERING
-    // so we may need custom pagedResourcesAssembler and modelAssembler
-    // if possible we may need toModel that enables to pass filter list to him
-    // maybe just use HashMap as argument filtering list
+
     @GetMapping
     public ResponseEntity all(
             @RequestParam(defaultValue = "") String name,
@@ -93,7 +90,7 @@ public class HubController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newHub);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "hub", result);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "hub", result);
         }
         catch (HubNotFoundException e) {
             result = crudServiceImplementation.addObject(newHub);

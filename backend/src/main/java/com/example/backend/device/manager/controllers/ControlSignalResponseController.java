@@ -127,7 +127,7 @@ public class ControlSignalResponseController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newControlSignalResponse);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlResponse", result);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlResponse", result);
         }
         catch (ControlSignalResponseNotFoundException e) {
             result = crudServiceImplementation.addObject(newControlSignalResponse);

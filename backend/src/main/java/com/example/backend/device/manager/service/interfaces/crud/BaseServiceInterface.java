@@ -7,7 +7,6 @@ public interface BaseServiceInterface<B> {
     List<B> getAllObjects();
     B findObjectById(Long id);
     B updateObjectById(Long id, B patch);
-    B updateObject(B patchedObject, B patch);
     void deleteObjectById(Long id);
     void deleteAllObjects();
 }

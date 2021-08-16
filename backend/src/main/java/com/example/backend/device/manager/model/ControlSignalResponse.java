@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 public class ControlSignalResponse implements DependentTypeInterface<ControlSignalResponse, ControlSignal>, KafkaRecordInterface<Long> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "CONTROL_SIGNAL_RESPONSE_ID")
     private Long id;
 
@@ -41,6 +41,11 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

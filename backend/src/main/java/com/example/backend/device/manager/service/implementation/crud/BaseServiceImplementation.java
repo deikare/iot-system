@@ -3,6 +3,8 @@ package com.example.backend.device.manager.service.implementation.crud;
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
 import com.example.backend.device.manager.model.interfaces.crud.BaseTypeInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -19,9 +21,8 @@ public class BaseServiceImplementation<
         this.objectNotFoundExceptionBuilder = objectNotFoundExceptionBuilder;
     }
 
-
     @Override
-    public B addObject(B t) {
+    public B addObject(B t) { //needs to enable to set id of object
         return repository.save(t);
     }
 
@@ -37,19 +38,18 @@ public class BaseServiceImplementation<
 
     @Override
     public B updateObjectById(Long id, B patch) throws E {
-        B patchedObject = findObjectById(id);
-        return updateObject(patchedObject, patch);
-    }
-
-    @Override
-    public B updateObject(B patchedObject, B patch) {
-        return patchedObject.update(patch);
+        return repository.findById(id)
+                .map(object -> {
+                    object.update(patch);
+                    return repository.save(object);
+                })
+                .orElseThrow(() -> objectNotFoundExceptionBuilder.newObject(id));
     }
 
     @Override
     public void deleteObjectById(Long id) throws E {
-        B objectToDelete = findObjectById(id);
-        repository.delete(objectToDelete);
+        findObjectById(id);
+        repository.deleteById(id);
     }
 
     @Override

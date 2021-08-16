@@ -40,18 +40,19 @@ public class LoadDatabase {
         return args -> {
             hubServiceImplementation.deleteAllObjects();
             deviceServiceImplementation.deleteAllObjects();
-            for (int i = 0; i < 100; i++) {
-                Hub hub = new Hub("H" + (i / 10));
+            int amountOfHubs = 6;
+            for (int i = 0; i < amountOfHubs; i++) {
+                Hub hub = new Hub("H" + i);
                 logger.info("Preloading hubs: " + hubServiceImplementation.addObject(hub));
 
-                int amountOfDevices = ThreadLocalRandom.current().nextInt(0, 10);
+                int amountOfDevices = ThreadLocalRandom.current().nextInt(0, 5);
                 for (int j = 0; j < amountOfDevices; j++) {
                     Device device = new Device("D" + j, hub, DeviceType.BOTH);
                     logger.info("Preloading devices: " + deviceServiceImplementation.addDependentAndBindItToMaster(device, hub));
 
                     int amountOfControls = ThreadLocalRandom.current().nextInt(0, 5);
                     for (int k = 0; k < amountOfControls; k++) {
-                        ControlSignal controlSignal = new ControlSignal("Cs" + j, randomString(5), device);
+                        ControlSignal controlSignal = new ControlSignal("Cs" + j, randomString(4), device);
                         logger.info("Preloading controlSignals: " + controlSignalServiceImplementation.addDependentAndBindItToMaster(controlSignal, device));
 
                         int amountOfResponses = ThreadLocalRandom.current().nextInt(0, 3);
@@ -78,7 +79,7 @@ public class LoadDatabase {
         };
     }
 
-    private String randomString(int len){
+    private String randomString(int len) {
         StringBuilder sb = new StringBuilder(len);
         for(int i = 0; i < len; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));

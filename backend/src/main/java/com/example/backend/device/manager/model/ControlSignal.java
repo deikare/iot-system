@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 public class ControlSignal implements MasterAndDependentTypeInterface<ControlSignal, ControlSignalResponse, Device>, KafkaRecordInterface<Long> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "CONTROL_SIGNAL_ID")
     private Long id;
 
@@ -46,6 +46,11 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

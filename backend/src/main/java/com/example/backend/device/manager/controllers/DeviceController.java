@@ -129,7 +129,7 @@ public class DeviceController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newDevice);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "device", result);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "device", result);
         }
         catch (DeviceNotFoundException e) {
             result = crudServiceImplementation.addObject(newDevice);
