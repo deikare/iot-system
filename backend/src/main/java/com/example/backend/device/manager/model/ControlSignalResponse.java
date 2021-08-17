@@ -5,6 +5,7 @@ import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInt
 import com.example.backend.device.manager.model.listeners.implementations.ControlSignalResponseEntityListener;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @EntityListeners(ControlSignalResponseEntityListener.class)
 @Entity
@@ -37,6 +38,24 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
         return "ControlSignalResponse{" +
                 "id=" + id +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+        if (!(o instanceof ControlSignalResponse))
+            return false;
+        ControlSignalResponse controlSignalResponse = (ControlSignalResponse) o;
+        return Objects.equals(this.id, controlSignalResponse.id) && Objects.equals(this.name, controlSignalResponse.name)
+                && Objects.equals(this.messageContent, controlSignalResponse.messageContent)
+                && Objects.equals(this.sentControlSignal, controlSignalResponse.sentControlSignal);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.name, this.messageContent, this.sentControlSignal);
     }
 
     public Long getId() {

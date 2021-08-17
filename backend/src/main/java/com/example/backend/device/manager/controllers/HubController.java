@@ -38,7 +38,7 @@ public class HubController {
 
     @GetMapping
     public ResponseEntity all(
-            @RequestParam(defaultValue = "") String name,
+            @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Page<Hub> result;

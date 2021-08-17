@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @EntityListeners(DeviceEntityListener.class)
 @Entity
@@ -81,6 +82,25 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
         return "Device{" +
                 "id=" + id +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+        if (!(o instanceof Device))
+            return false;
+        Device device = (Device) o;
+        return Objects.equals(this.id, device.id) && Objects.equals(this.name, device.name)
+                && Objects.equals(this.hub, device.controlSignals)
+                && Objects.equals(this.deviceType, device.deviceType)
+                && Objects.equals(this.controlSignals, device.controlSignals);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.name, this.hub, this.deviceType, this.controlSignals);
     }
 
     @Override

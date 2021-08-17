@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @EntityListeners(ControlSignalEntityListener.class)
 @Entity
@@ -42,6 +43,25 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
         return "ControlSignal{" +
                 "id=" + id +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+        if (!(o instanceof ControlSignal))
+            return false;
+        ControlSignal controlSignal = (ControlSignal) o;
+        return Objects.equals(this.id, controlSignal.id) && Objects.equals(this.name, controlSignal.name)
+                && Objects.equals(this.messageContent, controlSignal.messageContent)
+                && Objects.equals(this.device, controlSignal.device)
+                && Objects.equals(this.responses, controlSignal.responses);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.name, this.messageContent, this.device, this.responses);
     }
 
     public Long getId() {

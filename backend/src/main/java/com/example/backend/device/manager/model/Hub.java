@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @EntityListeners(HubEntityListener.class)
 @Entity
@@ -56,6 +57,24 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
                 "id=" + id +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+        if (!(o instanceof Hub))
+            return false;
+        Hub hub = (Hub) o;
+        return Objects.equals(this.id, hub.id) && Objects.equals(this.name, hub.name)
+                && Objects.equals(this.devices, hub.devices);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.name, this.devices);
+    }
+
 
     @Override
     public Hub update(Hub patch) {
