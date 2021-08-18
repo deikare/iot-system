@@ -8,6 +8,7 @@ import model.InfluxLogPojo;
 
 import java.time.Instant;
 import java.util.Random;
+import java.util.UUID;
 
 public class DataCreator {
     private static final String url = "http://localhost:8086";
@@ -18,7 +19,7 @@ public class DataCreator {
     private static final WriteApiBlocking writeApiData = InfluxDBClientFactory.create(url, token, org, "data").getWriteApiBlocking();
 
 
-    private static final String[] hubIds = {"1", "2", "3"};
+    private static final String[] hubIds = {UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()};
     private static final String[] deviceIds = {"4", "5", "6"};
 
     private static final String[] measurementTypes = {"temperature [K]", "humidity [%]", "pressure [hPa]"};
@@ -30,6 +31,7 @@ public class DataCreator {
 
     public static void main(String[] args) {
         while(true) {
+            System.out.println(UUID.randomUUID());
             String bucket = randomElement(buckets);
             String hubId = randomElement(hubIds);
             String deviceId = randomElement(deviceIds);
