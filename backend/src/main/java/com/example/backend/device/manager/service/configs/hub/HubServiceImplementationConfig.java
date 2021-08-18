@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
+
 @Configuration
 public class HubServiceImplementationConfig{
     private final HubRepository repository;
@@ -27,15 +29,15 @@ public class HubServiceImplementationConfig{
     }
 
     @Bean
-    public MasterServiceImplementation<Hub, Device, HubNotFoundException> hubServiceImplementation() {
-        MasterServiceImplementation<Hub, Device, HubNotFoundException> result = new MasterServiceImplementation<>(repository, builder);
+    public MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation() {
+        MasterServiceImplementation<Hub, Device, String, HubNotFoundException> result = new MasterServiceImplementation<>(repository, builder);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubCrudServiceImplementation");
         return result;
     }
 
     @Bean
-    public BasePaginationAndFilteringServiceImplementation<Hub> hubFilteringServiceImplementation() {
-        BasePaginationAndFilteringServiceImplementation<Hub> result = new BasePaginationAndFilteringServiceImplementation<>(repository);
+    public BasePaginationAndFilteringServiceImplementation<Hub, String> hubFilteringServiceImplementation() {
+        BasePaginationAndFilteringServiceImplementation<Hub, String> result = new BasePaginationAndFilteringServiceImplementation<>(repository);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubFilteringServiceImplementation");
         return result;
     }

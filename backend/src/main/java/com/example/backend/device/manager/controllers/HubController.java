@@ -19,22 +19,25 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/hubs")
 public class HubController {
     private final HubModelAssembler modelAssembler;
     private final PagedResourcesAssembler<Hub> pagedResourcesAssembler;
-    private final BasePaginationAndFilteringServiceImplementation<Hub> filteringServiceImplementation;
-    private final MasterServiceImplementation<Hub, Device, HubNotFoundException> crudServiceImplementation;
+    private final BasePaginationAndFilteringServiceImplementation<Hub, String> filteringServiceImplementation;
+    private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(HubController.class);
 
-    public HubController(HubModelAssembler modelAssembler, PagedResourcesAssembler<Hub> pagedResourcesAssembler, BasePaginationAndFilteringServiceImplementation<Hub> filteringServiceImplementation, MasterServiceImplementation<Hub, Device, HubNotFoundException> crudServiceImplementation) {
+    public HubController(HubModelAssembler modelAssembler, PagedResourcesAssembler<Hub> pagedResourcesAssembler, BasePaginationAndFilteringServiceImplementation<Hub, String> filteringServiceImplementation, MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
     }
+
 
     @GetMapping
     public ResponseEntity all(
@@ -57,7 +60,7 @@ public class HubController {
     }
 
     @GetMapping("/{id}")
-    public EntityModel<Hub> one(@PathVariable Long id) {
+    public EntityModel<Hub> one(@PathVariable String id) {
         Hub result;
 
         try {
@@ -84,7 +87,7 @@ public class HubController {
 
     @PutMapping("/{id}")
     public EntityModel<Hub> addOrChangeHub(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody Hub newHub) {
         Hub result;
 
@@ -102,7 +105,7 @@ public class HubController {
 
     @PatchMapping("/{id}")
     public EntityModel<Hub> changeHub(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody Hub newHub) {
         Hub result;
 
@@ -120,7 +123,7 @@ public class HubController {
     }
 
     @DeleteMapping("/{id}")
-    void deleteHub(@PathVariable Long id) {
+    void deleteHub(@PathVariable String id) {
         try {
             crudServiceImplementation.deleteObjectById(id);
         }

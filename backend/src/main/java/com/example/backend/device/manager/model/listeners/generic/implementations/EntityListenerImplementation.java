@@ -38,6 +38,11 @@ public class EntityListenerImplementation <K, V extends KafkaRecordInterface<K>>
         sendNewRecord(object, OperationType.DELETE);
     }
 
+    @PostUpdate
+    public void postRead(V object) {
+        sendNewRecord(object, OperationType.READ);
+    }
+
     private void sendNewRecord(V object, OperationType operationType) {
         final ProducerRecord<K, KafkaRecordWrapper<V>> record = new ProducerRecord<>(topic, object.getId(),
                 new KafkaRecordWrapper<>(object, operationType));

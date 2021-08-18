@@ -22,24 +22,25 @@ public class ControlSignalResponseServiceImplementationConfig {
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalResponseServiceImplementationConfig.class);
 
-    private final MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalServiceImplementation;
+    private final MasterServiceImplementation<ControlSignal, ControlSignalResponse, Long, ControlSignalNotFoundException> controlSignalServiceImplementation;
 
-    public ControlSignalResponseServiceImplementationConfig(ControlSignalResponseRepository controlSignalResponseRepository, ControlSignalResponseNotFoundExceptionBuilder builder, MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalServiceImplementation) {
+    public ControlSignalResponseServiceImplementationConfig(ControlSignalResponseRepository controlSignalResponseRepository, ControlSignalResponseNotFoundExceptionBuilder builder, MasterServiceImplementation<ControlSignal, ControlSignalResponse, Long, ControlSignalNotFoundException> controlSignalServiceImplementation) {
         this.controlSignalResponseRepository = controlSignalResponseRepository;
         this.builder = builder;
         this.controlSignalServiceImplementation = controlSignalServiceImplementation;
     }
 
+
     @Bean
-    DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlSignalResponseServiceImplementation() {
-        DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> result = new DependentServiceImplementation<>(controlSignalResponseRepository, builder, controlSignalServiceImplementation);
+    DependentServiceImplementation<ControlSignalResponse, ControlSignal, Long, Long, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlSignalResponseServiceImplementation() {
+        DependentServiceImplementation<ControlSignalResponse, ControlSignal, Long, Long, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> result = new DependentServiceImplementation<>(controlSignalResponseRepository, builder, controlSignalServiceImplementation);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseCrudServiceImplementation");
         return result;
     }
 
     @Bean
-    ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> controlSignalResponseFilteringServiceImplementation() {
-        ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalResponseRepository);
+    ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse, Long, Long> controlSignalResponseFilteringServiceImplementation() {
+        ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse, Long, Long> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalResponseRepository);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseFilteringServiceImplementation");
         return result;
     }

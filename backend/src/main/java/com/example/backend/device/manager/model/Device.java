@@ -20,11 +20,11 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
 
     private String name;
 
+    @JsonIgnore //used to avoid recursive call
     @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "HUB_ID")
     private Hub hub;
 
-    @JsonIgnore //used to avoid recursive call
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     private final List<ControlSignal> controlSignals = new ArrayList<>();
 

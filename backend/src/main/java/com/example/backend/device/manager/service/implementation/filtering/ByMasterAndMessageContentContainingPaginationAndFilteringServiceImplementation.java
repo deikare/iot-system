@@ -4,10 +4,10 @@ import com.example.backend.device.manager.service.interfaces.filtering.ByMasterA
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public class ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<B> extends ByMasterPaginationAndFilteringServiceImplementation<B> implements ByMasterAndMessageContentPaginationAndFilteringInterface<B> {
-    private final ByMasterAndMessageContentPaginationAndFilteringInterface<B> repository;
+public class ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<B, K, K_M> extends ByMasterPaginationAndFilteringServiceImplementation<B, K, K_M> implements ByMasterAndMessageContentPaginationAndFilteringInterface<B, K, K_M> {
+    private final ByMasterAndMessageContentPaginationAndFilteringInterface<B, K, K_M> repository;
 
-    public ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation(ByMasterAndMessageContentPaginationAndFilteringInterface<B> repository) {
+    public ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation(ByMasterAndMessageContentPaginationAndFilteringInterface<B, K, K_M> repository) {
         super(repository);
         this.repository = repository;
     }
@@ -23,12 +23,12 @@ public class ByMasterAndMessageContentContainingPaginationAndFilteringServiceImp
     }
 
     @Override
-    public Page<B> findAllByMessageContentContainingAndMaster_Id(String messageContent, Long id, Pageable pageable) {
+    public Page<B> findAllByMessageContentContainingAndMaster_Id(String messageContent, K_M id, Pageable pageable) {
         return repository.findAllByMessageContentContainingAndMaster_Id(messageContent, id, pageable);
     }
 
     @Override
-    public Page<B> findAllByNameContainingAndMessageContentContainingAndMaster_Id(String name, String messageContent, Long id, Pageable pageable) {
+    public Page<B> findAllByNameContainingAndMessageContentContainingAndMaster_Id(String name, String messageContent, K_M id, Pageable pageable) {
         return repository.findAllByNameContainingAndMessageContentContainingAndMaster_Id(name, messageContent, id, pageable);
     }
 }

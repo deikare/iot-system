@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 //remember to implement in-place all of methods from own filtering interface
 @Repository
-public interface ControlSignalResponseRepository extends JpaRepository<ControlSignalResponse, Long>, ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignalResponse> {
+public interface ControlSignalResponseRepository extends JpaRepository<ControlSignalResponse, Long>, ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignalResponse, Long, Long> {
     Page<ControlSignalResponse> findByNameContaining(String name, Pageable pageable);
     Page<ControlSignalResponse> findBySentControlSignal_Id(Long id, Pageable pageable);
     Page<ControlSignalResponse> findByMessageContentContaining(String messageContent, Pageable pageable);

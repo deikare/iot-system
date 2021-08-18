@@ -3,7 +3,7 @@ package com.example.backend.device.manager.service.interfaces.filtering;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface ByMasterPaginationAndFilteringInterface<T> extends BasePaginationAndFilteringInterface<T> {
-    Page<T> findAllByMaster_Id(Long id, Pageable pageable);
-    Page<T> findAllByNameContainingAndMaster_Id(String name, Long id, Pageable pageable);
+public interface ByMasterPaginationAndFilteringInterface<B, K, K_M> extends BasePaginationAndFilteringInterface<B, K> {
+    Page<B> findAllByMaster_Id(K_M id, Pageable pageable);
+    Page<B> findAllByNameContainingAndMaster_Id(String name, K_M id, Pageable pageable);
 }

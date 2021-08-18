@@ -1,4 +1,4 @@
 package com.example.backend.device.manager.service.interfaces.crud;
 
-public interface MasterAndDependentServiceInterface<B, D, M> extends MasterServiceInterface<B, D>, DependentServiceInterface<B, M> {
+public interface MasterAndDependentServiceInterface<B, D, M, K, K_M> extends MasterServiceInterface<B, D, K>, DependentServiceInterface<B, M, K, K_M> {
 }

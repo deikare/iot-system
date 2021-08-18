@@ -2,11 +2,11 @@ package com.example.backend.device.manager.service.interfaces.crud;
 
 import java.util.List;
 
-public interface BaseServiceInterface<B> {
+public interface BaseServiceInterface<B, K> {
     B addObject(B t);
     List<B> getAllObjects();
-    B findObjectById(Long id);
-    B updateObjectById(Long id, B patch);
-    void deleteObjectById(Long id);
+    B findObjectById(K id);
+    B updateObjectById(K id, B patch);
+    void deleteObjectById(K id);
     void deleteAllObjects();
 }

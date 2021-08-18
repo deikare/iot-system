@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
@@ -32,30 +33,30 @@ public class LoadDatabase {
 
     @Bean
     CommandLineRunner initializeHubs(
-            MasterServiceImplementation<Hub, Device, HubNotFoundException> hubServiceImplementation,
-            MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceServiceImplementation,
-            MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation,
-            DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlResponseServiceImplementation,
+            MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation,
+            MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceServiceImplementation,
+            MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation,
+            DependentServiceImplementation<ControlSignalResponse, ControlSignal, Long, Long, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlResponseServiceImplementation,
             InfluxQueryService influxQueryService) {
         return args -> {
             hubServiceImplementation.deleteAllObjects();
             deviceServiceImplementation.deleteAllObjects();
-            int amountOfHubs = 6;
+            int amountOfHubs = 10;
             for (int i = 0; i < amountOfHubs; i++) {
                 Hub hub = new Hub("H" + i);
                 logger.info("Preloading hubs: " + hubServiceImplementation.addObject(hub));
 
-                int amountOfDevices = ThreadLocalRandom.current().nextInt(0, 5);
+                int amountOfDevices = ThreadLocalRandom.current().nextInt(1, 20);
                 for (int j = 0; j < amountOfDevices; j++) {
                     Device device = new Device("D" + j, hub, DeviceType.BOTH);
                     logger.info("Preloading devices: " + deviceServiceImplementation.addDependentAndBindItToMaster(device, hub));
 
-                    int amountOfControls = ThreadLocalRandom.current().nextInt(0, 5);
+                    int amountOfControls = ThreadLocalRandom.current().nextInt(1, 10);
                     for (int k = 0; k < amountOfControls; k++) {
                         ControlSignal controlSignal = new ControlSignal("Cs" + j, randomString(4), device);
                         logger.info("Preloading controlSignals: " + controlSignalServiceImplementation.addDependentAndBindItToMaster(controlSignal, device));
 
-                        int amountOfResponses = ThreadLocalRandom.current().nextInt(0, 3);
+                        int amountOfResponses = ThreadLocalRandom.current().nextInt(1, 5);
                         for(int l = 0; l < amountOfResponses; l++) {
                             ControlSignalResponse controlSignalResponse = new ControlSignalResponse("Csr" + l, randomString(4), controlSignal);
                             logger.info("Preloading responses: " + controlResponseServiceImplementation.addDependentAndBindItToMaster(controlSignalResponse, controlSignal));

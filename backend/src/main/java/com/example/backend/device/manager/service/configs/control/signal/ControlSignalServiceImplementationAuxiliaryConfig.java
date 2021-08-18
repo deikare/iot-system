@@ -20,27 +20,27 @@ public class ControlSignalServiceImplementationAuxiliaryConfig {
     private final ControlSignalRepository controlSignalRepository;
     private final ControlSignalNotFoundExceptionBuilder builder;
 
-    private final MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> deviceMasterServiceImplementation;
+    private final MasterServiceImplementation<Device, ControlSignal, Long, DeviceNotFoundException> deviceMasterServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalServiceImplementationAuxiliaryConfig.class);
 
-
-    public ControlSignalServiceImplementationAuxiliaryConfig(ControlSignalRepository controlSignalRepository, ControlSignalNotFoundExceptionBuilder builder, MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> deviceMasterServiceImplementation) {
+    public ControlSignalServiceImplementationAuxiliaryConfig(ControlSignalRepository controlSignalRepository, ControlSignalNotFoundExceptionBuilder builder, MasterServiceImplementation<Device, ControlSignal, Long, DeviceNotFoundException> deviceMasterServiceImplementation) {
         this.controlSignalRepository = controlSignalRepository;
         this.builder = builder;
         this.deviceMasterServiceImplementation = deviceMasterServiceImplementation;
     }
 
+
     @Bean
-    MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalMasterServiceImplementation() {
-        MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> result = new MasterServiceImplementation<>(controlSignalRepository, builder);
+    MasterServiceImplementation<ControlSignal, ControlSignalResponse, Long, ControlSignalNotFoundException> controlSignalMasterServiceImplementation() {
+        MasterServiceImplementation<ControlSignal, ControlSignalResponse, Long, ControlSignalNotFoundException> result = new MasterServiceImplementation<>(controlSignalRepository, builder);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalMasterAuxiliaryServiceImplementation");
         return result;
     }
 
     @Bean
-    DependentServiceImplementation<ControlSignal, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation() {
-        DependentServiceImplementation<ControlSignal, Device, ControlSignalNotFoundException, DeviceNotFoundException> result = new DependentServiceImplementation<>(controlSignalRepository, builder, deviceMasterServiceImplementation);
+    DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation() {
+        DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> result = new DependentServiceImplementation<>(controlSignalRepository, builder, deviceMasterServiceImplementation);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalDependentAuxiliaryServiceImplementation");
         return result;
     }

@@ -5,7 +5,7 @@ import com.example.backend.device.manager.service.Builder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ControlSignalResponseNotFoundExceptionBuilder implements Builder<ControlSignalResponseNotFoundException> {
+public class ControlSignalResponseNotFoundExceptionBuilder implements Builder<ControlSignalResponseNotFoundException, Long> {
     @Override
     public ControlSignalResponseNotFoundException newObject(Long id) {
         return new ControlSignalResponseNotFoundException(id);

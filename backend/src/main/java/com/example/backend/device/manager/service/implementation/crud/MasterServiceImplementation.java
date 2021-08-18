@@ -8,16 +8,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public class MasterServiceImplementation<B extends MasterTypeInterface<B, D>,
         D extends DependentTypeInterface<D, B>,
+        K,
         E extends RuntimeException>
-        extends BaseServiceImplementation<B, E>
-        implements MasterServiceInterface<B, D> {
+        extends BaseServiceImplementation<B, K, E>
+        implements MasterServiceInterface<B, D, K> {
 
-    public MasterServiceImplementation(JpaRepository<B, Long> repository, Builder<E> builder) {
+    public MasterServiceImplementation(JpaRepository<B, K> repository, Builder<E, K> builder) {
         super(repository, builder);
     }
 
     @Override
-    public B addDependentToListInObjectById(Long objectId, D dependent) {
+    public B addDependentToListInObjectById(K objectId, D dependent) {
         B object = findObjectById(objectId);
         return addDependentToListInObject(object, dependent);
     }
@@ -28,7 +29,7 @@ public class MasterServiceImplementation<B extends MasterTypeInterface<B, D>,
     }
 
     @Override
-    public boolean deleteDependentFromListInObjectById(Long objectId, D dependent) {
+    public boolean deleteDependentFromListInObjectById(K objectId, D dependent) {
         B object = findObjectById(objectId);
         return deleteDependentFromListInObject(object, dependent);
     }

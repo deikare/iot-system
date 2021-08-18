@@ -24,11 +24,11 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     //eager fetch is imposed, because kafka couldn't serialize properly sending controls -
     // workaround is custom serializer
+    @JsonIgnore //used to avoid recursive call
     @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "DEVICE_ID")
     private Device device;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "sentControlSignal", cascade = CascadeType.ALL)
     private final List<ControlSignalResponse> responses = new ArrayList<>();
 
@@ -68,7 +68,6 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }

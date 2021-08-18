@@ -23,15 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("send_control")
 public class SendControlSignalController {
     private final KafkaControlSignalSender sender;
-    private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
+    private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
     private final String topic = "sent-controls";
 
     private final Logger logger = LoggerFactory.getLogger(SendControlSignalController.class);
 
-    public SendControlSignalController(KafkaControlSignalSender sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
+    public SendControlSignalController(KafkaControlSignalSender sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
         this.sender = sender;
         this.crudServiceImplementation = crudServiceImplementation;
     }
+
+
     //TODO get that informs how to use this endpoint
     /*@GetMapping
     public ResponseEntity<String> getInfo() {

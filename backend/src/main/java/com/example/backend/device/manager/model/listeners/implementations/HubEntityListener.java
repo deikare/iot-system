@@ -12,12 +12,13 @@ import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
+import java.util.UUID;
 
 public class HubEntityListener {
     private final Logger logger = LoggerFactory.getLogger(HubEntityListener.class);
 
     @Autowired
-    private EntityListenerImplementation<Long, Hub> hubListener;
+    private EntityListenerImplementation<String, Hub> hubListener;
 
     @PostPersist
     public void postPersist(Hub hub) {
@@ -27,6 +28,7 @@ public class HubEntityListener {
 
     @PostLoad
     public void postLoad(Hub hub) {
+        hubListener.postRead(hub);
         CrudServiceLogger.produceCrudServiceLog(logger, hub, CrudOperationType.READ);
     }
 

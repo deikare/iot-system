@@ -15,18 +15,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
+
 @Configuration
 public class DeviceServiceImplementationAuxiliaryConfig {
     private final DeviceRepository deviceRepository;
     private final DeviceNotFoundExceptionBuilder builder;
 
     // this bean is masterServiceImplementation of higher service implementation - needed to produce current level Dependent service implementation
-    private final MasterServiceImplementation<Hub, Device, HubNotFoundException> hubServiceImplementation;
+    private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(DeviceServiceImplementationAuxiliaryConfig.class);
 
-
-    public DeviceServiceImplementationAuxiliaryConfig(DeviceRepository deviceRepository, DeviceNotFoundExceptionBuilder builder, MasterServiceImplementation<Hub, Device, HubNotFoundException> hubServiceImplementation) {
+    public DeviceServiceImplementationAuxiliaryConfig(DeviceRepository deviceRepository, DeviceNotFoundExceptionBuilder builder, MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation) {
         this.deviceRepository = deviceRepository;
         this.builder = builder;
         this.hubServiceImplementation = hubServiceImplementation;
@@ -35,15 +36,15 @@ public class DeviceServiceImplementationAuxiliaryConfig {
 
     //those beans initialize auxiliary singletons - both for Master and Dependent implementations used in Wrapper implementation
     @Bean
-    MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> deviceMasterServiceImplementation() {
-        MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> result = new MasterServiceImplementation<>(deviceRepository, builder);
+    MasterServiceImplementation<Device, ControlSignal, Long, DeviceNotFoundException> deviceMasterServiceImplementation() {
+        MasterServiceImplementation<Device, ControlSignal, Long, DeviceNotFoundException> result = new MasterServiceImplementation<>(deviceRepository, builder);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceMasterAuxiliaryServiceImplementation");
         return result;
     }
 
     @Bean
-    DependentServiceImplementation<Device, Hub, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation() {
-        DependentServiceImplementation<Device, Hub, DeviceNotFoundException, HubNotFoundException> result = new DependentServiceImplementation<>(deviceRepository, builder, hubServiceImplementation);
+    DependentServiceImplementation<Device, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation() {
+        DependentServiceImplementation<Device, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> result = new DependentServiceImplementation<>(deviceRepository, builder, hubServiceImplementation);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceDependentAuxiliaryServiceImplementation");
         return result;
     }
