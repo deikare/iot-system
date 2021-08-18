@@ -9,18 +9,18 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @EntityListeners(HubEntityListener.class)
 @Entity
-public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterface<Long> {
+public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterface<String> {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "HUB_ID")
-    private Long id;
+    private String id = UUID.randomUUID().toString();
 
     private String name;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL)
     private final List<Device> devices = new ArrayList<>();
 
@@ -31,11 +31,11 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
     public Hub() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

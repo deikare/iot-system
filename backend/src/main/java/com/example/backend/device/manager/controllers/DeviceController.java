@@ -23,28 +23,30 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/devices")
 public class DeviceController {
     private final DeviceModelAssembler modelAssembler;
     private final PagedResourcesAssembler<Device> pagedResourcesAssembler;
-    private final ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> filteringServiceImplementation;
-    private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation;
+    private final ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String> filteringServiceImplementation;
+    private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
-
-    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringInterface<Device> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation) {
+    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
     }
 
+
     @GetMapping
     public ResponseEntity all(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Long hubId,
+            @RequestParam(required = false) String hubId,
             @RequestParam(required = false) DeviceType deviceType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
@@ -101,7 +103,7 @@ public class DeviceController {
     }
 
     @PostMapping
-    public EntityModel<Device> newDevice(@RequestParam(required = false) Long hubId,
+    public EntityModel<Device> newDevice(@RequestParam(required = false) String hubId,
                                          @RequestBody Device device) {
         Device result;
 

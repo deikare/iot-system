@@ -6,21 +6,25 @@ import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInt
 import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public class DependentServiceImplementation<B extends DependentTypeInterface<B, M>,
+public class DependentServiceImplementation<
+        B extends DependentTypeInterface<B, M>,
         M extends MasterTypeInterface<M, B>,
-        E extends RuntimeException, E_M extends RuntimeException>
-        extends BaseServiceImplementation<B, E>
-        implements DependentServiceInterface<B, M> {
+        K,
+        K_M,
+        E extends RuntimeException,
+        E_M extends RuntimeException>
+        extends BaseServiceImplementation<B, K, E>
+        implements DependentServiceInterface<B, M, K, K_M> {
 
-    private final MasterServiceImplementation<M, B, E_M> masterServiceImplementation;
+    private final MasterServiceImplementation<M, B, K_M, E_M> masterServiceImplementation;
 
-    public DependentServiceImplementation(JpaRepository<B, Long> repository, Builder<E> builder, MasterServiceImplementation<M, B, E_M> masterServiceImplementation) {
+    public DependentServiceImplementation(JpaRepository<B, K> repository, Builder<E, K> builder, MasterServiceImplementation<M, B, K_M, E_M> masterServiceImplementation) {
         super(repository, builder);
         this.masterServiceImplementation = masterServiceImplementation;
     }
 
     @Override
-    public B addDependentAndBindItToMasterById(B dependent, Long masterId) throws E {
+    public B addDependentAndBindItToMasterById(B dependent, K_M masterId) throws E {
         M master = masterServiceImplementation.findObjectById(masterId);
         return addDependentAndBindItToMaster(dependent, master);
     }

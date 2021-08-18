@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.*;
 public class ControlSignalResponseController {
     private final ControlSignalResponseModelAssembler modelAssembler;
     private final PagedResourcesAssembler<ControlSignalResponse> pagedResourcesAssembler;
-    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> filteringServiceImplementation;
-    private final DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> crudServiceImplementation;
+    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse, Long, Long> filteringServiceImplementation;
+    private final DependentServiceImplementation<ControlSignalResponse, ControlSignal, Long, Long, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> crudServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalResponseController.class);
 
-    public ControlSignalResponseController(ControlSignalResponseModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignalResponse> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse> filteringServiceImplementation, DependentServiceImplementation<ControlSignalResponse, ControlSignal, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> crudServiceImplementation) {
+    public ControlSignalResponseController(ControlSignalResponseModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignalResponse> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignalResponse, Long, Long> filteringServiceImplementation, DependentServiceImplementation<ControlSignalResponse, ControlSignal, Long, Long, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> crudServiceImplementation) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;

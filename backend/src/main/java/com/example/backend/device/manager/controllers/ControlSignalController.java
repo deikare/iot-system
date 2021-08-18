@@ -25,17 +25,18 @@ import org.springframework.web.bind.annotation.*;
 public class ControlSignalController {
     private final ControlSignalModelAssembler modelAssembler;
     private final PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler;
-    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal> filteringServiceImplementation;
-    private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
+    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation;
+    private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalController.class);
 
-    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal> filteringServiceImplementation, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
+    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
     }
+
 
     @GetMapping
     public ResponseEntity all(

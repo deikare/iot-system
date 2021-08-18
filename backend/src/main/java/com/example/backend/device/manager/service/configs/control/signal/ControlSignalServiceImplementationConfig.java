@@ -23,28 +23,29 @@ public class ControlSignalServiceImplementationConfig {
     private final ControlSignalRepository controlSignalRepository;
     private final ControlSignalNotFoundExceptionBuilder builder;
 
-    private final MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalMasterServiceImplementation;
-    private final DependentServiceImplementation<ControlSignal, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation;
+    private final MasterServiceImplementation<ControlSignal, ControlSignalResponse, Long, ControlSignalNotFoundException> controlSignalMasterServiceImplementation;
+    private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalResponseServiceImplementationConfig.class);
 
-    public ControlSignalServiceImplementationConfig(ControlSignalRepository controlSignalRepository, ControlSignalNotFoundExceptionBuilder builder, MasterServiceImplementation<ControlSignal, ControlSignalResponse, ControlSignalNotFoundException> controlSignalMasterServiceImplementation, DependentServiceImplementation<ControlSignal, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation) {
+    public ControlSignalServiceImplementationConfig(ControlSignalRepository controlSignalRepository, ControlSignalNotFoundExceptionBuilder builder, MasterServiceImplementation<ControlSignal, ControlSignalResponse, Long, ControlSignalNotFoundException> controlSignalMasterServiceImplementation, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation) {
         this.controlSignalRepository = controlSignalRepository;
         this.builder = builder;
         this.controlSignalMasterServiceImplementation = controlSignalMasterServiceImplementation;
         this.controlSignalDependentServiceImplementation = controlSignalDependentServiceImplementation;
     }
 
+
     @Bean
-    MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalMasterAndDependentServiceImplementation() {
-        MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, ControlSignalNotFoundException, DeviceNotFoundException> result = new MasterAndDependentServiceImplementation<>(controlSignalRepository, builder, controlSignalMasterServiceImplementation, controlSignalDependentServiceImplementation);
+    MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalMasterAndDependentServiceImplementation() {
+        MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long,ControlSignalNotFoundException, DeviceNotFoundException> result = new MasterAndDependentServiceImplementation<>(controlSignalRepository, builder, controlSignalMasterServiceImplementation, controlSignalDependentServiceImplementation);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalCrudServiceImplementation");
         return result;
     }
 
     @Bean
-    ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal> controlSignalFilteringServiceImplementation() {
-        ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalRepository);
+    ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> controlSignalFilteringServiceImplementation() {
+        ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalRepository);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalFilteringServiceImplementation");
         return result;
     }

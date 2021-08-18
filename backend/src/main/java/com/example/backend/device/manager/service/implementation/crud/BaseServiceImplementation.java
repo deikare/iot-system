@@ -11,12 +11,14 @@ import java.util.List;
 
 public class BaseServiceImplementation<
         B extends BaseTypeInterface<B>,
+        K,
         E extends RuntimeException>
-        implements BaseServiceInterface<B> {
-    private final JpaRepository<B, Long> repository;
-    private final Builder<E> objectNotFoundExceptionBuilder; //exception builder
+        implements BaseServiceInterface<B, K> {
 
-    public BaseServiceImplementation(JpaRepository<B, Long> repository, Builder<E> objectNotFoundExceptionBuilder) {
+    private final JpaRepository<B, K> repository;
+    private final Builder<E, K> objectNotFoundExceptionBuilder; //exception builder
+
+    public BaseServiceImplementation(JpaRepository<B, K> repository, Builder<E, K> objectNotFoundExceptionBuilder) {
         this.repository = repository;
         this.objectNotFoundExceptionBuilder = objectNotFoundExceptionBuilder;
     }
@@ -32,12 +34,12 @@ public class BaseServiceImplementation<
     }
 
     @Override
-    public B findObjectById(Long id) throws E {
+    public B findObjectById(K id) throws E {
         return repository.findById(id).orElseThrow(() -> objectNotFoundExceptionBuilder.newObject(id));
     }
 
     @Override
-    public B updateObjectById(Long id, B patch) throws E {
+    public B updateObjectById(K id, B patch) throws E {
         return repository.findById(id)
                 .map(object -> {
                     object.update(patch);
@@ -47,7 +49,7 @@ public class BaseServiceImplementation<
     }
 
     @Override
-    public void deleteObjectById(Long id) throws E {
+    public void deleteObjectById(K id) throws E {
         findObjectById(id);
         repository.deleteById(id);
     }

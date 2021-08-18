@@ -10,21 +10,24 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public class MasterAndDependentServiceImplementation <B extends MasterAndDependentTypeInterface<B, D, M>,
         D extends DependentTypeInterface<D, B>,
         M extends MasterTypeInterface<M, B>,
+        K,
+        K_M,
         E extends RuntimeException,
         E_M extends RuntimeException>
-        extends BaseServiceImplementation<B, E>
-        implements MasterAndDependentServiceInterface<B, D, M> {
-    private final MasterServiceImplementation<B, D, E> masterServiceImplementation;
-    private final DependentServiceImplementation<B, M, E, E_M> dependentServiceImplementation;
+        extends BaseServiceImplementation<B, K, E>
+        implements MasterAndDependentServiceInterface<B, D, M, K, K_M> {
 
-    public MasterAndDependentServiceImplementation(JpaRepository<B, Long> repository, Builder<E> builder, MasterServiceImplementation<B, D, E> masterServiceImplementation, DependentServiceImplementation<B, M, E, E_M> dependentServiceImplementation) {
+    private final MasterServiceImplementation<B, D, K, E> masterServiceImplementation;
+    private final DependentServiceImplementation<B, M, K, K_M, E, E_M> dependentServiceImplementation;
+
+    public MasterAndDependentServiceImplementation(JpaRepository<B, K> repository, Builder<E, K> builder, MasterServiceImplementation<B, D, K, E> masterServiceImplementation, DependentServiceImplementation<B, M, K, K_M, E, E_M>  dependentServiceImplementation) {
         super(repository, builder);
         this.masterServiceImplementation = masterServiceImplementation;
         this.dependentServiceImplementation = dependentServiceImplementation;
     }
 
     @Override
-    public B addDependentAndBindItToMasterById(B dependent, Long masterId) throws E_M {
+    public B addDependentAndBindItToMasterById(B dependent, K_M masterId) throws E_M {
         return dependentServiceImplementation.addDependentAndBindItToMasterById(dependent, masterId);
     }
 
@@ -34,7 +37,7 @@ public class MasterAndDependentServiceImplementation <B extends MasterAndDepende
     }
 
     @Override
-    public B addDependentToListInObjectById(Long objectId, D dependent) throws E {
+    public B addDependentToListInObjectById(K objectId, D dependent) throws E {
         return masterServiceImplementation.addDependentToListInObjectById(objectId, dependent);
     }
 
@@ -44,7 +47,7 @@ public class MasterAndDependentServiceImplementation <B extends MasterAndDepende
     }
 
     @Override
-    public boolean deleteDependentFromListInObjectById(Long objectId, D dependent) throws E {
+    public boolean deleteDependentFromListInObjectById(K objectId, D dependent) throws E {
         return masterServiceImplementation.deleteDependentFromListInObjectById(objectId, dependent);
     }
 

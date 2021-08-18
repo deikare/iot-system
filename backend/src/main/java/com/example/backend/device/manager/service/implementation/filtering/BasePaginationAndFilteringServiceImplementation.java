@@ -4,10 +4,10 @@ import com.example.backend.device.manager.service.interfaces.filtering.BasePagin
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public class BasePaginationAndFilteringServiceImplementation<B> implements BasePaginationAndFilteringInterface<B> {
-    private final BasePaginationAndFilteringInterface<B> repository;
+public class BasePaginationAndFilteringServiceImplementation<B, K> implements BasePaginationAndFilteringInterface<B, K> {
+    private final BasePaginationAndFilteringInterface<B, K> repository;
 
-    public BasePaginationAndFilteringServiceImplementation(BasePaginationAndFilteringInterface<B> repository) {
+    public BasePaginationAndFilteringServiceImplementation(BasePaginationAndFilteringInterface<B, K> repository) {
         this.repository = repository;
     }
 

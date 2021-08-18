@@ -18,34 +18,37 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
+
 @Configuration
 public class DeviceServiceImplementationConfig {
     private final DeviceRepository deviceRepository;
     private final DeviceNotFoundExceptionBuilder builder;
 
-    private final DependentServiceImplementation<Device, Hub, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation;
-    private final MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> deviceMasterServiceImplementation;
+    private final DependentServiceImplementation<Device, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation;
+    private final MasterServiceImplementation<Device, ControlSignal, Long, DeviceNotFoundException> deviceMasterServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalResponseServiceImplementationConfig.class);
 
-    public DeviceServiceImplementationConfig(DeviceRepository deviceRepository, DeviceNotFoundExceptionBuilder builder, DependentServiceImplementation<Device, Hub, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation, MasterServiceImplementation<Device, ControlSignal, DeviceNotFoundException> deviceMasterServiceImplementation) {
+    public DeviceServiceImplementationConfig(DeviceRepository deviceRepository, DeviceNotFoundExceptionBuilder builder, DependentServiceImplementation<Device, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceDependentServiceImplementation, MasterServiceImplementation<Device, ControlSignal, Long, DeviceNotFoundException> deviceMasterServiceImplementation) {
         this.deviceRepository = deviceRepository;
         this.builder = builder;
         this.deviceDependentServiceImplementation = deviceDependentServiceImplementation;
         this.deviceMasterServiceImplementation = deviceMasterServiceImplementation;
     }
 
+
     // and this one produces final singleton - Master and Dependent implementation
     @Bean
-    MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> deviceMasterAndDependentServiceImplementation() {
-        MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, DeviceNotFoundException, HubNotFoundException> result = new MasterAndDependentServiceImplementation<>(deviceRepository, builder, deviceMasterServiceImplementation, deviceDependentServiceImplementation);
+    MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceMasterAndDependentServiceImplementation() {
+        MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> result = new MasterAndDependentServiceImplementation<>(deviceRepository, builder, deviceMasterServiceImplementation, deviceDependentServiceImplementation);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceCrudServiceImplementation");
         return result;
     }
 
     @Bean
-    ByMasterPaginationAndFilteringServiceImplementation<Device> deviceFilteringServiceImplementation() {
-        ByMasterPaginationAndFilteringServiceImplementation<Device> result = new ByMasterPaginationAndFilteringServiceImplementation<>(deviceRepository);
+    ByMasterPaginationAndFilteringServiceImplementation<Device, Long, String> deviceFilteringServiceImplementation() {
+        ByMasterPaginationAndFilteringServiceImplementation<Device, Long, String> result = new ByMasterPaginationAndFilteringServiceImplementation<>(deviceRepository);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceFilteringServiceImplementation");
         return result;
     }

@@ -6,17 +6,19 @@ import com.example.backend.device.manager.model.listeners.generic.implementation
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
+
 @Configuration
 public class HubEntityListenerConfiguration {
-    private final KafkaCrudEntitySender<Long, Hub> sender;
+    private final KafkaCrudEntitySender<String, Hub> sender;
     private final String topic = "hubs";
 
-    public HubEntityListenerConfiguration(KafkaCrudEntitySender<Long, Hub> sender) {
+    public HubEntityListenerConfiguration(KafkaCrudEntitySender<String, Hub> sender) {
         this.sender = sender;
     }
 
     @Bean
-    public EntityListenerImplementation<Long, Hub> hubListenerImplementation() {
+    public EntityListenerImplementation<String, Hub> hubListenerImplementation() {
         return new EntityListenerImplementation<>(sender, topic);
     }
 }

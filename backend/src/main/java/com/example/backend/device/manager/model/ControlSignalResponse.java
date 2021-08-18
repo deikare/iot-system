@@ -3,6 +3,7 @@ package com.example.backend.device.manager.model;
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
 import com.example.backend.device.manager.model.listeners.implementations.ControlSignalResponseEntityListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
 
     private String messageContent;
 
+    @JsonIgnore //used to avoid recursive call
     @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "CONTROL_SIGNAL_ID")
     private ControlSignal sentControlSignal;
@@ -62,7 +64,6 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
