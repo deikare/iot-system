@@ -1,10 +1,9 @@
 import com.influxdb.client.InfluxDBClientFactory;
-import com.influxdb.client.QueryApi;
-import com.influxdb.client.WriteApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
-import model.InfluxDataPojo;
-import model.InfluxLogPojo;
+import model.InfluxDeviceDataPojo;
+import model.InfluxDeviceLogPojo;
+import model.InfluxHubLogPojo;
 
 import java.time.Instant;
 import java.util.Random;
@@ -17,9 +16,10 @@ public class DataCreator {
 
     private static final WriteApiBlocking writeApiLogs = InfluxDBClientFactory.create(url, token, org, "logs").getWriteApiBlocking();
     private static final WriteApiBlocking writeApiData = InfluxDBClientFactory.create(url, token, org, "data").getWriteApiBlocking();
+    private static final WriteApiBlocking writeApiHubs = InfluxDBClientFactory.create(url, token, org, "hubs").getWriteApiBlocking();
 
 
-    private static final String[] hubIds = {UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()};
+    private static final String[] hubIds = {UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString()};
     private static final String[] deviceIds = {"4", "5", "6"};
 
     private static final String[] measurementTypes = {"temperature [K]", "humidity [%]", "pressure [hPa]"};
@@ -30,8 +30,13 @@ public class DataCreator {
     private static final String[] buckets = {"data", "logs"};
 
     public static void main(String[] args) {
-        while(true) {
-            System.out.println(UUID.randomUUID());
+        for (String hubId : hubIds) {
+            InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubId, "CREATED");
+            writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
+            System.out.println("saved " + influxHubLogPojo + "\n");
+        }
+
+            while(true) {
             String bucket = randomElement(buckets);
             String hubId = randomElement(hubIds);
             String deviceId = randomElement(deviceIds);
@@ -40,7 +45,7 @@ public class DataCreator {
                 String logType = randomElement(logTypes);
                 String logValue = randomElement(logValues);
 
-                InfluxLogPojo logPojo = new InfluxLogPojo(Instant.now(), hubId, deviceId, logValue, logType);
+                InfluxDeviceLogPojo logPojo = new InfluxDeviceLogPojo(Instant.now(), hubId, deviceId, logValue, logType);
                 writeApiLogs.writeMeasurement(WritePrecision.MS, logPojo);
                 System.out.println("saved " + logPojo + " \n");
             }
@@ -48,7 +53,7 @@ public class DataCreator {
                 String measurementType = randomElement(measurementTypes);
                 double measurementValue = 100.0D * (new Random().nextDouble());
 
-                InfluxDataPojo dataPojo = new InfluxDataPojo(Instant.now(), hubId, deviceId, measurementValue, measurementType);
+                InfluxDeviceDataPojo dataPojo = new InfluxDeviceDataPojo(Instant.now(), hubId, deviceId, measurementValue, measurementType);
                 writeApiData.writeMeasurement(WritePrecision.MS, dataPojo);
                 System.out.println("saved " + dataPojo + " \n");
             }
