@@ -16,6 +16,8 @@ influx bucket create --host=$HOST -t $TOKEN -o $ORG -n data-downsampled2
 
 influx bucket create --host=$HOST -t $TOKEN -o $ORG -n logs
 
+influx bucket create --host=$HOST -t $TOKEN -o $ORG -n hubs
+
 influx bucket list --host=$HOST -t $TOKEN -o $ORG
 
 influx task create --host=$HOST -t $TOKEN -o $ORG --file $CONFIG_PATH/basic-downsampler.flux

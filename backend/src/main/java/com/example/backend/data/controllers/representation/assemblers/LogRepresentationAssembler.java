@@ -2,7 +2,7 @@ package com.example.backend.data.controllers.representation.assemblers;
 
 import com.example.backend.data.controllers.LogController;
 import com.example.backend.data.controllers.representation.models.LogRepresentationModel;
-import com.example.backend.data.model.InfluxLogPojo;
+import com.example.backend.data.model.InfluxDeviceLogPojo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -12,14 +12,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class LogRepresentationAssembler extends RepresentationModelAssemblerSupport<InfluxLogPojo, LogRepresentationModel> {
+public class LogRepresentationAssembler extends RepresentationModelAssemblerSupport<InfluxDeviceLogPojo, LogRepresentationModel> {
     public LogRepresentationAssembler() {
         super(LogController.class, LogRepresentationModel.class);
     }
 
     @NotNull
     @Override
-    public CollectionModel<LogRepresentationModel> toCollectionModel(@NotNull Iterable<? extends InfluxLogPojo> entities) {
+    public CollectionModel<LogRepresentationModel> toCollectionModel(@NotNull Iterable<? extends InfluxDeviceLogPojo> entities) {
         CollectionModel<LogRepresentationModel> logRepresentationModels = super.toCollectionModel(entities);
 
         logRepresentationModels.add(linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withSelfRel());
@@ -29,7 +29,7 @@ public class LogRepresentationAssembler extends RepresentationModelAssemblerSupp
 
     @NotNull
     @Override
-    public LogRepresentationModel toModel(@NotNull InfluxLogPojo entity) {
+    public LogRepresentationModel toModel(@NotNull InfluxDeviceLogPojo entity) {
         LogRepresentationModel model = new LogRepresentationModel(entity);
 
         model.add(

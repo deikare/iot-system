@@ -1,22 +1,22 @@
-package com.example.backend.data.model;
+package model;
 
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 
 import java.time.Instant;
 
-@Measurement(name = "log")
-public class InfluxLogPojo extends InfluxBasePojo {
+@Measurement(name = "deviceLog")
+public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo {
     @Column
     private String value;
 
-    public InfluxLogPojo(Instant time, String hubId, String deviceId, String value, String logType) {
+    public InfluxDeviceLogPojo(Instant time, String hubId, String deviceId, String value, String logType) {
         super(time, hubId, deviceId, logType);
         this.value = value;
     }
 
     // default constructor for query result mapping
-    public InfluxLogPojo() {
+    public InfluxDeviceLogPojo() {
     }
 
     public String getValue() {

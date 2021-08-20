@@ -3,7 +3,7 @@ package com.example.backend.data.controllers;
 import com.example.backend.data.controllers.representation.assemblers.LogRepresentationAssembler;
 import com.example.backend.data.controllers.exceptions.InfluxRecordNotFoundException;
 import com.example.backend.data.controllers.representation.models.LogRepresentationModel;
-import com.example.backend.data.model.InfluxLogPojo;
+import com.example.backend.data.model.InfluxDeviceLogPojo;
 import com.example.backend.data.service.InfluxQueryService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
@@ -35,14 +35,14 @@ public class LogController {
             @RequestParam(required = false) String limit,
             @RequestParam(required = false) String aggregateWindow) {
         String fluxQuery = influxQueryService.produceQuery(bucket, range, measurement, field, hubId, deviceId, logType, sort, limit, aggregateWindow);
-        List<InfluxLogPojo> queryResult = influxQueryService.query(fluxQuery, InfluxLogPojo.class);
+        List<InfluxDeviceLogPojo> queryResult = influxQueryService.query(fluxQuery, InfluxDeviceLogPojo.class);
 
         return assembler.toCollectionModel(queryResult);
     }
     @GetMapping("/{timestamp}")
     public LogRepresentationModel one(@PathVariable Instant timestamp) {
         String fluxQuery = influxQueryService.produceQuery(bucket, "start: " + timestamp, measurement, field, "", "", "","", "n: 1", "");
-        List<InfluxLogPojo> queryResult = influxQueryService.query(fluxQuery, InfluxLogPojo.class);
+        List<InfluxDeviceLogPojo> queryResult = influxQueryService.query(fluxQuery, InfluxDeviceLogPojo.class);
 
         if (queryResult.isEmpty())
             throw new InfluxRecordNotFoundException(timestamp);

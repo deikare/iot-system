@@ -3,7 +3,7 @@ package com.example.backend.data.controllers;
 import com.example.backend.data.controllers.representation.assemblers.DataRepresentationAssembler;
 import com.example.backend.data.controllers.exceptions.InfluxRecordNotFoundException;
 import com.example.backend.data.controllers.representation.models.DataRepresentationModel;
-import com.example.backend.data.model.InfluxDataPojo;
+import com.example.backend.data.model.InfluxDeviceDataPojo;
 import com.example.backend.data.service.InfluxQueryService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +36,7 @@ public class DataController {
             @RequestParam(required = false) String limit,
             @RequestParam(required = false) String aggregateWindow) {
         String fluxQuery = influxQueryService.produceQuery(bucket, range, measurement, field, hubId, deviceId, measurementType, sort, limit, aggregateWindow);
-        List<InfluxDataPojo> result = influxQueryService.query(fluxQuery, InfluxDataPojo.class);
+        List<InfluxDeviceDataPojo> result = influxQueryService.query(fluxQuery, InfluxDeviceDataPojo.class);
 
         return assembler.toCollectionModelConsideringBucket(result, bucket);
     }
@@ -44,7 +44,7 @@ public class DataController {
     @GetMapping("/{timestamp}")
     public DataRepresentationModel one(@PathVariable Instant timestamp, @RequestParam(defaultValue = "data") String bucket) {
         String fluxQuery = influxQueryService.produceQuery(bucket, "start: " + timestamp, measurement, field, "", "", "", "", "n: 1", "");
-        List<InfluxDataPojo> queryResult = influxQueryService.query(fluxQuery, InfluxDataPojo.class);
+        List<InfluxDeviceDataPojo> queryResult = influxQueryService.query(fluxQuery, InfluxDeviceDataPojo.class);
 
         if (queryResult.isEmpty())
             throw new InfluxRecordNotFoundException(timestamp);
