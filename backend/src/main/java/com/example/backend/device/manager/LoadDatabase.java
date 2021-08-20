@@ -1,7 +1,7 @@
 package com.example.backend.device.manager;
 
-import com.example.backend.data.model.InfluxDataPojo;
-import com.example.backend.data.model.InfluxLogPojo;
+import com.example.backend.data.model.InfluxDeviceDataPojo;
+import com.example.backend.data.model.InfluxDeviceLogPojo;
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
@@ -20,7 +20,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
@@ -67,13 +66,13 @@ public class LoadDatabase {
             }
 
             String flux = "from(bucket:\"data\") |> range(start: 0)";
-            List<InfluxDataPojo> influxDataPojos = influxQueryService.query(flux, InfluxDataPojo.class);
+            List<InfluxDeviceDataPojo> influxDataPojos = influxQueryService.query(flux, InfluxDeviceDataPojo.class);
             for (var dataPojo : influxDataPojos) {
                 logger.info("dataPojo: " + dataPojo);
             }
 
             String flux2 = "from(bucket:\"logs\") |> range(start: 0)";
-            List<InfluxLogPojo> influxLogPojos = influxQueryService.query(flux2, InfluxLogPojo.class);
+            List<InfluxDeviceLogPojo> influxLogPojos = influxQueryService.query(flux2, InfluxDeviceLogPojo.class);
             for (var logPojo : influxLogPojos) {
                 logger.info("logPojo: " + logPojo);
             }

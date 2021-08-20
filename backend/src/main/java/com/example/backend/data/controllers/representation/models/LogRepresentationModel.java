@@ -1,16 +1,16 @@
 package com.example.backend.data.controllers.representation.models;
 
-import com.example.backend.data.model.InfluxLogPojo;
+import com.example.backend.data.model.InfluxDeviceLogPojo;
 import org.springframework.hateoas.RepresentationModel;
 
 public class LogRepresentationModel extends RepresentationModel<LogRepresentationModel> {
-    private final InfluxLogPojo influxLogPojo;
+    private final InfluxDeviceLogPojo influxLogPojo;
 
-    public LogRepresentationModel(InfluxLogPojo influxLogPojo) {
+    public LogRepresentationModel(InfluxDeviceLogPojo influxLogPojo) {
         this.influxLogPojo = influxLogPojo;
     }
 
-    public InfluxLogPojo getInfluxLogPojo() {
+    public InfluxDeviceLogPojo getInfluxLogPojo() {
         return influxLogPojo;
     }
 }
