@@ -2,7 +2,7 @@ package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
-import com.example.backend.device.manager.kafka.producer.KafkaControlSignalSender;
+import com.example.backend.device.manager.kafka.services.senders.ControlSignalSenderService;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.model.Device;
@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("send_control")
 public class SendControlSignalController {
-    private final KafkaControlSignalSender sender;
+    private final ControlSignalSenderService sender;
     private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
-    private final String topic = "sent-controls";
 
     private final Logger logger = LoggerFactory.getLogger(SendControlSignalController.class);
 
-    public SendControlSignalController(KafkaControlSignalSender sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
+    public SendControlSignalController(ControlSignalSenderService sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
         this.sender = sender;
         this.crudServiceImplementation = crudServiceImplementation;
     }
@@ -56,10 +55,10 @@ public class SendControlSignalController {
             throw e;
         }
 
+        sender.sendNewControlSignal(result);
+
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "controlSignal", result);
 
-        ProducerRecord<Long, ControlSignal> record = new ProducerRecord<>(topic, result.getId(), result);
-        sender.sendKafkaRecord(record);
         return new ResponseEntity<>("Control signal sent", HttpStatus.OK);
     }
 }

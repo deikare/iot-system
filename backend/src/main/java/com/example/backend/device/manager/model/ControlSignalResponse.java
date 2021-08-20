@@ -2,13 +2,15 @@ package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
-import com.example.backend.device.manager.model.listeners.implementations.ControlSignalResponseEntityListener;
+import com.example.backend.device.manager.model.listeners.ControlSignalResponseEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @EntityListeners(ControlSignalResponseEntityListener.class)
+@Audited
 @Entity
 public class ControlSignalResponse implements DependentTypeInterface<ControlSignalResponse, ControlSignal>, KafkaRecordInterface<Long> {
     @Id
@@ -25,6 +27,13 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
     @JoinColumn(name = "CONTROL_SIGNAL_ID")
     private ControlSignal sentControlSignal;
 
+    private ControlSignalResponse(Long id, String name, String messageContent, ControlSignal sentControlSignal) {
+        this.id = id;
+        this.name = name;
+        this.messageContent = messageContent;
+        this.sentControlSignal = sentControlSignal;
+    }
+
     public ControlSignalResponse(String name, String messageContent, ControlSignal sentControlSignal) {
         this.name = name;
         this.messageContent = messageContent;
@@ -39,6 +48,8 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
     public String toString() {
         return "ControlSignalResponse{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
+                ", messageContent='" + messageContent + '\'' +
                 '}';
     }
 
@@ -62,10 +73,6 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -111,7 +118,7 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
     private void updateMessageContent(ControlSignalResponse patch) {
         String newMessageContent = String.valueOf(patch.getMessageContent());
         if (newMessageContent != null && !newMessageContent.isEmpty())
-            setName(newMessageContent);
+            setMessageContent(newMessageContent);
     }
 
     private void updateControlSignal(ControlSignalResponse patch) {
@@ -119,4 +126,10 @@ public class ControlSignalResponse implements DependentTypeInterface<ControlSign
         if (newControlSignal != null)
             setSentControlSignal(newControlSignal);
     }
+
+    @Override
+    public ControlSignalResponse deepCopy() {
+        return new ControlSignalResponse(this.id, this.name, this.messageContent, this.sentControlSignal);
+    }
+
 }

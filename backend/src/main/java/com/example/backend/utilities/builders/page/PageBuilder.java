@@ -1,6 +1,5 @@
-package com.example.backend.utilities.page.builders;
+package com.example.backend.utilities.builders.page;
 
-import com.influxdb.client.domain.Bucket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

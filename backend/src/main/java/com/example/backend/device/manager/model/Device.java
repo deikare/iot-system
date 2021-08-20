@@ -2,8 +2,9 @@ package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
-import com.example.backend.device.manager.model.listeners.implementations.DeviceEntityListener;
+import com.example.backend.device.manager.model.listeners.DeviceEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @EntityListeners(DeviceEntityListener.class)
+@Audited
 @Entity
 public class Device implements MasterAndDependentTypeInterface<Device, ControlSignal, Hub>, KafkaRecordInterface<Long> {
     @Id
@@ -31,6 +33,13 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
 
+    private Device(Long id, String name, Hub hub, DeviceType deviceType) {
+        this.id = id;
+        this.name = name;
+        this.hub = hub;
+        this.deviceType = deviceType;
+    }
+
     public Device(String name, Hub hub, DeviceType deviceType) {
         this.name = name;
         this.hub = hub;
@@ -43,10 +52,6 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -81,6 +86,8 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     public String toString() {
         return "Device{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
+                ", deviceType=" + deviceType +
                 '}';
     }
 
@@ -129,6 +136,16 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
         DeviceType newDeviceType = patch.getDeviceType();
         if (newDeviceType != null)
             setDeviceType(newDeviceType);
+    }
+
+    @Override
+    public Device deepCopy() {
+        Device copy =  new Device(this.id, this.name, this.hub, this.deviceType);
+
+        for (ControlSignal controlSignal : controlSignals) {
+            copy.addDependentToDependentsList(controlSignal.deepCopy());
+        }
+        return copy;
     }
 
     @Override

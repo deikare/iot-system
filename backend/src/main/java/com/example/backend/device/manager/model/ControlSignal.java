@@ -2,8 +2,9 @@ package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
-import com.example.backend.device.manager.model.listeners.implementations.ControlSignalEntityListener;
+import com.example.backend.device.manager.model.listeners.ControlSignalEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @EntityListeners(ControlSignalEntityListener.class)
+@Audited
 @Entity
 public class ControlSignal implements MasterAndDependentTypeInterface<ControlSignal, ControlSignalResponse, Device>, KafkaRecordInterface<Long> {
     @Id
@@ -22,8 +24,7 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     private String messageContent;
 
-    //eager fetch is imposed, because kafka couldn't serialize properly sending controls -
-    // workaround is custom serializer
+    //eager fetch is imposed, because kafka couldn't serialize properly sending controls
     @JsonIgnore //used to avoid recursive call
     @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "DEVICE_ID")
@@ -31,6 +32,13 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     @OneToMany(mappedBy = "sentControlSignal", cascade = CascadeType.ALL)
     private final List<ControlSignalResponse> responses = new ArrayList<>();
+
+    private ControlSignal(Long id, String name, String messageContent, Device device) {
+        this.id = id;
+        this.name = name;
+        this.messageContent = messageContent;
+        this.device = device;
+    }
 
     public ControlSignal(String name, String messageContent, Device device) {
         this.name = name;
@@ -42,6 +50,8 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
     public String toString() {
         return "ControlSignal{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
+                ", messageContent='" + messageContent + '\'' +
                 '}';
     }
 
@@ -66,10 +76,6 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -120,16 +126,28 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
             setName(newName);
     }
 
+
+
     private void updateMessageContent(ControlSignal patch) {
         String newMessageContent = String.valueOf(patch.getMessageContent());
         if (newMessageContent != null && !newMessageContent.isEmpty())
-            setName(newMessageContent);
+            setMessageContent(newMessageContent);
     }
 
     private void updateDevice(ControlSignal patch) {
         Device newDevice = patch.getDevice();
         if (newDevice != null)
             setDevice(newDevice);
+    }
+
+    @Override
+    public ControlSignal deepCopy() {
+        ControlSignal copy =  new ControlSignal(this.id, this.name, this.messageContent, this.device);
+
+        for (ControlSignalResponse controlSignalResponse : responses) {
+            copy.addDependentToDependentsList(controlSignalResponse.deepCopy());
+        }
+        return copy;
     }
 
     @Override
