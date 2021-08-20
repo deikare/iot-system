@@ -1,12 +1,11 @@
-package com.example.backend.device.manager.model.listeners.implementations;
+package com.example.backend.device.manager.model.listeners;
 
 import com.example.backend.device.manager.model.Device;
-import com.example.backend.device.manager.model.listeners.generic.implementations.EntityListenerImplementation;
+import com.example.backend.device.manager.model.Hub;
 import com.example.backend.utilities.loggers.abstracts.CrudOperationType;
 import com.example.backend.utilities.loggers.abstracts.CrudServiceLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
@@ -16,12 +15,8 @@ import javax.persistence.PostUpdate;
 public class DeviceEntityListener {
     private final Logger logger = LoggerFactory.getLogger(DeviceEntityListener.class);
 
-    @Autowired
-    private EntityListenerImplementation<Long, Device> deviceListener;
-
     @PostPersist
     public void postPersist(Device device) {
-        deviceListener.postPersist(device);
         CrudServiceLogger.produceCrudServiceLog(logger, device, CrudOperationType.CREATE);
     }
 
@@ -33,13 +28,15 @@ public class DeviceEntityListener {
 
     @PostUpdate
     public void postUpdate(Device device) {
-        deviceListener.postUpdate(device);
         CrudServiceLogger.produceCrudServiceLog(logger, device, CrudOperationType.UPDATE);
     }
 
     @PostRemove
     public void postRemove(Device device) {
-        deviceListener.postRemove(device);
         CrudServiceLogger.produceCrudServiceLog(logger, device, CrudOperationType.DELETE);
+    }
+
+    private Hub getHub(Device device) {
+        return device.getHub();
     }
 }

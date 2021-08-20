@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public class CrudControllerLogger extends BaseLogger {
-    public static void produceCrudControllerLog(Logger logger, HttpMethodType httpMethod, String recordName, @NotNull Object result) {
+    public static void produceCrudControllerLog(Logger logger, HttpMethodType httpMethod, String recordName, Object result) {
         String message = httpMethod + " - " + recordName + " queried, result: " + result;
         produceLog(logger, message);
     }

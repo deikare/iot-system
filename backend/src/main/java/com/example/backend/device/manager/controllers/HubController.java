@@ -4,6 +4,7 @@ import com.example.backend.device.manager.controllers.assemblers.HubModelAssembl
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
+import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.BasePaginationAndFilteringServiceImplementation;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
@@ -19,7 +20,7 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/hubs")
@@ -29,13 +30,16 @@ public class HubController {
     private final BasePaginationAndFilteringServiceImplementation<Hub, String> filteringServiceImplementation;
     private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation;
 
+    private final EntityCrudSenderService<String, Hub> hubSender;
+
     private final Logger logger = LoggerFactory.getLogger(HubController.class);
 
-    public HubController(HubModelAssembler modelAssembler, PagedResourcesAssembler<Hub> pagedResourcesAssembler, BasePaginationAndFilteringServiceImplementation<Hub, String> filteringServiceImplementation, MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation) {
+    public HubController(HubModelAssembler modelAssembler, PagedResourcesAssembler<Hub> pagedResourcesAssembler, BasePaginationAndFilteringServiceImplementation<Hub, String> filteringServiceImplementation, MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
+        this.hubSender = hubSender;
     }
 
 
@@ -76,15 +80,6 @@ public class HubController {
         return modelAssembler.toModel(result);
     }
 
-    @PostMapping
-    public EntityModel<Hub> newHub(@RequestBody Hub newHub) {
-        Hub result = crudServiceImplementation.addObject(newHub);
-
-        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "hub", result);
-
-        return modelAssembler.toModel(crudServiceImplementation.addObject(newHub));
-    }
-
     @PutMapping("/{id}")
     public EntityModel<Hub> addOrChangeHub(
             @PathVariable String id,
@@ -93,12 +88,14 @@ public class HubController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newHub);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "hub", result);
+            hubSender.postUpdate(result);
         }
         catch (HubNotFoundException e) {
-            result = crudServiceImplementation.addObject(newHub);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "hub", result);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "hub", null);
+            throw e;
         }
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "hub", result);
 
         return modelAssembler.toModel(result);
     }
@@ -111,6 +108,7 @@ public class HubController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newHub);
+            hubSender.postUpdate(result);
         }
         catch (HubNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
@@ -125,7 +123,8 @@ public class HubController {
     @DeleteMapping("/{id}")
     void deleteHub(@PathVariable String id) {
         try {
-            crudServiceImplementation.deleteObjectById(id);
+            Hub result = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
+            hubSender.postRemove(result);
         }
         catch (HubNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
@@ -137,7 +136,10 @@ public class HubController {
 
     @DeleteMapping
     void deleteAllHubs() {
-        crudServiceImplementation.deleteAllObjects();
+        List<Hub> deletedHubs = crudServiceImplementation.deleteAllObjectsAndReturnThemListed();
+
+        hubSender.postRemoves(deletedHubs);
+
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "hubs", "true");
     }
 }

@@ -4,9 +4,11 @@ import com.example.backend.device.manager.controllers.assemblers.ControlSignalMo
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceInControlSignalNotSpecifiedException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.*;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
+import com.example.backend.utilities.builders.lists.ListBuilder;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/control_signals")
 public class ControlSignalController {
@@ -28,13 +32,16 @@ public class ControlSignalController {
     private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation;
     private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
+    private final EntityCrudSenderService<String, Hub> hubSender;
+
     private final Logger logger = LoggerFactory.getLogger(ControlSignalController.class);
 
-    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
+    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
+        this.hubSender = hubSender;
     }
 
 
@@ -115,6 +122,8 @@ public class ControlSignalController {
         }
         else result = crudServiceImplementation.addDependentAndBindItToMasterById(newControlSignal, deviceId);
 
+        hubSender.postUpdate(result.getDevice().getHub());
+
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "controlSignal", result);
 
         return modelAssembler.toModel(result);
@@ -128,12 +137,14 @@ public class ControlSignalController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newControlSignal);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlSignal", result);
         }
         catch (ControlSignalNotFoundException e) {
             result = crudServiceImplementation.addObject(newControlSignal);
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlSignal", result);
         }
+
+        hubSender.postUpdate(result.getDevice().getHub());
+
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlSignal", result);
 
         return modelAssembler.toModel(result);
     }
@@ -152,6 +163,8 @@ public class ControlSignalController {
             throw e;
         }
 
+        hubSender.postUpdate(result.getDevice().getHub());
+
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlSignal", result);
 
         return modelAssembler.toModel(result);
@@ -160,7 +173,8 @@ public class ControlSignalController {
     @DeleteMapping("/{id}")
     void deleteControlSignal(@PathVariable Long id) {
         try {
-            crudServiceImplementation.deleteObjectById(id);
+            ControlSignal deletedControlSignal = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
+            hubSender.postUpdate(deletedControlSignal.getDevice().getHub());
         }
         catch (ControlSignalNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
@@ -172,7 +186,10 @@ public class ControlSignalController {
 
     @DeleteMapping
     void deleteAllControlSignals() {
-        crudServiceImplementation.deleteAllObjects();
+        List<ControlSignal> deletedControlSignals = crudServiceImplementation.deleteAllObjectsAndReturnThemListed();
+
+        hubSender.postUpdates(ListBuilder.hubListWithControlsFromControlSignalListBuilder(deletedControlSignals));
+
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "controlSignals", "true");
     }
 }

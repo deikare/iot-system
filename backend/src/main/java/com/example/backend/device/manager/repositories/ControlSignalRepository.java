@@ -1,15 +1,19 @@
 package com.example.backend.device.manager.repositories;
 
 import com.example.backend.device.manager.model.ControlSignal;
+import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.service.interfaces.filtering.ByMasterAndMessageContentPaginationAndFilteringInterface;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.stereotype.Repository;
 
 //remember to implement in-place all of methods from own filtering interface
 @Repository
-public interface ControlSignalRepository extends JpaRepository<ControlSignal, Long>, ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignal, Long, Long> {
+public interface ControlSignalRepository extends JpaRepository<ControlSignal, Long>,
+        ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignal, Long, Long>,
+        RevisionRepository<ControlSignal, Long, Long> {
     Page<ControlSignal> findByNameContaining(String name, Pageable pageable);
     Page<ControlSignal> findByDevice_Id(Long deviceId, Pageable pageable);
     Page<ControlSignal> findByMessageContentContaining(String messageContent, Pageable pageable);

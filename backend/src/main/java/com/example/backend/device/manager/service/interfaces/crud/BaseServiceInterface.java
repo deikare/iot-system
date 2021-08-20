@@ -8,5 +8,7 @@ public interface BaseServiceInterface<B, K> {
     B findObjectById(K id);
     B updateObjectById(K id, B patch);
     void deleteObjectById(K id);
+    B deleteObjectByIdAndReturnDeletedObject(K id);
     void deleteAllObjects();
+    List<B> deleteAllObjectsAndReturnThemListed();
 }

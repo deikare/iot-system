@@ -2,8 +2,8 @@ package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterface;
-import com.example.backend.device.manager.model.listeners.implementations.HubEntityListener;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.backend.device.manager.model.listeners.HubEntityListener;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,10 +12,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 @EntityListeners(HubEntityListener.class)
+@Audited
 @Entity
 public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterface<String> {
     @Id
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "HUB_ID")
     private String id = UUID.randomUUID().toString();
 
@@ -23,6 +23,11 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
 
     @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL)
     private final List<Device> devices = new ArrayList<>();
+
+    private Hub(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Hub(String name) {
         this.name = name;
@@ -54,7 +59,8 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
     @Override
     public String toString() {
         return "Hub{" +
-                "id=" + id +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 
@@ -87,6 +93,16 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
         String newName = String.valueOf(patch.getName());
         if (newName != null && !newName.isEmpty())
             setName(newName);
+    }
+
+    @Override
+    public Hub deepCopy() {
+        Hub copy =  new Hub(this.id, this.name);
+
+        for (Device device : devices) {
+            copy.addDependentToDependentsList(device.deepCopy());
+        }
+        return copy;
     }
 
     @Override

@@ -1,14 +1,12 @@
 package com.example.backend.data.service;
 
-import com.example.backend.utilities.page.builders.PageBuilder;
+import com.example.backend.utilities.builders.page.PageBuilder;
 import com.influxdb.client.BucketsApi;
-import com.influxdb.client.FindOptions;
 import com.influxdb.client.domain.Bucket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 

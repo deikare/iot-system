@@ -1,6 +1,5 @@
 package com.example.backend.device.manager.kafka.producer;
 
-import com.example.backend.device.manager.model.listeners.implementations.HubEntityListener;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -12,16 +11,16 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.Arrays;
 
-public class KafkaBaseEntitySender<K, V> {
+public class KafkaBaseEntityProducer<K, V> {
     private final KafkaTemplate<K, V> template;
 
-    private final Logger logger = LoggerFactory.getLogger(KafkaBaseEntitySender.class);
+    private final Logger logger = LoggerFactory.getLogger(KafkaBaseEntityProducer.class);
 
-    public KafkaBaseEntitySender(KafkaTemplate<K, V> template) {
+    public KafkaBaseEntityProducer(KafkaTemplate<K, V> template) {
         this.template = template;
     }
 
-    public void sendKafkaRecord(ProducerRecord<K, V> record) {
+    public void produceKafkaRecord(ProducerRecord<K, V> record) {
         ListenableFuture<SendResult<K, V>> future = template.send(record);
 
         future.addCallback(new ListenableFutureCallback<>() {
