@@ -4,37 +4,22 @@ import com.influxdb.annotations.Column;
 
 import java.time.Instant;
 
-public class InfluxBasePojo {
-    @Column(timestamp = true)
-    protected Instant time;
-
-    @Column(tag = true)
-    protected String hubId;
-
+public class InfluxDeviceBasePojo extends InfluxBasePojo {
     @Column(tag = true)
     protected String deviceId;
 
     @Column(tag = true)
     protected String type;
 
-    public InfluxBasePojo(Instant time, String hubId, String deviceId, String type) {
-        this.time = time;
-        this.hubId = hubId;
+    public InfluxDeviceBasePojo(Instant time, String hubId, String deviceId, String type) {
+        super(time, hubId);
         this.deviceId = deviceId;
         this.type = type;
     }
 
     // default constructor for query result mapping
-    public InfluxBasePojo() {
+    public InfluxDeviceBasePojo() {
 
-    }
-
-    public Instant getTime() {
-        return time;
-    }
-
-    public String getHubId() {
-        return hubId;
     }
 
     public String getDeviceId() {
