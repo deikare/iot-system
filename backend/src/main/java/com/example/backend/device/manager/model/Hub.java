@@ -17,19 +17,15 @@ import java.util.UUID;
 public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterface<String> {
     @Id
     @Column(name = "HUB_ID")
-    private String id = UUID.randomUUID().toString();
+    private String id;
 
     private String name;
 
     @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL)
     private final List<Device> devices = new ArrayList<>();
 
-    private Hub(String id, String name) {
+    public Hub(String id, String name) {
         this.id = id;
-        this.name = name;
-    }
-
-    public Hub(String name) {
         this.name = name;
     }
 

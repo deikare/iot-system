@@ -8,19 +8,27 @@ import java.time.Instant;
 @Measurement(name = "hubLog")
 public class InfluxHubLogPojo extends InfluxBasePojo{
     @Column
-    private String status;
+    private String value;
 
-    public InfluxHubLogPojo(Instant time, String hubId, String status) {
+    @Column(tag = true)
+    private String name;
+
+    public InfluxHubLogPojo(Instant time, String hubId, String value, String name) {
         super(time, hubId);
-        this.status = status;
+        this.value = value;
+        this.name = name;
     }
 
     public InfluxHubLogPojo() {
 
     }
 
-    public String getStatus() {
-        return status;
+    public String getValue() {
+        return value;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -28,7 +36,8 @@ public class InfluxHubLogPojo extends InfluxBasePojo{
         return "InfluxHubLogPojo{" +
                 "time=" + time +
                 ", hubId='" + hubId + '\'' +
-                ", status='" + status + '\'' +
+                ", value='" + value + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
