@@ -16,7 +16,7 @@ import java.util.List;
 public class DataController {
     private final InfluxQueryService influxQueryService;
     private final DataRepresentationAssembler assembler;
-    private final String measurement = "data";
+    private final String measurement = "deviceData";
     private final String field = "value";
 
 

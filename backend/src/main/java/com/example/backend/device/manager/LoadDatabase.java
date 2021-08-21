@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Configuration
 @EnableJpaAuditing
 public class LoadDatabase {
-    Logger logger = LoggerFactory.getLogger(LoadDatabase.class);
+/*    Logger logger = LoggerFactory.getLogger(LoadDatabase.class);
 
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
@@ -84,5 +84,5 @@ public class LoadDatabase {
         for(int i = 0; i < len; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
         return sb.toString();
-    }
+    }*/
 }

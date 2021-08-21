@@ -16,7 +16,7 @@ import java.util.List;
 public class LogController {
     private final InfluxQueryService influxQueryService;
     private final LogRepresentationAssembler assembler;
-    private final String measurement = "log";
+    private final String measurement = "deviceLog";
     private final String field = "value";
     private final String bucket = "logs";
 
