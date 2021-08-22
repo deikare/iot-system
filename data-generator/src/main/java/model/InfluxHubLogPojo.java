@@ -8,12 +8,12 @@ import java.time.Instant;
 @Measurement(name = "hubLog")
 public class InfluxHubLogPojo extends InfluxBasePojo{
     @Column
-    private String value;
+    private InfluxHubStatusValue value;
 
     @Column(tag = true)
     private String name;
 
-    public InfluxHubLogPojo(Instant time, String hubId, String value, String name) {
+    public InfluxHubLogPojo(Instant time, String hubId, InfluxHubStatusValue value, String name) {
         super(time, hubId);
         this.value = value;
         this.name = name;
@@ -23,7 +23,7 @@ public class InfluxHubLogPojo extends InfluxBasePojo{
 
     }
 
-    public String getValue() {
+    public InfluxHubStatusValue getValue() {
         return value;
     }
 

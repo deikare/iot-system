@@ -38,7 +38,7 @@ public class DataCreator {
             System.out.println("saved " + influxHubLogPojo + "\n");
         }
 
-        for (int j = 0; j < 5; j++) {
+        while (true) {
             String bucket = randomElement(buckets);
             String hubId = randomElement(hubIds);
             String deviceId = randomElement(deviceIds);
@@ -51,11 +51,11 @@ public class DataCreator {
                 writeApiLogs.writeMeasurement(WritePrecision.MS, logPojo);
                 System.out.println("saved " + logPojo + " \n");
 
-                for (int i = 0; i < hubIds.length; i++) {
+/*                for (int i = 0; i < hubIds.length; i++) {
                     InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.STOPPED, hubNames[i]);
                     writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
                     System.out.println("saved " + influxHubLogPojo + "\n");
-                }
+                }*/
             }
             else {
                 String measurementType = randomElement(measurementTypes);
@@ -65,11 +65,11 @@ public class DataCreator {
                 writeApiData.writeMeasurement(WritePrecision.MS, dataPojo);
                 System.out.println("saved " + dataPojo + " \n");
 
-                for (int i = 0; i < hubIds.length; i++) {
+/*                for (int i = 0; i < hubIds.length; i++) {
                     InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.RESTARTED, hubNames[i]);
                     writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
                     System.out.println("saved " + influxHubLogPojo + "\n");
-                }
+                }*/
             }
 
 
@@ -81,11 +81,11 @@ public class DataCreator {
             }
         }
 
-        for (int i = 0; i < hubIds.length; i++) {
+/*        for (int i = 0; i < hubIds.length; i++) {
             InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.DELETED, hubNames[i]);
             writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
             System.out.println("saved " + influxHubLogPojo + "\n");
-        }
+        }*/
     }
 
     private static <T> T randomElement(T[] array) {
