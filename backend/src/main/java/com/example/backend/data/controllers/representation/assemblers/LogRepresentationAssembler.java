@@ -2,7 +2,7 @@ package com.example.backend.data.controllers.representation.assemblers;
 
 import com.example.backend.data.controllers.LogController;
 import com.example.backend.data.controllers.representation.models.LogRepresentationModel;
-import com.example.backend.data.model.InfluxDeviceLogPojo;
+import com.example.backend.data.model.mappers.InfluxDeviceLogPojo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -33,7 +33,6 @@ public class LogRepresentationAssembler extends RepresentationModelAssemblerSupp
         LogRepresentationModel model = new LogRepresentationModel(entity);
 
         model.add(
-                linkTo(methodOn(LogController.class).one(entity.getTime())).withSelfRel(),
                 linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withRel("logs"));
 
         return model;

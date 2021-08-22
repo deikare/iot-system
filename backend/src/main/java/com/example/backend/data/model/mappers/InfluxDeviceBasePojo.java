@@ -1,4 +1,4 @@
-package com.example.backend.data.model;
+package com.example.backend.data.model.mappers;
 
 import com.influxdb.annotations.Column;
 

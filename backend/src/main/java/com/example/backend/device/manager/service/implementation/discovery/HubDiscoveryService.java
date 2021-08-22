@@ -1,7 +1,6 @@
 package com.example.backend.device.manager.service.implementation.discovery;
 
-import com.example.backend.data.model.InfluxHubLogPojo;
-import com.example.backend.data.model.InfluxHubStatusValue;
+import com.example.backend.data.model.mappers.InfluxHubLogPojo;
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @Component
 public class HubDiscoveryService {
-
     private final Logger logger = LoggerFactory.getLogger(HubDiscoveryService.class);
 
     private Instant start = Instant.ofEpochSecond(0);
@@ -54,11 +52,11 @@ public class HubDiscoveryService {
 
     private void consumeQueryResult(InfluxHubLogPojo queryResult) {
         switch (queryResult.getValue()) {
-            case InfluxHubStatusValue.CREATED -> {
+            case CREATED -> {
                 Hub createdHub = crudServiceImplementation.addObject(new Hub(queryResult.getHubId(), queryResult.getName()));
                 logger.info("Discovered creation of hub: " + createdHub);
             }
-            case InfluxHubStatusValue.RESTARTED -> {
+            case RESTARTED -> {
                 String hubId = queryResult.getHubId();
                 try {
                     Hub restartedHub = crudServiceImplementation.findObjectById(hubId);
@@ -70,22 +68,23 @@ public class HubDiscoveryService {
                     logger.info("Restarted hub{id:" + hubId + "} not found in SQL, created restarted Hub: " + createdHub);
                 }
             }
-            case InfluxHubStatusValue.STOPPED -> {
+            case STOPPED -> {
                 String hubId = queryResult.getHubId();
                 try {
                     Hub hub = crudServiceImplementation.findObjectById(hubId);
                     logger.info("Discovered stopped of hub: " + hub);
                 } catch (HubNotFoundException e) {
-                    logger.info("Stopped hub{id:" + hubId + "} not found in SQL");
+                    Hub createdHub = crudServiceImplementation.addObject(new Hub(hubId, queryResult.getName()));
+                    logger.info("Stopped hub{id:" + hubId + "} not found in SQL, created stopped Hub: " + createdHub);
                 }
             }
-            case InfluxHubStatusValue.DELETED -> {
+            case DELETED -> {
                 String hubId = queryResult.getHubId();
                 try {
                     crudServiceImplementation.deleteObjectById(hubId);
                     logger.info("Discovered delete of hub{" + hubId + "}");
                 } catch (HubNotFoundException e) {
-                    logger.info("Stopped hub{id:" + hubId + "} not found in SQL");
+                    logger.info("Deleted hub{id:" + hubId + "} not found in SQL");
                 }
             }
         }

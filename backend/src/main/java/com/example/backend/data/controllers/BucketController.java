@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-//TODO may add bucket and task management feature
+
 @RestController
 @RequestMapping("/buckets")
 public class BucketController {

@@ -1,4 +1,4 @@
-package com.example.backend.data.config;
+package com.example.backend.data.service.config;
 
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
@@ -9,16 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//TODO perhaps useless
 @Configuration
-public class FluxQueryConfig {
-/*    private final InfluxDBClient influxDBClient;
+public class InfluxDBQueryConfig {
+    private final InfluxDBClient influxDBClient;
 
-    public FluxQueryConfig(InfluxDBClient influxDBClient) {
+    public InfluxDBQueryConfig(InfluxDBClient influxDBClient) {
         this.influxDBClient = influxDBClient;
     }
 
-    private final Logger logger = LoggerFactory.getLogger(FluxQueryConfig.class);
+    private final Logger logger = LoggerFactory.getLogger(InfluxDBQueryConfig.class);
 
     @Bean
     public InfluxQueryService influxQueryService() {
@@ -32,5 +31,5 @@ public class FluxQueryConfig {
         QueryApi result = influxDBClient.getQueryApi();
         ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
-    }*/
+    }
 }

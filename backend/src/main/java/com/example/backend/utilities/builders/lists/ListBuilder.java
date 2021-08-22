@@ -11,6 +11,7 @@ public class ListBuilder {
     public static List<Hub> hubListWithResponsesFromControlResponseListBuilder(List<ControlSignalResponse> responses) {
         List<ControlSignal> controlSignals = responses.stream()
                 .map(ControlSignalResponse::getSentControlSignal)
+                .distinct() //reduces all repeated ControlSignals
                 .toList();
 
         return hubListWithControlsFromControlSignalListBuilder(controlSignals);
@@ -19,6 +20,7 @@ public class ListBuilder {
     public static List<Hub> hubListWithControlsFromControlSignalListBuilder(List<ControlSignal> controlSignals) {
         List<Device> devices = controlSignals.stream()
                 .map(ControlSignal::getDevice)
+                .distinct()
                 .toList();
 
         return hubListWithDevicesFromDeviceListBuilder(devices);
@@ -27,6 +29,7 @@ public class ListBuilder {
     public static List<Hub> hubListWithDevicesFromDeviceListBuilder(List<Device> devices) {
         return devices.stream()
                 .map(Device::getHub)
+                .distinct()
                 .toList();
     }
 }

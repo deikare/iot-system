@@ -1,4 +1,4 @@
-package com.example.backend.data.config;
+package com.example.backend.data.service.config;
 
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import com.influxdb.client.InfluxDBClient;

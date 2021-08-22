@@ -32,18 +32,6 @@ public class SendControlSignalController {
         this.crudServiceImplementation = crudServiceImplementation;
     }
 
-
-    //TODO get that informs how to use this endpoint
-    /*@GetMapping
-    public ResponseEntity<String> getInfo() {
-        return pushControlToKafkaById()
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<String> getInfoById(@PathVariable Long id) {
-        return pushControlToKafkaById(id)
-    }*/
-
     @PostMapping("/{id}")
     public ResponseEntity<String> pushControlToKafkaById(@PathVariable Long id) {
         ControlSignal result;
