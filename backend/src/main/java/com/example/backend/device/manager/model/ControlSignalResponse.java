@@ -4,13 +4,11 @@ import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInt
 import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
 import com.example.backend.device.manager.model.listeners.ControlSignalResponseEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @EntityListeners(ControlSignalResponseEntityListener.class)
-@Audited
 @Entity
 public class ControlSignalResponse implements DependentTypeInterface<ControlSignalResponse, ControlSignal>, KafkaRecordInterface<Long> {
     @Id

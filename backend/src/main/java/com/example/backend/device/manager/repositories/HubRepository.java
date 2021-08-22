@@ -13,8 +13,7 @@ import java.util.UUID;
 //remember to implement in-place all of methods from own filtering interface
 @Repository
 public interface HubRepository extends JpaRepository<Hub, String>,
-        BasePaginationAndFilteringInterface<Hub, String>,
-        RevisionRepository<Hub, String, Long> {
+        BasePaginationAndFilteringInterface<Hub, String> {
     Page<Hub> findByNameContaining(String name, Pageable pageable);
 
     @Override

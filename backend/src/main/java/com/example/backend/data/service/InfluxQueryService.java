@@ -1,12 +1,14 @@
 package com.example.backend.data.service;
 
+import com.example.backend.data.model.timeseries.DeviceBaseTimeseriesList;
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceValueInterface;
 import com.influxdb.client.QueryApi;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-//TODO may add pagination based on start, stop and limit flux functions
+
 public class InfluxQueryService {
     private final Logger logger = LoggerFactory.getLogger(InfluxQueryService.class);
 
@@ -16,12 +18,21 @@ public class InfluxQueryService {
         this.queryApi = queryApi;
     }
 
-    public <M> List<M> query(String flux, Class<M> classToMapRecords) {
-        logger.info("Starting query: " + flux);
-        List<M> result = queryApi.query(flux, classToMapRecords);
-        logger.info("Query result: " + result);
-        return queryApi.query(flux, classToMapRecords);
+    public <V, I extends InfluxDeviceValueInterface<V>> DeviceBaseTimeseriesList<V, I> queryWithResultMappedToTimeseriesList(String flux, Class<I> classToMapRecords) {
+        List<I> rawResult = query(flux, classToMapRecords);
+        DeviceBaseTimeseriesList<V, I> timeseriesList = new DeviceBaseTimeseriesList<>(rawResult);
+        logger.info("Query result as timeseriesList: " + timeseriesList);
+        return timeseriesList;
     }
+
+    public <I> List<I> query(String flux, Class<I> classToMapRecords) {
+        logger.info("Starting query: " + flux);
+        List<I> result = queryApi.query(flux, classToMapRecords);
+        logger.info("Query result: " + result);
+        return result;
+    }
+
+
 
     public String produceQuery(@NotNull String bucket, @NotNull String range, @NotNull String measurement,
                                @NotNull String field, String hubId, String deviceId, String type, String sort, String limit,

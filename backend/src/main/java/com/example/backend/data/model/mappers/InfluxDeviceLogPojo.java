@@ -1,12 +1,13 @@
-package com.example.backend.data.model;
+package com.example.backend.data.model.mappers;
 
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceValueInterface;
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 
 import java.time.Instant;
 
 @Measurement(name = "deviceLog")
-public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo {
+public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo  implements InfluxDeviceValueInterface<String> {
     @Column
     private String value;
 
@@ -32,5 +33,10 @@ public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo {
                 ", type='" + type + '\'' +
                 ", value='" + value + '\'' +
                 '}';
+    }
+
+    @Override
+    public String getValueAsObject() {
+        return getValue();
     }
 }

@@ -14,8 +14,7 @@ import java.util.UUID;
 //remember to implement in-place all of methods from own filtering interface
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long>,
-        ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String>,
-        RevisionRepository<Device, Long, Long> {
+        ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String> {
     Page<Device> findByNameContaining(String name, Pageable pageable);
     Page<Device> findByHub_Id(String id, Pageable pageable);
     Page<Device> findByNameContainingAndHub_Id(String name, String id, Pageable pageable);

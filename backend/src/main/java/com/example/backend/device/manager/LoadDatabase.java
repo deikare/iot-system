@@ -1,7 +1,7 @@
 package com.example.backend.device.manager;
 
-import com.example.backend.data.model.InfluxDeviceDataPojo;
-import com.example.backend.data.model.InfluxDeviceLogPojo;
+import com.example.backend.data.model.mappers.InfluxDeviceDataPojo;
+import com.example.backend.data.model.mappers.InfluxDeviceLogPojo;
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalResponseNotFoundException;
@@ -20,12 +20,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
 @EnableJpaAuditing
 public class LoadDatabase {
-/*    Logger logger = LoggerFactory.getLogger(LoadDatabase.class);
+ /*   Logger logger = LoggerFactory.getLogger(LoadDatabase.class);
 
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
@@ -42,7 +43,7 @@ public class LoadDatabase {
             deviceServiceImplementation.deleteAllObjects();
             int amountOfHubs = 10;
             for (int i = 0; i < amountOfHubs; i++) {
-                Hub hub = new Hub("H" + i);
+                Hub hub = new Hub(UUID.randomUUID().toString(), "H" + i);
                 logger.info("Preloading hubs: " + hubServiceImplementation.addObject(hub));
 
                 int amountOfDevices = ThreadLocalRandom.current().nextInt(1, 20);
