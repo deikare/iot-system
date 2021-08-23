@@ -7,6 +7,9 @@ import com.example.backend.data.model.timeseries.DeviceBaseTimeseriesList;
 import com.example.backend.data.service.InfluxQueryService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.List;
+
 @RestController
 @RequestMapping("data")
 public class DataController {
@@ -24,16 +27,16 @@ public class DataController {
     @GetMapping
     public DataTimeseriesListRepresentationModel all(
             @RequestParam(defaultValue = "data") String bucket,
-            @RequestParam(defaultValue = "start: 0") String range,
-            @RequestParam(required = false) String hubId,
-            @RequestParam(required = false) String deviceId,
-            @RequestParam(required = false) String measurementType,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String limit,
-            @RequestParam(required = false) String aggregateWindow) {
-        String fluxQuery = influxQueryService.produceQuery(bucket, range, measurement, field, hubId, deviceId, measurementType, sort, limit, aggregateWindow);
-        DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> result = influxQueryService.queryWithResultMappedToTimeseriesList(fluxQuery, InfluxDeviceDataPojo.class);
+            @RequestParam(required = false) Instant start,
+            @RequestParam(required = false) Instant stop,
+            @RequestParam(defaultValue = "true") boolean desc,
+            @RequestParam(defaultValue = "200") Long limit,
+            @RequestParam(required = false) List<String> hubIds,
+            @RequestParam(required = false) List<String> deviceIds,
+            @RequestParam(required = false) List<String> measurementTypes) {
+        String fluxQuery = influxQueryService.produceQuery(bucket, measurement, field, start, stop, desc, hubIds, deviceIds, measurementTypes);
+        DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> result = influxQueryService.queryWithResultMappedToTimeseriesList(fluxQuery, limit, InfluxDeviceDataPojo.class);
 
-        return assembler.toModelConsideringBucket(result, bucket);
+        return assembler.toModelConsideringQueryParams(result, bucket, desc, limit, hubIds, deviceIds, measurementTypes);
     }
 }

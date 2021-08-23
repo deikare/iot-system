@@ -10,6 +10,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -26,18 +28,10 @@ public class LogTimeseriesListRepresentationAssembler extends RepresentationMode
     public LogTimeseriesListRepresentationModel toModel(@NotNull DeviceBaseTimeseriesList<String, InfluxDeviceLogPojo> entity) {
         LogTimeseriesListRepresentationModel model = new LogTimeseriesListRepresentationModel(entity);
 
-        model.add(
-                linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withRel("logs"));
-
-        return model;
-    }
-
-    @NotNull
-    public LogTimeseriesListRepresentationModel toModelConsideringBucket(@NotNull DeviceBaseTimeseriesList<String, InfluxDeviceLogPojo> entity, @NotNull String bucket) {
-        LogTimeseriesListRepresentationModel model = new LogTimeseriesListRepresentationModel(entity);
-
-        model.add(
-                linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withRel("logs"));
+        model.add(linkTo(methodOn(LogController.class)
+                        .all(Instant.ofEpochSecond(0), null, true, null, null, null, null))
+                .withRel("all-logs"));
+//                linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withRel("logs"));
 
         return model;
     }
@@ -48,17 +42,9 @@ public class LogTimeseriesListRepresentationAssembler extends RepresentationMode
         CollectionModel<LogTimeseriesListRepresentationModel> logRepresentationModels = super.toCollectionModel(entities);
 
         logRepresentationModels.add(
-                linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withRel("logs"));
-
-        return logRepresentationModels;
-    }
-
-    @NotNull
-    public CollectionModel<LogTimeseriesListRepresentationModel> toCollectionModelConsideringBucket(@NotNull Iterable<? extends DeviceBaseTimeseriesList<String, InfluxDeviceLogPojo>> entities, @NotNull String bucket) {
-        CollectionModel<LogTimeseriesListRepresentationModel> logRepresentationModels = super.toCollectionModel(entities);
-
-        logRepresentationModels.add(
-                linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withRel("logs"));
+                linkTo(methodOn(LogController.class)
+                        .all(Instant.ofEpochSecond(0), null, true, null, null, null, null))
+                        .withRel("all-logs"));
 
         return logRepresentationModels;
     }

@@ -9,6 +9,10 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -26,18 +30,33 @@ public class DataTimeseriesListRepresentationAssembler
     public DataTimeseriesListRepresentationModel toModel(@NotNull DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> entity) {
         DataTimeseriesListRepresentationModel model = new DataTimeseriesListRepresentationModel(entity);
 
-        model.add(
-                linkTo(methodOn(DataController.class).all("data", "start: 0", null, null, null, null,null, null)).withRel("all-data"));
+        model.add(linkTo(methodOn(DataController.class)
+                        .all("data", Instant.ofEpochSecond(0), null, true, null, null,null, null))
+                        .withRel("all-data")
+//                linkTo(methodOn(DataController.class).all("data", "start: 0", null, null, null, null,null, null)).withRel("all-data")
+        );
 
         return model;
     }
 
     @NotNull
-    public DataTimeseriesListRepresentationModel toModelConsideringBucket(@NotNull DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> entity, @NotNull String bucket) {
+    public DataTimeseriesListRepresentationModel toModelConsideringQueryParams(@NotNull DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> entity,
+                                                                               @NotNull String bucket,
+                                                                               boolean desc, Long limit,
+                                                                               List<String> hubIds, List<String> deviceIds, List<String> types) {
         DataTimeseriesListRepresentationModel model = new DataTimeseriesListRepresentationModel(entity);
 
-        model.add(
-                linkTo(methodOn(DataController.class).all(bucket, "start: 0", null, null, null, null, null, null)).withRel("all-data"));
+        model.add(linkTo(methodOn(DataController.class)
+                .all(bucket, Instant.ofEpochSecond(0), null, true, null, null,null, null))
+                .withRel("all-data"),
+                linkTo(methodOn(DataController.class) //there is little offset in beginning and end because _start <= _t < _end
+                        .all(bucket, entity.getStart().minus(2, ChronoUnit.HOURS), entity.getStart().plus(1, ChronoUnit.MILLIS),
+                                true, limit, hubIds, deviceIds, types))
+                        .withRel("prev"),
+                linkTo(methodOn(DataController.class)
+                        .all(bucket, entity.getEnd().minus(1, ChronoUnit.MILLIS), entity.getEnd().plus(2, ChronoUnit.HOURS),
+                                false, limit, hubIds, deviceIds, types))
+                        .withRel("next"));
 
         return model;
     }
@@ -47,16 +66,21 @@ public class DataTimeseriesListRepresentationAssembler
     public CollectionModel<DataTimeseriesListRepresentationModel> toCollectionModel(@NotNull Iterable<? extends DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo>> entities) {
         CollectionModel<DataTimeseriesListRepresentationModel> dataRepresentationModels = super.toCollectionModel(entities);
 
-        dataRepresentationModels.add(linkTo(methodOn(DataController.class).all("data", "start: 0", null, null, null, null, null, null)).withSelfRel());
+        dataRepresentationModels.add(linkTo(methodOn(DataController.class)
+                .all("data", Instant.ofEpochSecond(0), null, true, null, null,null, null))
+                .withSelfRel());
 
         return dataRepresentationModels;
     }
 
     @NotNull
-    public CollectionModel<DataTimeseriesListRepresentationModel> toCollectionModelConsideringBucket(@NotNull Iterable<? extends DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo>> entities, @NotNull String bucket) {
+    public CollectionModel<DataTimeseriesListRepresentationModel> toCollectionModelConsideringQueryParams(@NotNull Iterable<? extends DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo>> entities, @NotNull String bucket) {
         CollectionModel<DataTimeseriesListRepresentationModel> dataRepresentationModels = super.toCollectionModel(entities);
 
-        dataRepresentationModels.add(linkTo(methodOn(DataController.class).all(bucket, "start: 0", null, null, null, null, null, null)).withSelfRel());
+        dataRepresentationModels.add(
+                linkTo(methodOn(DataController.class)
+                        .all(bucket, Instant.ofEpochSecond(0), null, true, null, null,null, null))
+                        .withRel("all-data"));
 
         return dataRepresentationModels;
     }

@@ -39,7 +39,7 @@ public class HubDiscoveryService {
 
         start = Instant.now(); //change next start to current one
 
-        List<InfluxHubLogPojo> queryResults = queryService.query(query, InfluxHubLogPojo.class);
+        List<InfluxHubLogPojo> queryResults = queryService.query(query, null, InfluxHubLogPojo.class);
 
         consumeQueryResults(queryResults);
     }
@@ -97,6 +97,9 @@ public class HubDiscoveryService {
         final String field = "value";
         final String sort = "columns: [\"_time\"], desc: true";
 
-        return queryService.produceQuery(bucket, range, measurement, field, "", "", "", "", "", "");
+        //cast last parameter, so java knows which implementation of produceQuery has to use
+        return queryService.produceQuery(bucket, measurement, field, start, null, false, null, null , (String) null);
+
+//        return queryService.produceQuery(bucket, range, measurement, field, "", "", "", "", "", "");
     }
 }

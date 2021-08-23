@@ -56,9 +56,9 @@ public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>
             Instant recordTime = record.getTime();
 
             if (end.compareTo(recordTime) < 0)
-                end = record.getTime();
+                end = recordTime;
             if (start.compareTo(recordTime) > 0)
-                start = record.getTime();
+                start = recordTime;
 
             TimeseriesTags<I> tags = new TimeseriesTags<>(record);
 

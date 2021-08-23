@@ -3,6 +3,8 @@ package com.example.backend.data.service.config;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.reactive.InfluxDBClientReactive;
+import com.influxdb.client.reactive.InfluxDBClientReactiveFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,13 @@ public class InfluxDBConfig {
     @Bean
     public InfluxDBClient influxDBClient() {
         InfluxDBClient result = InfluxDBClientFactory.create(url, token, org);
+        ConfigLogger.produceConfigBeanCreationLog(logger, result);
+        return result;
+    }
+
+    @Bean
+    public InfluxDBClientReactive influxDBClientReactive() {
+        InfluxDBClientReactive result = InfluxDBClientReactiveFactory.create(url, token, org);
         ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }

@@ -3,16 +3,16 @@ package com.example.backend.data.model.timeseries;
 import java.time.Instant;
 
 public class Point<V> {
-    private final Instant timestamp;
+    private final Instant time;
     private final V value;
 
-    public Point(Instant timestamp, V value) {
-        this.timestamp = timestamp;
+    public Point(Instant time, V value) {
+        this.time = time;
         this.value = value;
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
+    public Instant getTime() {
+        return time;
     }
 
     public V getValue() {
@@ -22,7 +22,7 @@ public class Point<V> {
     @Override
     public String toString() {
         return "Point{" +
-                "timestamp=" + timestamp +
+                "time=" + time +
                 ", value=" + value +
                 '}';
     }
