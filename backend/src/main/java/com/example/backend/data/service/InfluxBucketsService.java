@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Objects;
 
 public class InfluxBucketsService {
     private final BucketsApi bucketsApi;
@@ -21,7 +22,13 @@ public class InfluxBucketsService {
     }
 
     public Page<Bucket> getAllBuckets(Pageable pageable) {
-        List<Bucket> queryResult = bucketsApi.findBucketsByOrgName("my-org");
+        String org = "my-org";
+        List<Bucket> queryResult = bucketsApi.findBucketsByOrgName(org);
+
+        queryResult = queryResult.stream()
+                .filter(bucket -> !Objects.equals(bucket.getName(), "_monitoring") && !Objects.equals(bucket.getName(), "_tasks"))
+                .toList();
+
         Page<Bucket> result = PageBuilder.build(queryResult, pageable);
 
         logger.info("Query buckets: " + result);

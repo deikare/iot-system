@@ -2,8 +2,6 @@ package com.example.backend.data.service.config;
 
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.QueryApi;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import org.slf4j.Logger;
@@ -13,26 +11,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class InfluxDBQueryConfig {
-    private final InfluxDBClient influxDBClient;
     private final InfluxDBClientReactive influxDBClientReactive;
-
-    public InfluxDBQueryConfig(InfluxDBClient influxDBClient, InfluxDBClientReactive influxDBClientReactive) {
-        this.influxDBClient = influxDBClient;
-        this.influxDBClientReactive = influxDBClientReactive;
-    }
 
     private final Logger logger = LoggerFactory.getLogger(InfluxDBQueryConfig.class);
 
-    @Bean
-    public InfluxQueryService influxQueryService() {
-        InfluxQueryService result = new InfluxQueryService(queryApi(), queryReactiveApi());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result);
-        return result;
+    public InfluxDBQueryConfig(InfluxDBClientReactive influxDBClientReactive) {
+        this.influxDBClientReactive = influxDBClientReactive;
     }
 
     @Bean
-    public QueryApi queryApi() {
-        QueryApi result = influxDBClient.getQueryApi();
+    public InfluxQueryService influxQueryService() {
+        InfluxQueryService result = new InfluxQueryService(queryReactiveApi());
         ConfigLogger.produceConfigBeanCreationLog(logger, result);
         return result;
     }
