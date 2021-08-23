@@ -2,8 +2,6 @@ package com.example.backend.data.service;
 
 import com.example.backend.data.model.timeseries.DeviceBaseTimeseriesList;
 import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceValueInterface;
-import com.influxdb.client.QueryApi;
-import com.influxdb.client.reactive.InfluxDBClientReactiveFactory;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.query.dsl.Flux;
 import com.influxdb.query.dsl.functions.restriction.Restrictions;
@@ -19,11 +17,9 @@ import java.util.List;
 public class InfluxQueryService {
     private final Logger logger = LoggerFactory.getLogger(InfluxQueryService.class);
 
-    private final QueryApi queryApi;
     private final QueryReactiveApi queryReactiveApi;
 
-    public InfluxQueryService(QueryApi queryApi, QueryReactiveApi queryReactiveApi) {
-        this.queryApi = queryApi;
+    public InfluxQueryService(QueryReactiveApi queryReactiveApi) {
         this.queryReactiveApi = queryReactiveApi;
     }
 
@@ -37,9 +33,11 @@ public class InfluxQueryService {
     public <I> List<I> query(String flux, Long limit, Class<I> classToMapRawRecords) {
         logger.info("Starting query: " + flux);
         List<I> result = new ArrayList<>();
+
         if (limit == null)
-            result = queryApi.query(flux, classToMapRawRecords);
+            queryReactiveApi.query(flux, classToMapRawRecords).subscribe(result::add);
         else queryReactiveApi.query(flux, classToMapRawRecords).take(limit).subscribe(result::add);
+
         logger.info("Query result: " + result);
         return result;
     }
@@ -154,6 +152,4 @@ public class InfluxQueryService {
 
         return flux.toString();
     }
-
-
 }

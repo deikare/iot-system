@@ -30,7 +30,7 @@ public class DataController {
             @RequestParam(required = false) Instant start,
             @RequestParam(required = false) Instant stop,
             @RequestParam(defaultValue = "true") boolean desc,
-            @RequestParam(defaultValue = "200") Long limit,
+            @RequestParam(required = false) Long limit,
             @RequestParam(required = false) List<String> hubIds,
             @RequestParam(required = false) List<String> deviceIds,
             @RequestParam(required = false) List<String> measurementTypes) {

@@ -13,8 +13,8 @@ public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>
     private Instant start = Instant.now();
     private Instant end = Instant.ofEpochMilli(0);
 
-    private final int seriesAmount;
-    private final int pointsAmount;
+    private int seriesAmount;
+    private int pointsAmount;
 
     public DeviceBaseTimeseriesList(List<I> recordsList) {
         timeseriesList = new HashMap<>();
