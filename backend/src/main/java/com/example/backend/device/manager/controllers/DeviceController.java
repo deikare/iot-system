@@ -4,13 +4,13 @@ import com.example.backend.device.manager.controllers.assemblers.DeviceModelAsse
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.HubInDeviceNotSpecifiedException;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
+import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.DeviceType;
 import com.example.backend.device.manager.model.Hub;
-import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
-import com.example.backend.device.manager.service.interfaces.filtering.ByMasterAndDeviceTypePaginationAndFilteringInterface;
+import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation;
 import com.example.backend.utilities.builders.lists.ListBuilder;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
@@ -32,14 +32,14 @@ import java.util.List;
 public class DeviceController {
     private final DeviceModelAssembler modelAssembler;
     private final PagedResourcesAssembler<Device> pagedResourcesAssembler;
-    private final ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String> filteringServiceImplementation;
+    private final ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation;
     private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation;
 
     private final EntityCrudSenderService<String, Hub> hubSender;
 
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
-    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
+    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;

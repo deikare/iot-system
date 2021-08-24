@@ -4,8 +4,6 @@ import com.example.backend.device.manager.controllers.exceptions.HubNotFoundExce
 import com.example.backend.device.manager.service.Builder;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 public class HubNotFoundExceptionBuilder implements Builder<HubNotFoundException, String> {
     @Override

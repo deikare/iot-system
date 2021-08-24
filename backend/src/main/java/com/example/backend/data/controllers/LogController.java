@@ -37,7 +37,7 @@ public class LogController {
         String fluxQuery = influxQueryService.produceQuery(bucket, measurement, field, start, stop, desc, hubIds, deviceIds, logTypes);
         DeviceBaseTimeseriesList<String, InfluxDeviceLogPojo> queryResult = influxQueryService.queryWithResultMappedToTimeseriesList(fluxQuery, limit, InfluxDeviceLogPojo.class);
 
-        return assembler.toModel(queryResult);
+        return assembler.toModelConsideringQueryParams(queryResult, limit, hubIds, deviceIds, logTypes);
     }
 }
 

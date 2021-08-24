@@ -1,6 +1,5 @@
 package com.example.backend.data.controllers.representation.assemblers;
 
-import com.example.backend.data.controllers.DataController;
 import com.example.backend.data.controllers.LogController;
 import com.example.backend.data.controllers.representation.models.LogRepresentationModel;
 import com.example.backend.data.model.mappers.InfluxDeviceLogPojo;
@@ -27,8 +26,6 @@ public class LogRepresentationAssembler extends RepresentationModelAssemblerSupp
 
         logRepresentationModels.add(
                 linkTo(methodOn(LogController.class).all(Instant.ofEpochSecond(0), null, true, null, null,null, null)).withSelfRel());
-
-//                linkTo(methodOn(LogController.class).all("start: 0", null, null, null, null, null, null)).withSelfRel());
 
         return logRepresentationModels;
     }

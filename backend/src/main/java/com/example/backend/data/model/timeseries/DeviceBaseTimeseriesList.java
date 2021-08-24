@@ -3,7 +3,6 @@ package com.example.backend.data.model.timeseries;
 import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceValueInterface;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,8 +12,8 @@ public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>
     private Instant start = Instant.now();
     private Instant end = Instant.ofEpochMilli(0);
 
-    private int seriesAmount;
-    private int pointsAmount;
+    private final int seriesAmount;
+    private final int pointsAmount;
 
     public DeviceBaseTimeseriesList(List<I> recordsList) {
         timeseriesList = new HashMap<>();

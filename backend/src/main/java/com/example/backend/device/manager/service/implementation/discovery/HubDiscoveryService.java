@@ -1,6 +1,7 @@
 package com.example.backend.device.manager.service.implementation.discovery;
 
 import com.example.backend.data.model.mappers.InfluxHubLogPojo;
+import com.example.backend.data.model.mappers.InfluxHubStatusValue;
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
@@ -51,35 +52,50 @@ public class HubDiscoveryService {
     }
 
     private void consumeQueryResult(InfluxHubLogPojo queryResult) {
+        String hubId = queryResult.getHubId();
         switch (queryResult.getValue()) {
             case CREATED -> {
-                Hub createdHub = crudServiceImplementation.addObject(new Hub(queryResult.getHubId(), queryResult.getName()));
-                logger.info("Discovered creation of hub: " + createdHub);
+                try {
+                    Hub hub = crudServiceImplementation.findObjectById(hubId);
+
+                    hub.setStatus(InfluxHubStatusValue.CREATED);
+                    hub = crudServiceImplementation.updateObjectById(hubId, hub);
+
+                    logger.info("Discovered hub :" + hub + "already found in SQL");
+                } catch (HubNotFoundException e) {
+                    Hub createdHub = crudServiceImplementation.addObject(new Hub(queryResult.getHubId(), queryResult.getName(), InfluxHubStatusValue.CREATED));
+                    logger.info("Discovered creation of hub: " + createdHub);
+                }
             }
             case RESTARTED -> {
-                String hubId = queryResult.getHubId();
                 try {
-                    Hub restartedHub = crudServiceImplementation.findObjectById(hubId);
-                    logger.info("Discovered restart of hub: " + restartedHub);
+                    Hub hub = crudServiceImplementation.findObjectById(hubId);
+
+                    hub.setStatus(InfluxHubStatusValue.RESTARTED);
+                    hub = crudServiceImplementation.updateObjectById(hubId, hub);
+
+                    logger.info("Discovered restart of hub: " + hub);
                 } catch (HubNotFoundException e) {
-                    Hub createdHub = crudServiceImplementation.addObject(new Hub(hubId, queryResult.getName()));
+                    Hub createdHub = crudServiceImplementation.addObject(new Hub(hubId, queryResult.getName(), InfluxHubStatusValue.RESTARTED));
                     hubSender.postPersist(createdHub);
 
                     logger.info("Restarted hub{id:" + hubId + "} not found in SQL, created restarted Hub: " + createdHub);
                 }
             }
             case STOPPED -> {
-                String hubId = queryResult.getHubId();
                 try {
                     Hub hub = crudServiceImplementation.findObjectById(hubId);
+
+                    hub.setStatus(InfluxHubStatusValue.STOPPED);
+                    hub = crudServiceImplementation.updateObjectById(hubId, hub);
+
                     logger.info("Discovered stopped of hub: " + hub);
                 } catch (HubNotFoundException e) {
-                    Hub createdHub = crudServiceImplementation.addObject(new Hub(hubId, queryResult.getName()));
+                    Hub createdHub = crudServiceImplementation.addObject(new Hub(hubId, queryResult.getName(), InfluxHubStatusValue.STOPPED));
                     logger.info("Stopped hub{id:" + hubId + "} not found in SQL, created stopped Hub: " + createdHub);
                 }
             }
             case DELETED -> {
-                String hubId = queryResult.getHubId();
                 try {
                     crudServiceImplementation.deleteObjectById(hubId);
                     logger.info("Discovered delete of hub{" + hubId + "}");
@@ -92,14 +108,10 @@ public class HubDiscoveryService {
 
     private String getQueryForHubDiscovery() {
         final String bucket = "hubs";
-        final String range = "start: " + start.toString();
         final String measurement = "hubLog";
         final String field = "value";
-        final String sort = "columns: [\"_time\"], desc: true";
 
         //cast last parameter, so java knows which implementation of produceQuery has to use
         return queryService.produceQuery(bucket, measurement, field, start, null, false, null, null , (String) null);
-
-//        return queryService.produceQuery(bucket, range, measurement, field, "", "", "", "", "", "");
     }
 }

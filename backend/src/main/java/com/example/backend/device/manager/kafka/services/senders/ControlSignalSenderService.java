@@ -1,7 +1,6 @@
 package com.example.backend.device.manager.kafka.services.senders;
 
 import com.example.backend.device.manager.kafka.producer.KafkaControlSignalProducer;
-import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
 import com.example.backend.device.manager.model.ControlSignal;
 import org.apache.kafka.clients.producer.ProducerRecord;
 

@@ -1,10 +1,8 @@
 package com.example.backend.device.manager.service.implementation.crud;
 
+import com.example.backend.device.manager.model.interfaces.crud.BaseTypeInterface;
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
-import com.example.backend.device.manager.model.interfaces.crud.BaseTypeInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;
