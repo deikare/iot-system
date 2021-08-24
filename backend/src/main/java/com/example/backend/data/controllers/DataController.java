@@ -37,6 +37,6 @@ public class DataController {
         String fluxQuery = influxQueryService.produceQuery(bucket, measurement, field, start, stop, desc, hubIds, deviceIds, measurementTypes);
         DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> result = influxQueryService.queryWithResultMappedToTimeseriesList(fluxQuery, limit, InfluxDeviceDataPojo.class);
 
-        return assembler.toModelConsideringQueryParams(result, bucket, desc, limit, hubIds, deviceIds, measurementTypes);
+        return assembler.toModelConsideringQueryParams(result, bucket, limit, hubIds, deviceIds, measurementTypes);
     }
 }

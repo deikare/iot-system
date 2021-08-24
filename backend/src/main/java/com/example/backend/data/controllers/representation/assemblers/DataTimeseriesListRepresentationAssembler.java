@@ -32,17 +32,14 @@ public class DataTimeseriesListRepresentationAssembler
 
         model.add(linkTo(methodOn(DataController.class)
                         .all("data", Instant.ofEpochSecond(0), null, true, null, null,null, null))
-                        .withRel("all-data")
-//                linkTo(methodOn(DataController.class).all("data", "start: 0", null, null, null, null,null, null)).withRel("all-data")
-        );
+                        .withRel("all-data"));
 
         return model;
     }
 
     @NotNull
     public DataTimeseriesListRepresentationModel toModelConsideringQueryParams(@NotNull DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo> entity,
-                                                                               @NotNull String bucket,
-                                                                               boolean desc, Long limit,
+                                                                               @NotNull String bucket, Long limit,
                                                                                List<String> hubIds, List<String> deviceIds, List<String> types) {
         DataTimeseriesListRepresentationModel model = new DataTimeseriesListRepresentationModel(entity);
 
@@ -69,18 +66,6 @@ public class DataTimeseriesListRepresentationAssembler
         dataRepresentationModels.add(linkTo(methodOn(DataController.class)
                 .all("data", Instant.ofEpochSecond(0), null, true, null, null,null, null))
                 .withSelfRel());
-
-        return dataRepresentationModels;
-    }
-
-    @NotNull
-    public CollectionModel<DataTimeseriesListRepresentationModel> toCollectionModelConsideringQueryParams(@NotNull Iterable<? extends DeviceBaseTimeseriesList<Double, InfluxDeviceDataPojo>> entities, @NotNull String bucket) {
-        CollectionModel<DataTimeseriesListRepresentationModel> dataRepresentationModels = super.toCollectionModel(entities);
-
-        dataRepresentationModels.add(
-                linkTo(methodOn(DataController.class)
-                        .all(bucket, Instant.ofEpochSecond(0), null, true, null, null,null, null))
-                        .withRel("all-data"));
 
         return dataRepresentationModels;
     }

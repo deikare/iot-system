@@ -46,30 +46,6 @@ public class ProducerConfig {
     }
 
 
-/*
-    @Bean
-    public KafkaCrudEntityProducer<Long, Device> deviceKafkaCrudEntitySender() {
-        KafkaCrudEntityProducer<Long, Device> result = new KafkaCrudEntityProducer<>(deviceKafkaTemplate());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceKafkaCrudEntitySender");
-        return result;
-    }
-
-    @Bean
-    public KafkaTemplate<Long, KafkaRecordWrapper<Device>> deviceKafkaTemplate() {
-        KafkaTemplate<Long, KafkaRecordWrapper<Device>> result = new KafkaTemplate<>(deviceProducerFactory());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceKafkaTemplate");
-        return result;
-    }
-
-    @Bean
-    public ProducerFactory<Long, KafkaRecordWrapper<Device>> deviceProducerFactory() {
-        ProducerFactory<Long, KafkaRecordWrapper<Device>> result = new DefaultKafkaProducerFactory<>(othersProperties());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "DeviceProducerFactory");
-        return result;
-    }
-*/
-
-
     //for control signal sending
     @Bean
     public KafkaControlSignalProducer controlSignalProducer() {
@@ -91,52 +67,6 @@ public class ProducerConfig {
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSenderProducerFactory");
         return result;
     }
-
-
-    //for Crud
-/*    @Bean
-    public KafkaCrudEntityProducer<Long, ControlSignal> controlSignalKafkaCrudEntitySender() {
-        KafkaCrudEntityProducer<Long, ControlSignal> result = new KafkaCrudEntityProducer<>(controlSignalCrudKafkaTemplate());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalKafkaCrudEntitySender");
-        return result;
-    }
-
-    @Bean
-    public KafkaTemplate<Long, KafkaRecordWrapper<ControlSignal>> controlSignalCrudKafkaTemplate() {
-        KafkaTemplate<Long, KafkaRecordWrapper<ControlSignal>> result = new KafkaTemplate<>(controlSignalProducerFactory());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalCrudKafkaTemplate");
-        return result;
-    }
-
-    @Bean
-    public ProducerFactory<Long, KafkaRecordWrapper<ControlSignal>> controlSignalProducerFactory() {
-        ProducerFactory<Long, KafkaRecordWrapper<ControlSignal>> result = new DefaultKafkaProducerFactory<>(othersProperties());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalProducerFactory");
-        return result;
-    }*/
-
-
-/*    @Bean
-    public KafkaCrudEntityProducer<Long, ControlSignalResponse> controlSignalResponseCrudKafkaEntitySender() {
-        KafkaCrudEntityProducer<Long, ControlSignalResponse> result = new KafkaCrudEntityProducer<>(controlSignalResponseKafkaTemplate());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseCrudKafkaEntitySender");
-        return result;
-    }
-
-    @Bean
-    public KafkaTemplate<Long, KafkaRecordWrapper<ControlSignalResponse>> controlSignalResponseKafkaTemplate() {
-        KafkaTemplate<Long, KafkaRecordWrapper<ControlSignalResponse>> result = new KafkaTemplate<>(controlSignalResponseProducerFactory());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseKafkaTemplate");
-        return result;
-    }
-
-    @Bean
-    public ProducerFactory<Long, KafkaRecordWrapper<ControlSignalResponse>> controlSignalResponseProducerFactory() {
-        ProducerFactory<Long, KafkaRecordWrapper<ControlSignalResponse>> result = new DefaultKafkaProducerFactory<>(othersProperties());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalResponseProducerFactory");
-        return result;
-    }*/
-
 
     @Bean
     public Map<String, Object> hubProperties() {

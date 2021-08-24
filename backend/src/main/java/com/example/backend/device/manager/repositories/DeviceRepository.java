@@ -6,12 +6,9 @@ import com.example.backend.device.manager.service.interfaces.filtering.ByMasterA
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
-
-//remember to implement in-place all of methods from own filtering interface
+//remember to implement in-place all methods from own filtering interface
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long>,
         ByMasterAndDeviceTypePaginationAndFilteringInterface<Device, Long, String> {

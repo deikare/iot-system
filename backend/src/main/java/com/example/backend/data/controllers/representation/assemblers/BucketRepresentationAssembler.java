@@ -2,7 +2,7 @@ package com.example.backend.data.controllers.representation.assemblers;
 
 import com.example.backend.data.controllers.BucketController;
 import com.example.backend.data.controllers.representation.models.BucketRepresentationModel;
-import com.influxdb.client.domain.Bucket;
+import com.example.backend.data.model.mappers.InfluxBucketWithTagsPojo;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -12,14 +12,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class BucketRepresentationAssembler extends RepresentationModelAssemblerSupport<Bucket, BucketRepresentationModel> {
+public class BucketRepresentationAssembler extends RepresentationModelAssemblerSupport<InfluxBucketWithTagsPojo, BucketRepresentationModel> {
     public BucketRepresentationAssembler() {
         super(BucketController.class, BucketRepresentationModel.class);
     }
 
     @NotNull
     @Override
-    public CollectionModel<BucketRepresentationModel> toCollectionModel(@NotNull Iterable<? extends Bucket> entities) {
+    public CollectionModel<BucketRepresentationModel> toCollectionModel(@NotNull Iterable<? extends InfluxBucketWithTagsPojo> entities) {
         CollectionModel<BucketRepresentationModel> bucketRepresentationModels = super.toCollectionModel(entities);
 
         bucketRepresentationModels.add(linkTo(methodOn(BucketController.class).all(0, 5)).withSelfRel());
@@ -29,10 +29,11 @@ public class BucketRepresentationAssembler extends RepresentationModelAssemblerS
 
     @NotNull
     @Override
-    public BucketRepresentationModel toModel(@NotNull Bucket entity) {
+    public BucketRepresentationModel toModel(@NotNull InfluxBucketWithTagsPojo entity) {
         BucketRepresentationModel model = new BucketRepresentationModel(entity);
 
         model.add(
+                linkTo(methodOn(BucketController.class).one(entity.getName())).withSelfRel(),
                 linkTo(methodOn(BucketController.class).all(0, 5)).withRel("buckets"));
 
         return model;

@@ -2,11 +2,8 @@ package com.example.backend.device.manager.kafka.services.senders.config;
 
 import com.example.backend.device.manager.kafka.producer.KafkaControlSignalProducer;
 import com.example.backend.device.manager.kafka.services.senders.ControlSignalSenderService;
-import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
-import com.example.backend.device.manager.model.Hub;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 @Configuration
 public class ControlSignalSenderServiceConfiguration {

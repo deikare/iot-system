@@ -5,10 +5,9 @@ import com.example.backend.device.manager.service.interfaces.filtering.ByMasterA
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.stereotype.Repository;
 
-//remember to implement in-place all of methods from own filtering interface
+//remember to implement in-place all methods from own filtering interface
 @Repository
 public interface ControlSignalResponseRepository extends JpaRepository<ControlSignalResponse, Long>,
         ByMasterAndMessageContentPaginationAndFilteringInterface<ControlSignalResponse, Long, Long> {
