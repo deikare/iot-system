@@ -2,7 +2,7 @@ package com.example.backend.device.manager.kafka.producer.config;
 
 import com.example.backend.device.manager.kafka.producer.KafkaControlSignalProducer;
 import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
-import com.example.backend.device.manager.kafka.record.KafkaCrudRecordWrapper;
+import com.example.backend.device.manager.kafka.record.KafkaEntityControlRecordWrapper;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
@@ -25,22 +25,22 @@ public class ProducerConfig {
     private final Logger logger = LoggerFactory.getLogger(ProducerConfig.class);
 
     @Bean
-    public KafkaCrudEntityProducer<String, KafkaCrudRecordWrapper<Hub>> hubKafkaCrudEntityProducer() {
-        KafkaCrudEntityProducer<String, KafkaCrudRecordWrapper<Hub>> result = new KafkaCrudEntityProducer<>(hubKafkaTemplate());
+    public KafkaCrudEntityProducer<String, KafkaEntityControlRecordWrapper<Hub>> hubKafkaCrudEntityProducer() {
+        KafkaCrudEntityProducer<String, KafkaEntityControlRecordWrapper<Hub>> result = new KafkaCrudEntityProducer<>(hubKafkaTemplate());
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubKafkaCrudEntitySender");
         return result;
     }
 
     @Bean
-    public KafkaTemplate<String, KafkaCrudRecordWrapper<Hub>> hubKafkaTemplate() {
-        KafkaTemplate<String, KafkaCrudRecordWrapper<Hub>> result = new KafkaTemplate<>(hubProducerFactory());
+    public KafkaTemplate<String, KafkaEntityControlRecordWrapper<Hub>> hubKafkaTemplate() {
+        KafkaTemplate<String, KafkaEntityControlRecordWrapper<Hub>> result = new KafkaTemplate<>(hubProducerFactory());
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubKafkaTemplate");
         return result;
     }
 
     @Bean
-    public ProducerFactory<String, KafkaCrudRecordWrapper<Hub>> hubProducerFactory() {
-        ProducerFactory<String, KafkaCrudRecordWrapper<Hub>> result = new DefaultKafkaProducerFactory<>(hubProperties());
+    public ProducerFactory<String, KafkaEntityControlRecordWrapper<Hub>> hubProducerFactory() {
+        ProducerFactory<String, KafkaEntityControlRecordWrapper<Hub>> result = new DefaultKafkaProducerFactory<>(hubProperties());
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubProducerFactory");
         return result;
     }

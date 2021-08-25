@@ -1,15 +1,15 @@
 package com.example.backend.device.manager.kafka.services.senders;
 
 import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
-import com.example.backend.device.manager.kafka.record.KafkaCrudRecordWrapper;
+import com.example.backend.device.manager.kafka.record.KafkaEntityControlRecordWrapper;
 import com.example.backend.device.manager.kafka.record.OperationType;
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.List;
 
-public class EntityCrudSenderService<K, V extends KafkaRecordInterface<K>> extends BaseSenderService<K, KafkaCrudRecordWrapper<V>> {
-    public EntityCrudSenderService(KafkaCrudEntityProducer<K, KafkaCrudRecordWrapper<V>> producer, String topic) {
+public class EntityCrudSenderService<K, V extends KafkaRecordInterface<K>> extends BaseSenderService<K, KafkaEntityControlRecordWrapper<V>> {
+    public EntityCrudSenderService(KafkaCrudEntityProducer<K, KafkaEntityControlRecordWrapper<V>> producer, String topic) {
         super(producer, topic);
     }
 
@@ -37,8 +37,8 @@ public class EntityCrudSenderService<K, V extends KafkaRecordInterface<K>> exten
 
     private void sendNewRecord(V object, OperationType operationType) {
 
-        final ProducerRecord<K, KafkaCrudRecordWrapper<V>> record = new ProducerRecord<>(super.getTopic(), object.getId(),
-                new KafkaCrudRecordWrapper<>(object, operationType));
+        final ProducerRecord<K, KafkaEntityControlRecordWrapper<V>> record = new ProducerRecord<>(super.getTopic(), object.getId(),
+                new KafkaEntityControlRecordWrapper<>(object, operationType));
         super.getProducer().produceKafkaRecord(record);
     }
 }

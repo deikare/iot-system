@@ -2,6 +2,7 @@ package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.assemblers.DeviceModelAssembler;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
 import com.example.backend.device.manager.controllers.exceptions.HubInDeviceNotSpecifiedException;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
@@ -142,6 +143,10 @@ public class DeviceController {
         catch (DeviceNotFoundException e) {
             result = crudServiceImplementation.addObject(newDevice);
         }
+        catch (EntityNotModifiedException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PUT, e.getMessage());
+            throw e;
+        }
 
         hubSender.postUpdate(result.getHub());
 
@@ -159,7 +164,7 @@ public class DeviceController {
         try {
             result = crudServiceImplementation.updateObjectById(id, newDevice);
         }
-        catch (DeviceNotFoundException e) {
+        catch (DeviceNotFoundException | EntityNotModifiedException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
             throw e;
         }

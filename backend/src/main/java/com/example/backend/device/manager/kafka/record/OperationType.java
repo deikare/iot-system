@@ -4,5 +4,7 @@ public enum OperationType {
     CREATE,
     READ,
     UPDATE,
-    DELETE
+    DELETE,
+    START,
+    STOP
 }

@@ -4,6 +4,7 @@ import com.example.backend.device.manager.controllers.assemblers.ControlSignalMo
 import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceInControlSignalNotSpecifiedException;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.*;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
@@ -141,10 +142,14 @@ public class ControlSignalController {
         catch (ControlSignalNotFoundException e) {
             result = crudServiceImplementation.addObject(newControlSignal);
         }
+        catch (EntityNotModifiedException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PUT, e.getMessage());
+            throw e;
+        }
 
         hubSender.postUpdate(result.getDevice().getHub());
 
-        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlSignal", result);
+        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlSignal", result);
 
         return modelAssembler.toModel(result);
     }
@@ -158,7 +163,7 @@ public class ControlSignalController {
         try {
             result = crudServiceImplementation.updateObjectById(id, newControlSignal);
         }
-        catch (ControlSignalNotFoundException e) {
+        catch (ControlSignalNotFoundException | EntityNotModifiedException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
             throw e;
         }

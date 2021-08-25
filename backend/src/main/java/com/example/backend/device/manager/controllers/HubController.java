@@ -1,10 +1,11 @@
 package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.assemblers.HubModelAssembler;
+import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
+import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
-import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.BasePaginationAndFilteringServiceImplementation;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
@@ -89,13 +90,12 @@ public class HubController {
         try {
             result = crudServiceImplementation.updateObjectById(id, newHub);
             hubSender.postUpdate(result);
+            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "hub", result);
         }
-        catch (HubNotFoundException e) {
-            CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "hub", null);
+        catch (HubNotFoundException | EntityNotModifiedException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PUT, e.getMessage());
             throw e;
         }
-
-        CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "hub", result);
 
         return modelAssembler.toModel(result);
     }
@@ -110,7 +110,7 @@ public class HubController {
             result = crudServiceImplementation.updateObjectById(id, newHub);
             hubSender.postUpdate(result);
         }
-        catch (HubNotFoundException e) {
+        catch (HubNotFoundException | EntityNotModifiedException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
             throw e;
         }

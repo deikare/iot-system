@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("send_control")
-public class SendControlSignalController {
+public class SendControlSignalRPCController {
     private final ControlSignalSenderService sender;
     private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
-    private final Logger logger = LoggerFactory.getLogger(SendControlSignalController.class);
+    private final Logger logger = LoggerFactory.getLogger(SendControlSignalRPCController.class);
 
-    public SendControlSignalController(ControlSignalSenderService sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
+    public SendControlSignalRPCController(ControlSignalSenderService sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
         this.sender = sender;
         this.crudServiceImplementation = crudServiceImplementation;
     }
