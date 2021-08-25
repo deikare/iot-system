@@ -140,6 +140,10 @@ public class ControlSignalResponseController {
         catch (ControlSignalResponseNotFoundException e) {
             result = crudServiceImplementation.addObject(newControlSignalResponse);
         }
+        catch (EntityNotModifiedException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PUT, e.getMessage());
+            throw e;
+        }
 
         hubSender.postUpdate(result.getSentControlSignal().getDevice().getHub());
 
@@ -157,7 +161,7 @@ public class ControlSignalResponseController {
         try {
             result = crudServiceImplementation.updateObjectById(id, newControlSignalResponse);
         }
-        catch (ControlSignalResponseNotFoundException e) {
+        catch (ControlSignalResponseNotFoundException | EntityNotModifiedException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
             throw e;
         }

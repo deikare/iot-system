@@ -1,5 +1,6 @@
 package com.example.backend.device.manager.service.implementation.crud;
 
+import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
 import com.example.backend.device.manager.model.interfaces.crud.BaseTypeInterface;
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
@@ -38,9 +39,11 @@ public class BaseServiceImplementation<
     }
 
     @Override
-    public B updateObjectById(K id, B patch) throws E {
+    public B updateObjectById(K id, B patch) throws E, EntityNotModifiedException {
         return repository.findById(id)
                 .map(object -> {
+                    if (object.equals(patch))
+                        throw new EntityNotModifiedException();
                     object.update(patch);
                     return repository.save(object);
                 })
