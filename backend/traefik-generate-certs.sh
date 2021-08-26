@@ -18,7 +18,6 @@ ORGANIZATION_UNIT="Warsaw University of Technology"
 
 CN="reverse-proxy"
 SAN="traefik"
-SERVER_FQDN="localhost"
 
 VALIDITY="365"
 

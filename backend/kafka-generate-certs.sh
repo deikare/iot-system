@@ -20,7 +20,6 @@ ALIAS="kafka"
 
 CN="kafka"
 SAN="kafka"
-SERVER_DNS="localhost"
 
 VALIDITY="365"
 KEYALG="RSA"
@@ -35,7 +34,7 @@ NODES_NUMBER=3
 for ((i=1;i<=NODES_NUMBER;i++)); do
     CN_ITERATION=$CN$i
 
-    SAN_ITERATION="dns:"$SAN$i,"dns:"$SERVER_DNS
+    SAN_ITERATION="dns:"$SAN$i,"dns:"$SERVER_FQDN
 
     STOREPASS_ITERATION="confluent"${i}
     KEYPASS_ITERATION="confluent"${i}
@@ -72,7 +71,7 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
 
     echo "[alt_names]" >> $KAFKA_PATH/kafka-cert.conf
     echo "DNS.1 = $SAN$i" >> $KAFKA_PATH/kafka-cert.conf
-    echo "DNS.2 = $SERVER_DNS" >> $KAFKA_PATH/kafka-cert.conf
+    echo "DNS.2 = $SERVER_FQDN" >> $KAFKA_PATH/kafka-cert.conf
     
     # Sign crt
     openssl x509 -req -CA $CA_PATH/ca.crt -CAkey $CA_PATH/ca.key -in $KAFKA_PATH/kafka$i.csr -out $KAFKA_PATH/kafka$i.signed.crt -days $VALIDITY -CAcreateserial  \
