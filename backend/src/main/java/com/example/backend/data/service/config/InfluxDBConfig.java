@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class InfluxDBConfig {
-    private final String url = "http://localhost:8086";
+    private final String url = "http://influxdb:8086";
     private final char[] token = "my-token".toCharArray();
     private final String org = "my-org";
 

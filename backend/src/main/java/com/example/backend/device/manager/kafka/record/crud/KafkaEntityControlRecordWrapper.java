@@ -1,4 +1,4 @@
-package com.example.backend.device.manager.kafka.record;
+package com.example.backend.device.manager.kafka.record.crud;
 
 public class KafkaEntityControlRecordWrapper<V> {
     private final V object;
