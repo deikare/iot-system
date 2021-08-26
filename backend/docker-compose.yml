@@ -42,7 +42,7 @@ services:
       - INFLUXD_QUERY_CONCURRENCY=30
       - INFLUXD_QUERY_QUEUE_SIZE=50
     labels: 
-#      - "traefik.http.routers.influxdb.rule=Host(`influxdb.docker.localhost`)"
+      - "traefik.http.routers.influxdb.rule=Host(`influxdb`)"
       - "traefik.http.routers.influxdb.tls=true"
       - "traefik.http.routers.influxdb.entrypoints=websecure"
       - "traefik.enable=true"
@@ -224,9 +224,8 @@ services:
     hostname: kafka3
     ports:
         - "9094:9094"
-        - "8094:8094"
     environment:
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL_SSL://kafka3:19094,LISTENER_DOCKER_EXTERNAL_SSL://localhost:9094, LISTENER_DOCKER_INTERNAL://kafka2:8093
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL_SSL://kafka3:19094,LISTENER_DOCKER_EXTERNAL_SSL://localhost:9094, LISTENER_DOCKER_INTERNAL://kafka3:8094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL_SSL:SSL,LISTENER_DOCKER_EXTERNAL_SSL:SSL, LISTENER_DOCKER_INTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL_SSL
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
@@ -254,13 +253,24 @@ services:
       - zoo2
       - zoo3
 
-  sql-db:
+  postgres:
     image: postgres:latest
-    ports:
-      - "127.0.0.1:5432:5432"
+    hostname: postgres
+    # ports:
+    #   - "127.0.0.1:5432:5432"
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres-db
 
+  backend:
+    image: backend:0.0.1-SNAPSHOT
+    hostname: backend
+    labels: 
+      - "traefik.http.routers.backend.rule=Host(`backend`)"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
