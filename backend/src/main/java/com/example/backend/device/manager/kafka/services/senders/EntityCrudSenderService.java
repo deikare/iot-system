@@ -1,8 +1,8 @@
 package com.example.backend.device.manager.kafka.services.senders;
 
 import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
-import com.example.backend.device.manager.kafka.record.KafkaEntityControlRecordWrapper;
-import com.example.backend.device.manager.kafka.record.OperationType;
+import com.example.backend.device.manager.kafka.record.crud.KafkaEntityControlRecordWrapper;
+import com.example.backend.device.manager.kafka.record.crud.OperationType;
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
 import org.apache.kafka.clients.producer.ProducerRecord;
 

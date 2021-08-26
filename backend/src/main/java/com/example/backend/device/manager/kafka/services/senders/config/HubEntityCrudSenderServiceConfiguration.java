@@ -1,7 +1,7 @@
 package com.example.backend.device.manager.kafka.services.senders.config;
 
 import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
-import com.example.backend.device.manager.kafka.record.KafkaEntityControlRecordWrapper;
+import com.example.backend.device.manager.kafka.record.crud.KafkaEntityControlRecordWrapper;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import org.springframework.context.annotation.Bean;

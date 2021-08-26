@@ -2,7 +2,9 @@ package com.example.backend.device.manager.kafka.producer.config;
 
 import com.example.backend.device.manager.kafka.producer.KafkaControlSignalProducer;
 import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
-import com.example.backend.device.manager.kafka.record.KafkaEntityControlRecordWrapper;
+import com.example.backend.device.manager.kafka.producer.KafkaHubControlProducer;
+import com.example.backend.device.manager.kafka.record.control.hub.KafkaHubControlRecordWrapper;
+import com.example.backend.device.manager.kafka.record.crud.KafkaEntityControlRecordWrapper;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
@@ -45,6 +47,28 @@ public class ProducerConfig {
         return result;
     }
 
+    // for hub control sending
+    @Bean
+    public KafkaHubControlProducer hubControlProducer() {
+        KafkaHubControlProducer result = new KafkaHubControlProducer(hubControlSenderKafkaTemplate());
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSender");
+        return result;
+    }
+
+    @Bean
+    public KafkaTemplate<String, KafkaHubControlRecordWrapper> hubControlSenderKafkaTemplate() {
+        KafkaTemplate<String, KafkaHubControlRecordWrapper> result = new KafkaTemplate<>(hubControlSenderProducerFactory());
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSenderKafkaTemplate");
+        return result;
+    }
+
+    @Bean
+    public ProducerFactory<String, KafkaHubControlRecordWrapper> hubControlSenderProducerFactory() {
+        ProducerFactory<String, KafkaHubControlRecordWrapper> result = new DefaultKafkaProducerFactory<>(hubProperties());
+        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSenderProducerFactory");
+        return result;
+    }
+
 
     //for control signal sending
     @Bean
@@ -72,7 +96,7 @@ public class ProducerConfig {
     public Map<String, Object> hubProperties() {
         Map<String, Object> result = new HashMap<>();
 
-        String bootstrapServer = "localhost:8092";
+        String bootstrapServer = "kafka1:8092";
 
         result.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         result.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -96,7 +120,7 @@ public class ProducerConfig {
     public Map<String, Object> othersProperties() {
         Map<String, Object> result = new HashMap<>();
 
-        String bootstrapServer = "localhost:8092";
+        String bootstrapServer = "kafka1:8092";
 
         result.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         result.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
