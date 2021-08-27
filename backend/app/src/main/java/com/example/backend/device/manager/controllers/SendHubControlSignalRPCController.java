@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("send_hub_control")
+@RequestMapping("/backend/send_hub_control")
 public class SendHubControlSignalRPCController {
     private final HubControlSenderService sender;
     private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation;

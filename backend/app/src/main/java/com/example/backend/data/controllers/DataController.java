@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("data")
+@RequestMapping("/backend/data")
 public class DataController {
     private final InfluxQueryService influxQueryService;
     private final DataTimeseriesListRepresentationAssembler assembler;

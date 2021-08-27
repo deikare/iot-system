@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/buckets")
+@RequestMapping("/backend/buckets")
 public class BucketController {
     private final InfluxBucketsService influxBucketsService;
     private final BucketRepresentationAssembler assembler;
