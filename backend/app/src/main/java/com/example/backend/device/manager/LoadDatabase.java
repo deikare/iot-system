@@ -34,7 +34,7 @@ public class LoadDatabase {
     CommandLineRunner initializeHubs(
             MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation,
             MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceServiceImplementation,
-            DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation,) {
+            DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation) {
         return args -> {
             hubServiceImplementation.deleteAllObjects();
             deviceServiceImplementation.deleteAllObjects();
