@@ -6,7 +6,7 @@ import com.influxdb.annotations.Measurement;
 import java.time.Instant;
 
 @Measurement(name = "hubLog")
-public class InfluxHubLogPojo extends InfluxBasePojo{
+public class InfluxHubLogPojo extends InfluxBasePojo {
     @Column
     private InfluxHubStatusValue value;
 
