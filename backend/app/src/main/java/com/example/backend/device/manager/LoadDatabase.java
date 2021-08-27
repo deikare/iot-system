@@ -1,11 +1,26 @@
 package com.example.backend.device.manager;
 
+import com.example.backend.data.model.mappers.InfluxHubStatusValue;
+import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
+import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
+import com.example.backend.device.manager.model.ControlSignal;
+import com.example.backend.device.manager.model.Device;
+import com.example.backend.device.manager.model.DeviceType;
+import com.example.backend.device.manager.model.Hub;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.security.SecureRandom;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
 @EnableJpaAuditing
@@ -15,12 +30,11 @@ public class LoadDatabase {
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
 
-/*    @Bean
+    @Bean
     CommandLineRunner initializeHubs(
             MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation,
             MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceServiceImplementation,
-            MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation,
-            DependentServiceImplementation<ControlSignalResponse, ControlSignal, Long, Long, ControlSignalResponseNotFoundException, ControlSignalNotFoundException> controlResponseServiceImplementation) {
+            DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalServiceImplementation,) {
         return args -> {
             hubServiceImplementation.deleteAllObjects();
             deviceServiceImplementation.deleteAllObjects();
@@ -38,18 +52,12 @@ public class LoadDatabase {
                     for (int k = 0; k < amountOfControls; k++) {
                         ControlSignal controlSignal = new ControlSignal("Cs" + j, randomString(4), device);
                         logger.info("Preloading controlSignals: " + controlSignalServiceImplementation.addDependentAndBindItToMaster(controlSignal, device));
-
-                        int amountOfResponses = ThreadLocalRandom.current().nextInt(1, 5);
-                        for(int l = 0; l < amountOfResponses; l++) {
-                            ControlSignalResponse controlSignalResponse = new ControlSignalResponse("Csr" + l, randomString(4), controlSignal);
-                            logger.info("Preloading responses: " + controlResponseServiceImplementation.addDependentAndBindItToMaster(controlSignalResponse, controlSignal));
-                        }
                     }
                 }
                 logger.info("Hub after preloading devices: " + hub);
             }
         };
-    }*/
+    }
 
     private String randomString(int len) {
         StringBuilder sb = new StringBuilder(len);
