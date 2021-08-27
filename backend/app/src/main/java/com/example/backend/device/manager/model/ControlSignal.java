@@ -1,6 +1,7 @@
 package com.example.backend.device.manager.model;
 
 import com.example.backend.device.manager.kafka.record.interfaces.KafkaRecordInterface;
+import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
 import com.example.backend.device.manager.model.interfaces.crud.MasterAndDependentTypeInterface;
 import com.example.backend.device.manager.model.listeners.ControlSignalEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,7 +13,7 @@ import java.util.Objects;
 
 @EntityListeners(ControlSignalEntityListener.class)
 @Entity
-public class ControlSignal implements MasterAndDependentTypeInterface<ControlSignal, ControlSignalResponse, Device>, KafkaRecordInterface<Long> {
+public class ControlSignal implements DependentTypeInterface<ControlSignal, Device>, KafkaRecordInterface<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "CONTROL_SIGNAL_ID")
@@ -27,9 +28,6 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
     @ManyToOne/*(fetch = FetchType.LAZY)*/
     @JoinColumn(name = "DEVICE_ID")
     private Device device;
-
-    @OneToMany(mappedBy = "sentControlSignal", cascade = CascadeType.ALL)
-    private final List<ControlSignalResponse> responses = new ArrayList<>();
 
     private ControlSignal(Long id, String name, String messageContent, Device device) {
         this.id = id;
@@ -63,13 +61,12 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
         ControlSignal controlSignal = (ControlSignal) o;
         return Objects.equals(this.id, controlSignal.id) && Objects.equals(this.name, controlSignal.name)
                 && Objects.equals(this.messageContent, controlSignal.messageContent)
-                && Objects.equals(this.device, controlSignal.device)
-                && Objects.equals(this.responses, controlSignal.responses);
+                && Objects.equals(this.device, controlSignal.device);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.messageContent, this.device, this.responses);
+        return Objects.hash(this.id, this.name, this.messageContent, this.device);
     }
 
     public Long getId() {
@@ -98,10 +95,6 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
 
     public void setDevice(Device device) {
         this.device = device;
-    }
-
-    public List<ControlSignalResponse> getResponses() {
-        return responses;
     }
 
     public ControlSignal() {
@@ -142,20 +135,6 @@ public class ControlSignal implements MasterAndDependentTypeInterface<ControlSig
     public ControlSignal deepCopy() {
         ControlSignal copy =  new ControlSignal(this.id, this.name, this.messageContent, this.device);
 
-        for (ControlSignalResponse controlSignalResponse : responses) {
-            copy.addDependentToDependentsList(controlSignalResponse.deepCopy());
-        }
         return copy;
-    }
-
-    @Override
-    public ControlSignal addDependentToDependentsList(ControlSignalResponse dependent) {
-        responses.add(dependent);
-        return this;
-    }
-
-    @Override
-    public boolean removeDependentFromDependentsList(ControlSignalResponse dependent) {
-        return responses.remove(dependent);
     }
 }

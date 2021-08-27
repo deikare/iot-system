@@ -7,7 +7,7 @@ import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundE
 import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.*;
-import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
 import com.example.backend.utilities.builders.lists.ListBuilder;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
@@ -31,13 +31,13 @@ public class ControlSignalController {
     private final ControlSignalModelAssembler modelAssembler;
     private final PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler;
     private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation;
-    private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
+    private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
     private final EntityCrudSenderService<String, Hub> hubSender;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalController.class);
 
-    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
+    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
