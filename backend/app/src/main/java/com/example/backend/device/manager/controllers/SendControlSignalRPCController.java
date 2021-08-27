@@ -4,9 +4,8 @@ import com.example.backend.device.manager.controllers.exceptions.ControlSignalNo
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.kafka.services.senders.ControlSignalSenderService;
 import com.example.backend.device.manager.model.ControlSignal;
-import com.example.backend.device.manager.model.ControlSignalResponse;
 import com.example.backend.device.manager.model.Device;
-import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
+import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
 import org.slf4j.Logger;
@@ -22,14 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("send_device_control")
 public class SendControlSignalRPCController {
     private final ControlSignalSenderService sender;
-    private final MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
+    private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
     private final Logger logger = LoggerFactory.getLogger(SendControlSignalRPCController.class);
 
-    public SendControlSignalRPCController(ControlSignalSenderService sender, MasterAndDependentServiceImplementation<ControlSignal, ControlSignalResponse, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
+    public SendControlSignalRPCController(ControlSignalSenderService sender, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation) {
         this.sender = sender;
         this.crudServiceImplementation = crudServiceImplementation;
     }
+
 
     @PostMapping("/{id}")
     public ResponseEntity<String> pushControlToKafkaById(@PathVariable Long id) {
