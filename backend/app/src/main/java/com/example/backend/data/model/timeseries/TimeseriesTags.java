@@ -1,38 +1,26 @@
 package com.example.backend.data.model.timeseries;
 
 import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceBaseInterface;
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceDataInterface;
 
+import java.util.HashMap;
 import java.util.Objects;
 
-public class TimeseriesTags<I extends InfluxDeviceBaseInterface> {
-    private final String hubId;
-    private final String deviceId;
-    private final String type;
+public class TimeseriesTags<V, I extends InfluxDeviceDataInterface<V>> {
+    private final HashMap<String, String> tags;
 
     public TimeseriesTags(I pojo) {
-        hubId = pojo.getHubId();
-        deviceId = pojo.getDeviceId();
-        type = pojo.getType();
+        tags = pojo.getTags();
     }
 
-    public String getHubId() {
-        return hubId;
-    }
-
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public String getType() {
-        return type;
+    public HashMap<String, String> getTags() {
+        return tags;
     }
 
     @Override
     public String toString() {
         return "TimeseriesTags{" +
-                "hubId='" + hubId + '\'' +
-                ", deviceId='" + deviceId + '\'' +
-                ", type='" + type + '\'' +
+                "tags=" + tags +
                 '}';
     }
 
@@ -40,12 +28,12 @@ public class TimeseriesTags<I extends InfluxDeviceBaseInterface> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TimeseriesTags<?> that = (TimeseriesTags<?>) o;
-        return Objects.equals(hubId, that.hubId) && Objects.equals(deviceId, that.deviceId) && Objects.equals(type, that.type);
+        TimeseriesTags<?, ?> that = (TimeseriesTags<?, ?>) o;
+        return tags.equals(that.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hubId, deviceId, type);
+        return Objects.hash(tags);
     }
 }

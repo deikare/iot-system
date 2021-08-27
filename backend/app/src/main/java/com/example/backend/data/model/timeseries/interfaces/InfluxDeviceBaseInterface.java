@@ -6,5 +6,4 @@ public interface InfluxDeviceBaseInterface {
     Instant getTime();
     String getHubId();
     String getDeviceId();
-    String getType();
 }

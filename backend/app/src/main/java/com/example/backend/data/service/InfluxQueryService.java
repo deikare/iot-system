@@ -1,7 +1,9 @@
 package com.example.backend.data.service;
 
+import com.example.backend.data.model.logseries.DeviceLogseries;
 import com.example.backend.data.model.timeseries.DeviceBaseTimeseriesList;
-import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceValueInterface;
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceDataInterface;
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceLogInterface;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.dsl.Flux;
@@ -25,10 +27,17 @@ public class InfluxQueryService {
         this.queryReactiveApi = queryReactiveApi;
     }
 
-    public <V, I extends InfluxDeviceValueInterface<V>> DeviceBaseTimeseriesList<V, I> queryWithResultMappedToTimeseriesList(String flux, Long limit, Class<I> classToMapRawRecords) {
+    public <V, I extends InfluxDeviceDataInterface<V>> DeviceBaseTimeseriesList<V, I> queryWithResultMappedToTimeseriesList(String flux, Long limit, Class<I> classToMapRawRecords) {
         List<I> rawResult = query(flux, limit, classToMapRawRecords);
         DeviceBaseTimeseriesList<V, I> timeseriesList = new DeviceBaseTimeseriesList<>(rawResult);
         logger.info("Query result as timeseriesList: " + timeseriesList);
+        return timeseriesList;
+    }
+
+    public <I extends InfluxDeviceLogInterface<String>> DeviceLogseries<I> queryWithResultMappedToLogseries(String flux, Long limit, Class<I> classToMapRawRecords) {
+        List<I> rawResult = query(flux, limit, classToMapRawRecords);
+        DeviceLogseries<I> timeseriesList = new DeviceLogseries<>(rawResult);
+        logger.info("Query result as logseries: " + timeseriesList);
         return timeseriesList;
     }
 
@@ -82,6 +91,28 @@ public class InfluxQueryService {
         return result;
     }
 
+    public String produceQuery(@NotNull String bucket, @NotNull String measurement,
+                               @NotNull String field, Instant start, Instant stop, boolean desc,
+                               String hubId, String deviceId) {
+
+        Restrictions restrictions = generateRestrictions(measurement, field, hubId, deviceId);
+        String result = generateQueryFromRestrictions(bucket, restrictions, start, stop, desc);
+
+        logger.info("Created query: " + result);
+        return result;
+    }
+
+    public String produceQuery(@NotNull String bucket, @NotNull String measurement,
+                               @NotNull String field, Instant start, Instant stop, boolean desc,
+                               List<String> hubIds, List<String> deviceIds) {
+
+        Restrictions restrictions = generateRestrictions(measurement, field, hubIds, deviceIds);
+        String result = generateQueryFromRestrictions(bucket, restrictions, start, stop, desc);
+
+        logger.info("Created query: " + result);
+        return result;
+    }
+
     private Restrictions generateRestrictions(@NotNull String measurement, @NotNull String field, List<String> hubIds, List<String> deviceIds, List<String> types) {
         Restrictions restrictions = generateBaseRestrictions(measurement, field);
 
@@ -98,6 +129,24 @@ public class InfluxQueryService {
         restrictions = addTagRestriction(restrictions, "hubId", hubId);
         restrictions = addTagRestriction(restrictions, "deviceId", deviceId);
         restrictions = addTagRestriction(restrictions, "type", type);
+
+        return restrictions;
+    }
+
+    private Restrictions generateRestrictions(@NotNull String measurement, @NotNull String field, List<String> hubIds, List<String> deviceIds) {
+        Restrictions restrictions = generateBaseRestrictions(measurement, field);
+
+        restrictions = addTagListRestrictions(restrictions, "hubId", hubIds);
+        restrictions = addTagListRestrictions(restrictions, "deviceId", deviceIds);
+
+        return restrictions;
+    }
+
+    private Restrictions generateRestrictions(@NotNull String measurement, @NotNull String field, String hubId, String deviceId) {
+        Restrictions restrictions = generateBaseRestrictions(measurement, field);
+
+        restrictions = addTagRestriction(restrictions, "hubId", hubId);
+        restrictions = addTagRestriction(restrictions, "deviceId", deviceId);
 
         return restrictions;
     }

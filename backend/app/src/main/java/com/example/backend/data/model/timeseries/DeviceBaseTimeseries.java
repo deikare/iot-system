@@ -53,6 +53,4 @@ public class DeviceBaseTimeseries<V> {
     public Instant getEnd() {
         return end;
     }
-
-
 }

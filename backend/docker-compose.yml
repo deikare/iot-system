@@ -42,7 +42,7 @@ services:
       - INFLUXD_QUERY_CONCURRENCY=30
       - INFLUXD_QUERY_QUEUE_SIZE=50
     labels: 
-      - "traefik.http.routers.influxdb.rule=Host(`influxdb`)"
+      - "traefik.http.routers.influxdb.rule=PathPrefix(`/influxdb`)"
       - "traefik.http.routers.influxdb.tls=true"
       - "traefik.http.routers.influxdb.entrypoints=websecure"
       - "traefik.enable=true"
@@ -268,7 +268,7 @@ services:
     image: backend:0.0.1-SNAPSHOT
     hostname: backend
     labels: 
-      - "traefik.http.routers.backend.rule=Host(`backend`)"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/backend`)"
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.enable=true"

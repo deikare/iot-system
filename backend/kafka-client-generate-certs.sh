@@ -54,7 +54,7 @@ keytool -keystore $KAFKA_CLIENT_PATH/kafka.client.truststore.jks -storetype $STO
 rm $KAFKA_CLIENT_PATH/kafka.client.csr 
 rm $KAFKA_CLIENT_PATH/kafka.client.crt
 
-KAFKA_SERVER=localhost:9092
+KAFKA_SERVER=$SERVER_FQDN:9092,$SERVER_FQDN:9093,$SERVER_FQDN:9094
 
 echo "bootstrap.servers=$KAFKA_SERVER" > $KAFKA_CLIENT_PATH/client-ssl.properties
 echo "security.protocol=SSL" >> $KAFKA_CLIENT_PATH/client-ssl.properties

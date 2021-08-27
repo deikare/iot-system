@@ -1,13 +1,14 @@
 package com.example.backend.data.model.timeseries;
 
-import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceValueInterface;
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceDataInterface;
+import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceLogInterface;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
-public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>> {
-    private final HashMap<TimeseriesTags<I>, DeviceBaseTimeseries<V>> timeseriesList;
+public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceDataInterface<V>> {
+    private final HashMap<TimeseriesTags<V, I>, DeviceBaseTimeseries<V>> timeseriesList;
 
     private Instant start = Instant.now();
     private Instant end = Instant.ofEpochMilli(0);
@@ -30,7 +31,7 @@ public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>
                 '}';
     }
 
-    public HashMap<TimeseriesTags<I>, DeviceBaseTimeseries<V>> getTimeseriesList() {
+    public HashMap<TimeseriesTags<V, I>, DeviceBaseTimeseries<V>> getTimeseriesList() {
         return timeseriesList;
     }
 
@@ -59,7 +60,7 @@ public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>
             if (start.compareTo(recordTime) > 0)
                 start = recordTime;
 
-            TimeseriesTags<I> tags = new TimeseriesTags<>(record);
+            TimeseriesTags<V, I> tags = new TimeseriesTags<>(record);
 
             DeviceBaseTimeseries<V> timeseries = timeseriesList.get(tags);
 
@@ -71,7 +72,7 @@ public class DeviceBaseTimeseriesList<V, I extends InfluxDeviceValueInterface<V>
         }
     }
 
-    private void putNewTimeseries(TimeseriesTags<I> tags, Point<V> newPoint) {
+    private void putNewTimeseries(TimeseriesTags<V, I> tags, Point<V> newPoint) {
         DeviceBaseTimeseries<V> newTimeseries = new DeviceBaseTimeseries<>();
         newTimeseries.addPoint(newPoint);
         timeseriesList.put(tags, newTimeseries);
