@@ -20,8 +20,8 @@ public class LogseriesRepresentationAssembler extends RepresentationModelAssembl
         LogseriesRepresentationModel> {
 
 
-    public LogseriesRepresentationAssembler(Class<?> controllerClass, Class<LogseriesRepresentationModel> resourceType) {
-        super(controllerClass, resourceType);
+    public LogseriesRepresentationAssembler() {
+        super(LogController.class, LogseriesRepresentationModel.class);
     }
 
     @Override
