@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  sql-db:
+    image: postgres:latest
+#    ports:
+#      - "127.0.0.1:5433:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres-db
+
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0.11
+    hostname: mqtt-broker
+    ports:
+      - "127.0.0.1:1883:1883"
+
+  telegraf:
+    image: telegraf:1.17.3
+    hostname: telegraf
+    ports:
+      - "127.0.0.1:8086:8086"
+    environment:
+      - INFLUX_URL=https://${SERVER_FQDN}
+    volumes:
+      - ./configs/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+      - ./certs/telegraf:/etc/telegraf/secrets
+      - ./volumes/telegraf:/tmp
