@@ -11,22 +11,28 @@ import com.example.hubservice.management.hub.service.implementation.crud.MasterS
 import com.example.hubservice.management.hub.service.implementation.telegraf.TelegrafSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HubConfigurationService {
+public class HubManagementService {
     private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService;
     private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService;
     private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService;
+    private final ApplicationContext applicationContext;
+    private final TelegrafSender telegrafSender;
 
     private Hub hub;
 
-    private final Logger logger = LoggerFactory.getLogger(HubConfigurationService.class);
+    private final Logger logger = LoggerFactory.getLogger(HubManagementService.class);
 
-    public HubConfigurationService(MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService, TelegrafSender telegrafSender) {
+    public HubManagementService(MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService, TelegrafSender telegrafSender, ApplicationContext applicationContext) {
         this.hubService = hubService;
         this.deviceService = deviceService;
         this.controlSignalService = controlSignalService;
+        this.applicationContext = applicationContext;
+        this.telegrafSender = telegrafSender;
 
         logger.info("Starting hub initialization");
 
@@ -40,11 +46,13 @@ public class HubConfigurationService {
             //TODO add shutdown hook
         }
 
-        telegrafSender.sendHubLogToTelegraf(hub);
+        this.telegrafSender.sendHubLogToTelegraf(hub);
     }
 
     public Hub updateStack(Hub newStack) {
         Hub result = hubService.updateObjectById(newStack.getId(), newStack);
+
+        logger.info("Updating stack with new hub: " + result);
 
         deviceService.deleteAllObjects();
         for (Device device : newStack.getDevices()) {
@@ -71,6 +79,32 @@ public class HubConfigurationService {
         return controlSignalService.isPresent(controlSignalId);
     }
 
+    public Hub getHub() {
+        return hub;
+    }
+
+    public InfluxHubStatusValue getHubStatus() throws TooManyHubsExistException, NoHubsFoundException {
+        return getHub().getStatus();
+    }
+
+    public String getHubId() throws TooManyHubsExistException, NoHubsFoundException {
+        return getHub().getId();
+    }
+
+    public void initiateShutdownOnDelete() {
+        int returnCode = 0;
+        try {
+            Hub deletedHub = deleteHub();
+            telegrafSender.sendHubLogToTelegraf(deletedHub);
+            logger.info("Received delete signal, shutdown gracefully");
+        }
+        catch (TooManyHubsExistException | NoHubsFoundException e) {
+            logger.info("Error during shutdown: " + e.getMessage());
+            returnCode = 103;
+        }
+
+        makeShutdown(returnCode);
+    }
 
     private Hub initializeHub() throws TooManyHubsExistException {
         Hub result;
@@ -99,23 +133,15 @@ public class HubConfigurationService {
         return result;
     }
 
-    public InfluxHubStatusValue getHubStatus() throws TooManyHubsExistException, NoHubsFoundException {
-        return getHub().getStatus();
-    }
-
-    public String getHubId() throws TooManyHubsExistException, NoHubsFoundException {
-        return getHub().getId();
-    }
-
-    public void deleteHub() throws TooManyHubsExistException, NoHubsFoundException {
-        Hub deletedHub = getHub();
+    private Hub deleteHub() throws TooManyHubsExistException, NoHubsFoundException {
+        Hub deletedHub = getHub().deepCopyWithoutDependents();
+        deletedHub.setStatus(InfluxHubStatusValue.DELETED);
 
         hubService.deleteAllObjects();
-
-        hub = null;
+        return deletedHub;
     }
 
-    public Hub getHub() {
-        return hub;
+    private void makeShutdown(int returnCode) {
+        SpringApplication.exit(applicationContext, () -> returnCode);
     }
 }

@@ -126,6 +126,10 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
         return copy;
     }
 
+    public Hub deepCopyWithoutDependents() {
+        return new Hub(this.id, this.name, this.status);
+    }
+
     @Override
     public Hub addDependentToDependentsList(Device dependent) {
         devices.add(dependent);
