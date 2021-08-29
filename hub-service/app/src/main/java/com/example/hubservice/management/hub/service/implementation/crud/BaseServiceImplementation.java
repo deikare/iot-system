@@ -44,6 +44,11 @@ public class BaseServiceImplementation<
     }
 
     @Override
+    public boolean isPresent(K id) {
+        return repository.findById(id).isPresent();
+    }
+
+    @Override
     public B updateObjectById(K id, B patch) throws E, EntityNotModifiedException {
         return repository.findById(id)
                 .map(object -> {

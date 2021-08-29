@@ -7,6 +7,7 @@ public interface BaseServiceInterface<B, K> {
     List<B> getAllObjects();
     long count();
     B findObjectById(K id);
+    boolean isPresent(K id);
     B updateObjectById(K id, B patch);
     void deleteObjectById(K id);
     B deleteObjectByIdAndReturnDeletedObject(K id);
