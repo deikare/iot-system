@@ -96,9 +96,9 @@ public class ProducerConfig {
     public Map<String, Object> hubProperties() {
         Map<String, Object> result = new HashMap<>();
 
-        String bootstrapServer = "kafka1:8092";
+        String [] bootstrapServers = {"kafka1:8092", "kafka2:8093", "kafka3:8094"};
 
-        result.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+        result.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         result.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         result.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
 
@@ -120,9 +120,9 @@ public class ProducerConfig {
     public Map<String, Object> othersProperties() {
         Map<String, Object> result = new HashMap<>();
 
-        String bootstrapServer = "kafka1:8092";
+        String [] bootstrapServers = {"kafka1:8092", "kafka2:8093", "kafka3:8094"};
 
-        result.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+        result.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         result.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
         result.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
 

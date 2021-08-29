@@ -35,8 +35,4 @@ public class DeviceEntityListener {
     public void postRemove(Device device) {
         CrudServiceLogger.produceCrudServiceLog(logger, device, CrudOperationType.DELETE);
     }
-
-    private Hub getHub(Device device) {
-        return device.getHub();
-    }
 }

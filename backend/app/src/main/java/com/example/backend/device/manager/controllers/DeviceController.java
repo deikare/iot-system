@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/backend/devices")
+@RequestMapping("/devices")
 public class DeviceController {
     private final DeviceModelAssembler modelAssembler;
     private final PagedResourcesAssembler<Device> pagedResourcesAssembler;

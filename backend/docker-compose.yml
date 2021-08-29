@@ -47,6 +47,9 @@ services:
       - "traefik.http.routers.influxdb.entrypoints=websecure"
       - "traefik.enable=true"
 
+      - "traefik.http.routers.influxdb.middlewares=influxdb-strip@docker"
+      - "traefik.http.middlewares.influxdb-strip.stripprefix.prefixes=/influxdb"
+
       - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
 
   influxdb-init:
@@ -274,3 +277,6 @@ services:
       - "traefik.enable=true"
 
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
+
+      - "traefik.http.routers.backend.middlewares=influxdb-strip@docker"
+      - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/backend"

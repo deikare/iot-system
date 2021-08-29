@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/backend/hubs")
+@RequestMapping("/hubs")
 public class HubController {
     private final HubModelAssembler modelAssembler;
     private final PagedResourcesAssembler<Hub> pagedResourcesAssembler;
