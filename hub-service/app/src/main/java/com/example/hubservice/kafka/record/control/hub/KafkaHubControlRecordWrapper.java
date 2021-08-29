@@ -3,8 +3,11 @@ package com.example.hubservice.kafka.record.control.hub;
 import com.example.hubservice.management.hub.model.Hub;
 
 public class KafkaHubControlRecordWrapper {
-    private final Hub hub;
-    private final HubControlType controlType;
+    private Hub hub;
+    private HubControlType controlType;
+
+    public KafkaHubControlRecordWrapper() {
+    }
 
     public KafkaHubControlRecordWrapper(Hub hub, HubControlType controlType) {
         this.hub = hub;

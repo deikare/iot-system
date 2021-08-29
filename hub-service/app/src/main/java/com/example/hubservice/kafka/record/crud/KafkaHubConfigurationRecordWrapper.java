@@ -1,15 +1,20 @@
 package com.example.hubservice.kafka.record.crud;
 
-public class KafkaEntityControlRecordWrapper<V> {
-    private final V object;
-    private final OperationType operationType;
+import com.example.hubservice.management.hub.model.Hub;
 
-    public KafkaEntityControlRecordWrapper(V object, OperationType operationType) {
+public class KafkaHubConfigurationRecordWrapper {
+    private Hub object;
+    private OperationType operationType;
+
+    public KafkaHubConfigurationRecordWrapper() {
+    }
+
+    public KafkaHubConfigurationRecordWrapper(Hub object, OperationType operationType) {
         this.object = object;
         this.operationType = operationType;
     }
 
-    public V getObject() {
+    public Hub getObject() {
         return object;
     }
 
