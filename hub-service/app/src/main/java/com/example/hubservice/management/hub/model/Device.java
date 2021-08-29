@@ -1,6 +1,6 @@
 package com.example.hubservice.management.hub.model;
 
-import com.example.hubservice.management.hub.model.crud.MasterAndDependentTypeInterface;
+import com.example.hubservice.management.hub.model.interfaces.crud.MasterAndDependentTypeInterface;
 import com.example.hubservice.management.hub.model.listeners.DeviceEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

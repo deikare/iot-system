@@ -1,8 +1,8 @@
 package com.example.hubservice.management.hub.service.implementation.crud;
 
-import com.example.hubservice.management.hub.model.crud.DependentTypeInterface;
-import com.example.hubservice.management.hub.model.crud.MasterAndDependentTypeInterface;
-import com.example.hubservice.management.hub.model.crud.MasterTypeInterface;
+import com.example.hubservice.management.hub.model.interfaces.crud.DependentTypeInterface;
+import com.example.hubservice.management.hub.model.interfaces.crud.MasterAndDependentTypeInterface;
+import com.example.hubservice.management.hub.model.interfaces.crud.MasterTypeInterface;
 import com.example.hubservice.management.hub.service.Builder;
 import com.example.hubservice.management.hub.service.interfaces.crud.MasterAndDependentServiceInterface;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,13 +1,14 @@
 package com.example.hubservice.management.hub.model;
 
 import com.example.hubservice.influxdb.mappers.InfluxHubStatusValue;
-import com.example.hubservice.management.hub.model.crud.MasterTypeInterface;
+import com.example.hubservice.management.hub.model.interfaces.crud.MasterTypeInterface;
 import com.example.hubservice.management.hub.model.listeners.HubEntityListener;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @EntityListeners(HubEntityListener.class)
 @Entity
@@ -26,6 +27,12 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
 
     public Hub(String id, String name, InfluxHubStatusValue status) {
         this.id = id;
+        this.name = name;
+        this.status = status;
+    }
+
+    public Hub(String name, InfluxHubStatusValue status) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.status = status;
     }
