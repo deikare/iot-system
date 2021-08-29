@@ -156,4 +156,9 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     public boolean removeDependentFromDependentsList(ControlSignal dependent) {
         return controlSignals.remove(dependent);
     }
+
+    @Override
+    public void setMaster(Hub master) {
+        setHub(master);
+    }
 }

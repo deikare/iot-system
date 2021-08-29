@@ -137,4 +137,9 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
 
         return copy;
     }
+
+    @Override
+    public void setMaster(Device master) {
+        setDevice(master);
+    }
 }
