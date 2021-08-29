@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("/backend/logs")
+@RequestMapping("/logs")
 public class LogController {
     private final InfluxQueryService influxQueryService;
     private final LogseriesRepresentationAssembler assembler;
