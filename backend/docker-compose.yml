@@ -278,5 +278,5 @@ services:
 
       - "traefik.http.services.backend.loadbalancer.server.port=8080"
 
-      - "traefik.http.routers.backend.middlewares=influxdb-strip@docker"
+      - "traefik.http.routers.backend.middlewares=backend-strip@docker"
       - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/backend"
