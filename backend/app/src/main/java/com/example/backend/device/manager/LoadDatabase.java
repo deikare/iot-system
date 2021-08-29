@@ -30,7 +30,7 @@ public class LoadDatabase {
     static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     static SecureRandom rnd = new SecureRandom();
 
-    @Bean
+    /*@Bean
     CommandLineRunner initializeHubs(
             MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation,
             MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceServiceImplementation,
@@ -57,7 +57,7 @@ public class LoadDatabase {
                 logger.info("Hub after preloading devices: " + hub);
             }
         };
-    }
+    }*/
 
     private String randomString(int len) {
         StringBuilder sb = new StringBuilder(len);

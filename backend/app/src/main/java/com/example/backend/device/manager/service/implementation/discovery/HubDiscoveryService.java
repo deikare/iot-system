@@ -14,8 +14,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+//TODO add offset
 @Component
 public class HubDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(HubDiscoveryService.class);
@@ -38,7 +40,7 @@ public class HubDiscoveryService {
     private void discoverServices() {
         String query = getQueryForHubDiscovery();
 
-        start = Instant.now(); //change next start to current one
+        start = Instant.now().minus(20L, ChronoUnit.SECONDS); //change next start to current one with offset
 
         List<InfluxHubLogPojo> queryResults = queryService.query(query, null, InfluxHubLogPojo.class);
 

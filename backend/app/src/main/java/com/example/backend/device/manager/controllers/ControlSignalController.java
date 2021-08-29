@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/backend/control_signals")
+@RequestMapping("/control_signals")
 public class ControlSignalController {
     private final ControlSignalModelAssembler modelAssembler;
     private final PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler;
