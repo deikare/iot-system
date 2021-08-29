@@ -86,6 +86,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", deviceType=" + deviceType +
+                ", hub=" + hub +
                 '}';
     }
 

@@ -48,6 +48,7 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", messageContent='" + messageContent + '\'' +
+                ", device='" + device + '\'' +
                 '}';
     }
 
