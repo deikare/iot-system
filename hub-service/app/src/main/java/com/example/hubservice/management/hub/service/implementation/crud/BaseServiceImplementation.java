@@ -1,7 +1,7 @@
 package com.example.hubservice.management.hub.service.implementation.crud;
 
 import com.example.hubservice.management.hub.exceptions.EntityNotModifiedException;
-import com.example.hubservice.management.hub.model.crud.BaseTypeInterface;
+import com.example.hubservice.management.hub.model.interfaces.crud.BaseTypeInterface;
 import com.example.hubservice.management.hub.service.Builder;
 import com.example.hubservice.management.hub.service.interfaces.crud.BaseServiceInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,6 +31,11 @@ public class BaseServiceImplementation<
     @Override
     public List<B> getAllObjects() {
         return repository.findAll();
+    }
+
+    @Override
+    public long count() {
+        return repository.count();
     }
 
     @Override
