@@ -56,32 +56,17 @@ public class HubDiscoveryService {
     private void consumeQueryResult(InfluxHubLogPojo queryResult) {
         String hubId = queryResult.getHubId();
         switch (queryResult.getValue()) {
-            case CREATED -> {
+            case STARTED -> {
                 try {
                     Hub hub = crudServiceImplementation.findObjectById(hubId);
 
-                    hub.setStatus(InfluxHubStatusValue.CREATED);
+                    hub.setStatus(InfluxHubStatusValue.STARTED);
                     hub = crudServiceImplementation.updateObjectById(hubId, hub);
 
-                    logger.info("Discovered hub :" + hub + "already found in SQL");
+                    logger.info("Started hub :" + hub + "already found in SQL");
                 } catch (HubNotFoundException e) {
-                    Hub createdHub = crudServiceImplementation.addObject(new Hub(queryResult.getHubId(), queryResult.getName(), InfluxHubStatusValue.CREATED));
+                    Hub createdHub = crudServiceImplementation.addObject(new Hub(queryResult.getHubId(), queryResult.getName(), InfluxHubStatusValue.STARTED));
                     logger.info("Discovered creation of hub: " + createdHub);
-                }
-            }
-            case RESTARTED -> {
-                try {
-                    Hub hub = crudServiceImplementation.findObjectById(hubId);
-
-                    hub.setStatus(InfluxHubStatusValue.RESTARTED);
-                    hub = crudServiceImplementation.updateObjectById(hubId, hub);
-
-                    logger.info("Discovered restart of hub: " + hub);
-                } catch (HubNotFoundException e) {
-                    Hub createdHub = crudServiceImplementation.addObject(new Hub(hubId, queryResult.getName(), InfluxHubStatusValue.RESTARTED));
-                    hubSender.postPersist(createdHub);
-
-                    logger.info("Restarted hub{id:" + hubId + "} not found in SQL, created restarted Hub: " + createdHub);
                 }
             }
             case STOPPED -> {
