@@ -1,6 +1,7 @@
 package com.example.hubservice.management.hub.service.implementation.hub.configuration;
 
 import com.example.hubservice.influxdb.mappers.InfluxHubStatusValue;
+import com.example.hubservice.kafka.record.control.hub.HubControlType;
 import com.example.hubservice.management.hub.exceptions.*;
 import com.example.hubservice.management.hub.model.ControlSignal;
 import com.example.hubservice.management.hub.model.Device;
@@ -23,8 +24,6 @@ public class HubManagementService {
     private final ApplicationContext applicationContext;
     private final TelegrafSender telegrafSender;
 
-    private Hub hub;
-
     private final Logger logger = LoggerFactory.getLogger(HubManagementService.class);
 
     public HubManagementService(MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService, TelegrafSender telegrafSender, ApplicationContext applicationContext) {
@@ -36,33 +35,36 @@ public class HubManagementService {
 
         logger.info("Starting hub initialization");
 
+        Hub hub;
         try {
-            hub = getHubOnStartup();
+            hub = getHub();
             logger.info("Already existing hub: " + hub);
+            this.telegrafSender.sendHubLogToTelegraf(hub);
         } catch (NoHubsFoundException e) {
             hub = initializeHub();
             logger.info("New hub: " + hub);
+            this.telegrafSender.sendHubLogToTelegraf(hub);
         } catch (TooManyHubsExistException e) {
-            //TODO add shutdown hook
+            initiateShutdownOnDelete();
         }
 
-        this.telegrafSender.sendHubLogToTelegraf(hub);
     }
 
     public Hub updateStack(Hub newStack) {
-        Hub result = hubService.updateObjectById(newStack.getId(), newStack);
+        Hub result = hubService.updateObjectById(newStack.getId(), newStack).deepCopyWithoutDependents();
 
-        logger.info("Updating stack with new hub: " + result);
+        hubService.deleteAllObjects();
 
-        deviceService.deleteAllObjects();
+        Hub newVersion = hubService.addObject(result);
+        String newVersionId = newVersion.getId();
+
         for (Device device : newStack.getDevices()) {
-            deviceService.addDependentAndBindItToMaster(device, result);
+            Device addedDevice = deviceService.addDependentAndBindItToMasterById(device, newVersionId);
 
-            for (ControlSignal controlSignal : device.getControlSignals())
-                controlSignalService.addDependentAndBindItToMaster(controlSignal, device);
+            for (ControlSignal controlSignal : device.getControlSignals()) {
+                ControlSignal newControlSignal = controlSignalService.addDependentAndBindItToMasterById(controlSignal, addedDevice.getId());
+            }
         }
-
-        hub = result;
 
         return result;
     }
@@ -79,8 +81,27 @@ public class HubManagementService {
         return controlSignalService.isPresent(controlSignalId);
     }
 
-    public Hub getHub() {
-        return hub;
+    public Hub getHub() throws TooManyHubsExistException, NoHubsFoundException {
+        Hub result;
+
+        long actualHubCount = hubService.count();
+
+        if (actualHubCount != 0) {
+            if (actualHubCount == 1)
+                result = hubService.getAllObjects().get(0);
+            else throw new TooManyHubsExistException(actualHubCount);
+        }
+        else throw new NoHubsFoundException();
+
+        return result;
+    }
+
+    public Device getDevice(Long deviceId) throws DeviceNotFoundException {
+        return deviceService.findObjectById(deviceId);
+    }
+
+    public ControlSignal getControlSignal(Long controlSignalId) throws ControlSignalNotFoundException {
+        return controlSignalService.findObjectById(controlSignalId);
     }
 
     public InfluxHubStatusValue getHubStatus() throws TooManyHubsExistException, NoHubsFoundException {
@@ -89,6 +110,46 @@ public class HubManagementService {
 
     public String getHubId() throws TooManyHubsExistException, NoHubsFoundException {
         return getHub().getId();
+    }
+
+    //if false, status hasn't changed
+    //TODO add logs sending to telegraf
+    public boolean changeHubStatus(HubControlType hubControlSignal) throws TooManyHubsExistException, NoHubsFoundException {
+        boolean result = false;
+        Hub currentHub = getHub();
+
+        try {
+            InfluxHubStatusValue statusAfterHubControl = generateProperStateAfterHubControlReceived(currentHub.getStatus(), hubControlSignal);
+            currentHub.setStatus(statusAfterHubControl);
+            Hub hubAfterStatusChange = hubService.updateObjectById(currentHub.getId(), currentHub);
+            logger.info("Changed status of hub, after operation: " + hubAfterStatusChange);
+
+            result = true;
+        }
+        catch (IllegalHubControlException e) {
+            logger.info(e.getMessage());
+        }
+
+        return result;
+    }
+
+    private InfluxHubStatusValue generateProperStateAfterHubControlReceived(InfluxHubStatusValue currentStatus, HubControlType hubControlSignal) throws IllegalHubControlException {
+        InfluxHubStatusValue result;
+        switch (hubControlSignal) {
+            case START -> {
+                if (currentStatus == InfluxHubStatusValue.STARTED)
+                    throw new IllegalHubControlException(currentStatus, hubControlSignal);
+                else result = InfluxHubStatusValue.STARTED; //current status is stopped
+            }
+            case STOP -> {
+                if (currentStatus == InfluxHubStatusValue.STARTED)
+                    result = InfluxHubStatusValue.STOPPED;
+                else throw new IllegalHubControlException(currentStatus, hubControlSignal); //current status is stopped
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + hubControlSignal);
+        }
+
+        return result;
     }
 
     public void initiateShutdownOnDelete() {
@@ -106,29 +167,18 @@ public class HubManagementService {
         makeShutdown(returnCode);
     }
 
+    private void makeShutdown(int returnCode) {
+        SpringApplication.exit(applicationContext, () -> returnCode);
+    }
+
     private Hub initializeHub() throws TooManyHubsExistException {
         Hub result;
 
         long actualHubCount = hubService.count();
 
         if (actualHubCount == 0)
-            result = hubService.addObject(new Hub("place-holder", InfluxHubStatusValue.CREATED));
+            result = hubService.addObject(new Hub("place-holder", InfluxHubStatusValue.STARTED));
         else throw new TooManyHubsExistException(actualHubCount);
-
-        return result;
-    }
-
-    private Hub getHubOnStartup() throws TooManyHubsExistException, NoHubsFoundException {
-        Hub result;
-
-        long actualHubCount = hubService.count();
-
-        if (actualHubCount != 0) {
-            if (actualHubCount == 1)
-                result = hubService.getAllObjects().get(0);
-            else throw new TooManyHubsExistException(actualHubCount);
-        }
-        else throw new NoHubsFoundException();
 
         return result;
     }
@@ -141,7 +191,11 @@ public class HubManagementService {
         return deletedHub;
     }
 
-    private void makeShutdown(int returnCode) {
-        SpringApplication.exit(applicationContext, () -> returnCode);
+    public void logStack() {
+        String result = "Stack: \n" +
+                hubService.getAllObjects() + "\n" +
+                deviceService.getAllObjects() + "\n" +
+                controlSignalService.getAllObjects();
+        logger.info(result);
     }
 }

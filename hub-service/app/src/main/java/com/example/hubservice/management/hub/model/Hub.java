@@ -22,7 +22,7 @@ public class Hub implements MasterTypeInterface<Hub, Device> {
     @Enumerated(EnumType.STRING)
     private InfluxHubStatusValue status;
 
-    @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final List<Device> devices = new ArrayList<>();
 
     public Hub(String id, String name, InfluxHubStatusValue status) {

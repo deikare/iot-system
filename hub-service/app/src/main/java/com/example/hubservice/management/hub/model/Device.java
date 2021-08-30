@@ -13,7 +13,6 @@ import java.util.Objects;
 @Entity
 public class Device implements MasterAndDependentTypeInterface<Device, ControlSignal, Hub> {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "DEVICE_ID")
     private Long id;
 
@@ -24,7 +23,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     @JoinColumn(name = "HUB_ID")
     private Hub hub;
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final List<ControlSignal> controlSignals = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -84,6 +83,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
         return "Device{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", hub=" + hub +
                 ", deviceType=" + deviceType +
                 '}';
     }
@@ -154,5 +154,10 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     @Override
     public boolean removeDependentFromDependentsList(ControlSignal dependent) {
         return controlSignals.remove(dependent);
+    }
+
+    @Override
+    public void setMaster(Hub master) {
+        setHub(master);
     }
 }
