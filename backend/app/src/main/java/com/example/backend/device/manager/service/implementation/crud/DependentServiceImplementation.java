@@ -32,8 +32,9 @@ public class DependentServiceImplementation<
     @Override
     public B addDependentAndBindItToMaster(B dependent, M master) {
         dependent.setMaster(master);
-        B addedDependent = addObject(dependent);
         masterServiceImplementation.addDependentToListInObject(master, dependent);
+        B addedDependent = addObject(dependent);
+//        masterServiceImplementation.addDependentToListInObject(master, dependent);
         return addedDependent;
     }
 }
