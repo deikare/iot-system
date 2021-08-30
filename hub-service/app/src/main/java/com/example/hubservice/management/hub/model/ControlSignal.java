@@ -11,7 +11,6 @@ import java.util.Objects;
 @Entity
 public class ControlSignal implements DependentTypeInterface<ControlSignal, Device> {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "CONTROL_SIGNAL_ID")
     private Long id;
 
@@ -44,6 +43,7 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", messageContent='" + messageContent + '\'' +
+                ", device=" + device +
                 '}';
     }
 
@@ -132,5 +132,10 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
         ControlSignal copy =  new ControlSignal(this.id, this.name, this.messageContent, this.device);
 
         return copy;
+    }
+
+    @Override
+    public void setMaster(Device master) {
+        setDevice(master);
     }
 }
