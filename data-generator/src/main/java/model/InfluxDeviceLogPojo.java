@@ -10,8 +10,8 @@ public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo {
     @Column
     private String value;
 
-    public InfluxDeviceLogPojo(Instant time, String hubId, String deviceId, String value, String logType) {
-        super(time, hubId, deviceId, logType);
+    public InfluxDeviceLogPojo(Instant time, String hubId, String deviceId, String bucketName, String value) {
+        super(time, hubId, deviceId, bucketName);
         this.value = value;
     }
 
@@ -25,11 +25,11 @@ public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo {
 
     @Override
     public String toString() {
-        return "InfluxLogPojo{" +
+        return "InfluxDeviceLogPojo{" +
                 "time=" + time +
                 ", hubId='" + hubId + '\'' +
+                ", bucketName='" + bucketName + '\'' +
                 ", deviceId='" + deviceId + '\'' +
-                ", type='" + type + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }

@@ -11,12 +11,20 @@ public class InfluxBasePojo {
     @Column(tag = true)
     protected String hubId;
 
-    public InfluxBasePojo(Instant time, String hubId) {
+    @Column(tag = true)
+    protected String bucketName;
+
+    public InfluxBasePojo(Instant time, String hubId, String bucketName) {
         this.time = time;
         this.hubId = hubId;
+        this.bucketName = bucketName;
     }
 
     public InfluxBasePojo() {
+    }
+
+    public String getBucketName() {
+        return bucketName;
     }
 
     public Instant getTime() {

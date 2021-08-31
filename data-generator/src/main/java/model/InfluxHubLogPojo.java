@@ -13,8 +13,8 @@ public class InfluxHubLogPojo extends InfluxBasePojo{
     @Column(tag = true)
     private String name;
 
-    public InfluxHubLogPojo(Instant time, String hubId, InfluxHubStatusValue value, String name) {
-        super(time, hubId);
+    public InfluxHubLogPojo(Instant time, String hubId, String bucketName, InfluxHubStatusValue value, String name) {
+        super(time, hubId, bucketName);
         this.value = value;
         this.name = name;
     }
@@ -36,7 +36,8 @@ public class InfluxHubLogPojo extends InfluxBasePojo{
         return "InfluxHubLogPojo{" +
                 "time=" + time +
                 ", hubId='" + hubId + '\'' +
-                ", value='" + value + '\'' +
+                ", bucketName='" + bucketName + '\'' +
+                ", value=" + value +
                 ", name='" + name + '\'' +
                 '}';
     }

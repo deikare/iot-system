@@ -24,6 +24,12 @@
             <artifactId>influxdb-client-flux</artifactId>
             <version>3.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.hivemq</groupId>
+            <artifactId>hivemq-mqtt-client</artifactId>
+            <version>1.2.2</version>
+        </dependency>
     </dependencies>
 
 </project>
