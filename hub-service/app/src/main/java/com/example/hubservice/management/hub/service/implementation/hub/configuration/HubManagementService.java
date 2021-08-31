@@ -16,6 +16,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Random;
+
 @Service
 public class HubManagementService {
     private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService;
@@ -100,6 +103,17 @@ public class HubManagementService {
         return deviceService.findObjectById(deviceId);
     }
 
+    public Device getRandomDevice() {
+        Device result;
+        List<Device> devices = deviceService.getAllObjects();
+
+        if (devices.isEmpty())
+            result = null;
+        else result = devices.get(new Random().nextInt(devices.size()));
+
+        return result;
+    }
+
     public ControlSignal getControlSignal(Long controlSignalId) throws ControlSignalNotFoundException {
         return controlSignalService.findObjectById(controlSignalId);
     }
@@ -112,10 +126,26 @@ public class HubManagementService {
         return getHub().getId();
     }
 
+    public void sendDeviceDataToTelegraf(String deviceIdAsString, String measurementType, String dataAsString) {
+        if (getHubStatus() == InfluxHubStatusValue.STARTED) {
+            if (isDevicePresent(Long.valueOf(deviceIdAsString)))
+                telegrafSender.sendDeviceDataToTelegraf(getHub(), deviceIdAsString, measurementType, dataAsString);
+            else logger.info("Device not present");
+        }
+        else logger.info("Hub is stopped");
+    }
+
+    public void sendDeviceLogToTelegraf(String deviceIdAsString, String log) {
+        if (getHubStatus() == InfluxHubStatusValue.STARTED) {
+            if (isDevicePresent(Long.valueOf(deviceIdAsString)))
+                telegrafSender.sendDeviceLogToTelegraf(getHub(), deviceIdAsString, log);
+            else logger.info("Device not present");
+        }
+        else logger.info("Hub is stopped");
+    }
+
     //if false, status hasn't changed
-    //TODO add logs sending to telegraf
-    public boolean changeHubStatus(HubControlType hubControlSignal) throws TooManyHubsExistException, NoHubsFoundException {
-        boolean result = false;
+    public void changeHubStatus(HubControlType hubControlSignal) throws TooManyHubsExistException, NoHubsFoundException {
         Hub currentHub = getHub();
 
         try {
@@ -124,13 +154,11 @@ public class HubManagementService {
             Hub hubAfterStatusChange = hubService.updateObjectById(currentHub.getId(), currentHub);
             logger.info("Changed status of hub, after operation: " + hubAfterStatusChange);
 
-            result = true;
+            telegrafSender.sendHubLogToTelegraf(hubAfterStatusChange);
         }
         catch (IllegalHubControlException e) {
             logger.info(e.getMessage());
         }
-
-        return result;
     }
 
     private InfluxHubStatusValue generateProperStateAfterHubControlReceived(InfluxHubStatusValue currentStatus, HubControlType hubControlSignal) throws IllegalHubControlException {
@@ -189,13 +217,5 @@ public class HubManagementService {
 
         hubService.deleteAllObjects();
         return deletedHub;
-    }
-
-    public void logStack() {
-        String result = "Stack: \n" +
-                hubService.getAllObjects() + "\n" +
-                deviceService.getAllObjects() + "\n" +
-                controlSignalService.getAllObjects();
-        logger.info(result);
     }
 }

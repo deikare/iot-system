@@ -1,5 +1,6 @@
 package com.example.hubservice.kafka.consumers;
 
+import com.example.hubservice.influxdb.mappers.InfluxHubStatusValue;
 import com.example.hubservice.management.hub.model.ControlSignal;
 import com.example.hubservice.management.hub.service.implementation.hub.configuration.HubManagementService;
 import com.example.hubservice.mqtt.MqttClientService;
@@ -23,16 +24,20 @@ public class DeviceControlConsumer {
     public void listen(ControlSignal data) {
         logger.info("Received controlSignal: " + data.toString());
 
-        ControlSignal controlSignal = hubManagementService.getControlSignal(data.getId());
+        if (hubManagementService.getHubStatus() == InfluxHubStatusValue.STARTED) {
+            ControlSignal controlSignal = hubManagementService.getControlSignal(data.getId());
 
-        String topic = produceTopic(controlSignal);
-        String message = controlSignal.getMessageContent();
+            String topic = produceTopic(controlSignal);
+            String message = controlSignal.getMessageContent();
 
-        logger.info("Trying to send message: topic = " + topic + ", content = " + message);
-        mqttClientService.publishMessage(topic, message);
+            logger.info("Trying to send message: topic = " + topic + ", content = " + message);
+            mqttClientService.publishMessage(topic, message);
+        }
+
+        else logger.info("Hub is stopped");
     }
 
     private String produceTopic(ControlSignal data) {
-        return "devices/" + data.getDevice().getId() + "/in";
+        return "devices/" + data.getDevice().getId() + "/logs/in";
     }
 }

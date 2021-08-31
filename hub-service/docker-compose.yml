@@ -1,31 +1,32 @@
 version: '3.8'
 services:
-  sql-db:
-    image: postgres:latest
-    ports:
-      - "127.0.0.1:5432:5432"
+  postgres:
+    image: postgres:13.4
+    hostname: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres-db
 
-  mqtt-broker:
+  mqtt:
     image: eclipse-mosquitto:2.0.11
-    hostname: mqtt-broker
-    ports:
-      - "8883:8883"
+    hostname: mqtt
     volumes:
       - ./configs/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   telegraf:
     image: telegraf:1.17.3
     hostname: telegraf
-    ports:
-      - "127.0.0.1:8086:8086"
     environment:
-      - INFLUX_URL=https://${SERVER_FQDN}
+      - INFLUX_URL=https://${SERVER_FQDN}/influxdb
     volumes:
       - ./configs/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
       - ./certs/telegraf:/etc/telegraf/secrets
       - ./volumes/telegraf:/tmp
+
+  hub:
+    image: hub-service:0.0.1-SNAPSHOT
+    hostname: hub
+    volumes:
+      - ./certs/kafka-client:/etc/secrets/kafka-client

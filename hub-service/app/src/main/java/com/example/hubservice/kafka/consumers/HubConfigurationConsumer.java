@@ -25,13 +25,9 @@ public class HubConfigurationConsumer {
         switch (data.getOperationType()) {
             case CREATE -> logger.info("Received: " + OperationType.CREATE + " of already created hub");
 
-            case UPDATE -> {
-                logger.info("Updated: " + hubManagementService.updateStack(data.getObject()));
-            }
+            case UPDATE -> logger.info("Updated: " + hubManagementService.updateStack(data.getObject()));
 
-            case DELETE -> {
-                hubManagementService.initiateShutdownOnDelete();
-            }
+            case DELETE -> hubManagementService.initiateShutdownOnDelete();
         }
 
     }
