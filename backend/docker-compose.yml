@@ -35,7 +35,7 @@ services:
     hostname: influxdb
     image: influxdb:2.0.8
     volumes:
-      - ./mounts/influxdbv2:/.influxdbv2
+      - ./mounts/influxdbv2:/var/lib/influxdb2
     ports:
       - "127.0.0.1:8086:8086"
     environment: 
@@ -62,6 +62,7 @@ services:
       - influxdb
     volumes:
       - ./configs/influxdb:/etc/influxdb/configs
+      - ./mounts/influxdbv2:/var/lib/influxdb2
 
   zoo1:
     image: confluentinc/cp-zookeeper:6.2.0
@@ -92,6 +93,8 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+      - ./mounts/zoo/1/data:/var/lib/zookeeper/data
+      - ./mounts/zoo/1/logs:/var/lib/zookeeper/logs
 
   zoo2:
     image: confluentinc/cp-zookeeper:6.2.0
@@ -122,6 +125,8 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+      - ./mounts/zoo/2/data:/var/lib/zookeeper/data
+      - ./mounts/zoo/2/logs:/var/lib/zookeeper/logs
 
   zoo3:
     image: confluentinc/cp-zookeeper:6.2.0
@@ -152,6 +157,8 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+      - ./mounts/zoo/3/data:/var/lib/zookeeper/data
+      - ./mounts/zoo/3/logs:/var/lib/zookeeper/logs
 
   kafka1:
     image: confluentinc/cp-kafka:6.2.0
@@ -183,6 +190,7 @@ services:
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+      - ./mounts/kafka/1/data:/var/lib/kafka/data
     depends_on:
       - zoo1
       - zoo2
@@ -217,6 +225,7 @@ services:
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+      - ./mounts/kafka/2/data:/var/lib/kafka/data
     depends_on:
       - zoo1
       - zoo2
@@ -251,6 +260,7 @@ services:
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
+      - ./mounts/kafka/3/data:/var/lib/kafka/data
     depends_on:
       - zoo1
       - zoo2
@@ -259,13 +269,13 @@ services:
   postgres:
     image: postgres:13.4
     hostname: postgres
-    # ports:
-    #   - "127.0.0.1:5432:5432"
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres-db
+    volumes:
+      - ./mounts/posgres/data:/var/lib/postgresql/data
 
   backend:
     image: backend:0.0.1-SNAPSHOT
@@ -280,3 +290,13 @@ services:
 
       - "traefik.http.routers.backend.middlewares=backend-strip@docker"
       - "traefik.http.middlewares.backend-strip.stripprefix.prefixes=/backend"
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+      - kafka1
+      - kafka2
+      - kafka3
+      - postgres
+      - influxdb
+
