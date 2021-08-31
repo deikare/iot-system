@@ -93,8 +93,8 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-      - ./mounts/zoo/1/data:/var/lib/zookeeper/data
-      - ./mounts/zoo/1/logs:/var/lib/zookeeper/logs
+      - ./mounts/zoo/1/data:/var/lib/zookeeper/data:rw
+      - ./mounts/zoo/1/logs:/var/lib/zookeeper/logs:rw
 
   zoo2:
     image: confluentinc/cp-zookeeper:6.2.0
@@ -125,8 +125,8 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-      - ./mounts/zoo/2/data:/var/lib/zookeeper/data
-      - ./mounts/zoo/2/logs:/var/lib/zookeeper/logs
+      - ./mounts/zoo/2/data:/var/lib/zookeeper/data:rw
+      - ./mounts/zoo/2/logs:/var/lib/zookeeper/logs:rw
 
   zoo3:
     image: confluentinc/cp-zookeeper:6.2.0
@@ -157,8 +157,8 @@ services:
     volumes:
       - ./certs/zoo:/etc/zoo/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-      - ./mounts/zoo/3/data:/var/lib/zookeeper/data
-      - ./mounts/zoo/3/logs:/var/lib/zookeeper/logs
+      - ./mounts/zoo/3/data:/var/lib/zookeeper/data:rw
+      - ./mounts/zoo/3/logs:/var/lib/zookeeper/logs:rw
 
   kafka1:
     image: confluentinc/cp-kafka:6.2.0
@@ -190,7 +190,7 @@ services:
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-      - ./mounts/kafka/1/data:/var/lib/kafka/data
+      - ./mounts/kafka/1/data:/var/lib/kafka/data:rw
     depends_on:
       - zoo1
       - zoo2
@@ -225,7 +225,7 @@ services:
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-      - ./mounts/kafka/2/data:/var/lib/kafka/data
+      - ./mounts/kafka/2/data:/var/lib/kafka/data:rw
     depends_on:
       - zoo1
       - zoo2
@@ -260,7 +260,7 @@ services:
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
-      - ./mounts/kafka/3/data:/var/lib/kafka/data
+      - ./mounts/kafka/3/data:/var/lib/kafka/data:rw
     depends_on:
       - zoo1
       - zoo2
