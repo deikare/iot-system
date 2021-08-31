@@ -4,6 +4,7 @@ import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceBaseInte
 import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceLogInterface;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceLogseries<I extends InfluxDeviceLogInterface<String>> {
@@ -11,8 +12,8 @@ public class DeviceLogseries<I extends InfluxDeviceLogInterface<String>> {
 
     private final int numberOfPoints;
 
-    private Instant start = Instant.now();
-    private Instant end = Instant.ofEpochMilli(0);
+    private final Instant start;
+    private final Instant end;
 
     public DeviceLogseries(List<I> logs) {
         this.logs = logs;
@@ -20,11 +21,11 @@ public class DeviceLogseries<I extends InfluxDeviceLogInterface<String>> {
 
         start = logs.stream()
                 .map(InfluxDeviceBaseInterface::getTime)
-                .min(Instant::compareTo).orElseThrow();
+                .min(Instant::compareTo).orElse(Instant.now());
 
         end = logs.stream()
                 .map(InfluxDeviceBaseInterface::getTime)
-                .max(Instant::compareTo).orElseThrow();
+                .max(Instant::compareTo).orElse(Instant.ofEpochMilli(0));
     }
 
     @Override
