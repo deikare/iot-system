@@ -12,7 +12,7 @@ import java.util.HashMap;
 @Service
 public class TelegrafSender {
     private final String bucketTagName = "bucketName";
-    private final String telegrafServerCall = "http://localhost:8086/api/v2/write?precision=ms";
+    private final String telegrafServerCall = "http://telegraf:8086/api/v2/write?precision=ms";
 
     private final Logger logger = LoggerFactory.getLogger(TelegrafSender.class);
 
@@ -31,20 +31,37 @@ public class TelegrafSender {
         sendWriteQueryToTelegraf(writeQuery);
     }
 
+    public void sendDeviceDataToTelegraf(Hub hub, String deviceIdAsString, String measurementType, String dataAsString) {
+        HashMap<String, String> tags = new HashMap<>();
+        tags.put("hubId", hub.getId());
+        tags.put("deviceId", deviceIdAsString);
+        tags.put("type", measurementType);
+
+        String writeQuery = produceInfluxLineProtocolPoint("data", "deviceData", Instant.now().toEpochMilli(),
+                "value", false, dataAsString, tags);
+
+        sendWriteQueryToTelegraf(writeQuery);
+    }
+
+    public void sendDeviceLogToTelegraf(Hub hub, String deviceIdAsString, String log) {
+        HashMap<String, String> tags = new HashMap<>();
+        tags.put("hubId", hub.getId());
+        tags.put("deviceId", String.valueOf(deviceIdAsString));
+
+        String writeQuery = produceInfluxLineProtocolPoint("logs", "deviceLog", Instant.now().toEpochMilli(),
+                "value", true, log, tags);
+
+        sendWriteQueryToTelegraf(writeQuery);
+    }
+
     private void sendWriteQueryToTelegraf(String writeQuery) {
         logger.info("Sending writeQuery to Telegraf: " + writeQuery);
         new RestTemplate().postForLocation(telegrafServerCall, writeQuery);
     }
-    //TODO add other sender methods
     //TODO add sqlite
-    //TODO add state changer
-    //TODO add mqtt consumer
-    //TODO add shutdown hooks
-    //TODO add kafka filtering
 
     public String produceInfluxLineProtocolPoint(String bucket, String measurement, Long msTimestamp, String fieldKey, boolean isValueString, String fieldValueAsString, HashMap<String, String> tagPairs) {
         StringBuilder result = new StringBuilder(measurement + "," + bucketTagName + "=" + bucket);
-
 
         for (var pair : tagPairs.entrySet())
             result.append(",").append(pair.getKey()).append("=").append(pair.getValue());

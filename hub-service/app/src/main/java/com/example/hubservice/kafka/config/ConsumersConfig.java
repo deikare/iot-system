@@ -71,10 +71,10 @@ public class ConsumersConfig {
         properties.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, hubManagementService.getHubId() + "_" + "hub_configuration");
 
         properties.put("security.protocol", "SSL");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/home/deikare/wut/iot-system/hub-service/certs/kafka-client/kafka.client.truststore.jks");
+        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.truststore.jks");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "confluent");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "JKS");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/home/deikare/wut/iot-system/hub-service/certs/kafka-client/kafka.client.keystore.jks");
+        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.keystore.jks");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "confluent");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEY_PASSWORD_CONFIG, "confluent");
@@ -125,10 +125,10 @@ public class ConsumersConfig {
         properties.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, hubManagementService.getHubId() + "_" + "hub_configuration");
 
         properties.put("security.protocol", "SSL");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/home/deikare/wut/iot-system/hub-service/certs/kafka-client/kafka.client.truststore.jks");
+        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.truststore.jks");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "confluent");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "JKS");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/home/deikare/wut/iot-system/hub-service/certs/kafka-client/kafka.client.keystore.jks");
+        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.keystore.jks");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "confluent");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEY_PASSWORD_CONFIG, "confluent");
@@ -179,10 +179,10 @@ public class ConsumersConfig {
         properties.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, hubManagementService.getHubId() + "_" + "hub_configuration");
 
         properties.put("security.protocol", "SSL");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/home/deikare/wut/iot-system/hub-service/certs/kafka-client/kafka.client.truststore.jks");
+        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.truststore.jks");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "confluent");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "JKS");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/home/deikare/wut/iot-system/hub-service/certs/kafka-client/kafka.client.keystore.jks");
+        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.keystore.jks");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "confluent");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
         properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEY_PASSWORD_CONFIG, "confluent");
@@ -196,7 +196,7 @@ public class ConsumersConfig {
     }
 
     private String getServerListWithPorts(String serverFQDN, String[] ports) {
-        StringBuilder result = new StringBuilder("");
+        StringBuilder result = new StringBuilder();
 
         for (String port : ports)
             result = result.append(serverFQDN).append(":").append(port).append(",");
