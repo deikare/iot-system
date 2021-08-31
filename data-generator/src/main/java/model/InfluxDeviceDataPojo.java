@@ -10,9 +10,14 @@ public class InfluxDeviceDataPojo extends InfluxDeviceBasePojo {
     @Column
     private double value;
 
-    public InfluxDeviceDataPojo(Instant time, String hubId, String deviceId, double value, String measurementType) {
-        super(time, hubId, deviceId, measurementType);
+    @Column(tag = true)
+    private String type;
+
+    public InfluxDeviceDataPojo(Instant time, String hubId, String deviceId, double value, String bucketName, String type) {
+        super(time, hubId, deviceId, bucketName);
         this.value = value;
+
+        this.type = type;
     }
 
     // default constructor for query result mapping
@@ -23,14 +28,19 @@ public class InfluxDeviceDataPojo extends InfluxDeviceBasePojo {
         return value;
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
-        return "InfluxDataPojo{" +
+        return "InfluxDeviceDataPojo{" +
                 "time=" + time +
                 ", hubId='" + hubId + '\'' +
+                ", bucketName='" + bucketName + '\'' +
                 ", deviceId='" + deviceId + '\'' +
-                ", type='" + type + '\'' +
                 ", value=" + value +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

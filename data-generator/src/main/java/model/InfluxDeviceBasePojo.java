@@ -8,13 +8,9 @@ public class InfluxDeviceBasePojo extends InfluxBasePojo {
     @Column(tag = true)
     protected String deviceId;
 
-    @Column(tag = true)
-    protected String type;
-
-    public InfluxDeviceBasePojo(Instant time, String hubId, String deviceId, String type) {
-        super(time, hubId);
+    public InfluxDeviceBasePojo(Instant time, String hubId, String deviceId, String bucketName) {
+        super(time, hubId, bucketName);
         this.deviceId = deviceId;
-        this.type = type;
     }
 
     // default constructor for query result mapping
@@ -26,17 +22,13 @@ public class InfluxDeviceBasePojo extends InfluxBasePojo {
         return deviceId;
     }
 
-    public String getType() {
-        return type;
-    }
-
     @Override
     public String toString() {
-        return "InfluxBasePojo{" +
+        return "InfluxDeviceBasePojo{" +
                 "time=" + time +
                 ", hubId='" + hubId + '\'' +
+                ", bucketName='" + bucketName + '\'' +
                 ", deviceId='" + deviceId + '\'' +
-                ", type='" + type + '\'' +
                 '}';
     }
 }

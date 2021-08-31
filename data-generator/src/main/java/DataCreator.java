@@ -5,13 +5,16 @@ import model.InfluxDeviceDataPojo;
 import model.InfluxDeviceLogPojo;
 import model.InfluxHubLogPojo;
 import model.InfluxHubStatusValue;
+import okhttp3.OkHttpClient;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 
 public class DataCreator {
-    private static final String url = "http://localhost:8086";
+    private static final String url = "http://iot.switzerlandnorth.cloudapp.azure.com:8086";
     private static final char[] token = "my-token".toCharArray();
     private static final String org = "my-org";
 
@@ -26,14 +29,13 @@ public class DataCreator {
 
     private static final String[] measurementTypes = {"temperature [K]", "humidity [%]", "pressure [hPa]"};
 
-    private static final String[] logTypes = {"health", "status"};
     private static final String[] logValues = {"OK", "NOT_OK"};
 
     private static final String[] buckets = {"data", "logs"};
 
     public static void main(String[] args) {
         for (int i = 0; i < hubIds.length; i++) {
-            InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.CREATED, hubNames[i]);
+            InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], "hubs", InfluxHubStatusValue.CREATED, hubNames[i]);
             writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
             System.out.println("saved " + influxHubLogPojo + "\n");
         }
@@ -44,15 +46,14 @@ public class DataCreator {
             String deviceId = randomElement(deviceIds);
 
             if (bucket.equals("logs")) {
-                String logType = randomElement(logTypes);
                 String logValue = randomElement(logValues);
 
-                InfluxDeviceLogPojo logPojo = new InfluxDeviceLogPojo(Instant.now(), hubId, deviceId, logValue, logType);
+                InfluxDeviceLogPojo logPojo = new InfluxDeviceLogPojo(Instant.now(), hubId, deviceId, "logs", logValue);
                 writeApiLogs.writeMeasurement(WritePrecision.MS, logPojo);
                 System.out.println("saved " + logPojo + " \n");
 
 /*                for (int i = 0; i < hubIds.length; i++) {
-                    InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.STOPPED, hubNames[i]);
+                    InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], "hubs", InfluxHubStatusValue.STOPPED, hubNames[i]);
                     writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
                     System.out.println("saved " + influxHubLogPojo + "\n");
                 }*/
@@ -61,12 +62,12 @@ public class DataCreator {
                 String measurementType = randomElement(measurementTypes);
                 double measurementValue = 100.0D * (new Random().nextDouble());
 
-                InfluxDeviceDataPojo dataPojo = new InfluxDeviceDataPojo(Instant.now(), hubId, deviceId, measurementValue, measurementType);
+                InfluxDeviceDataPojo dataPojo = new InfluxDeviceDataPojo(Instant.now(), hubId, deviceId, measurementValue, "data", measurementType);
                 writeApiData.writeMeasurement(WritePrecision.MS, dataPojo);
                 System.out.println("saved " + dataPojo + " \n");
 
 /*                for (int i = 0; i < hubIds.length; i++) {
-                    InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.RESTARTED, hubNames[i]);
+                    InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], "hubs", InfluxHubStatusValue.RESTARTED, hubNames[i]);
                     writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
                     System.out.println("saved " + influxHubLogPojo + "\n");
                 }*/
@@ -82,7 +83,7 @@ public class DataCreator {
         }
 
 /*        for (int i = 0; i < hubIds.length; i++) {
-            InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], InfluxHubStatusValue.DELETED, hubNames[i]);
+            InfluxHubLogPojo influxHubLogPojo = new InfluxHubLogPojo(Instant.now(), hubIds[i], "hubs", InfluxHubStatusValue.DELETED, hubNames[i]);
             writeApiHubs.writeMeasurement(WritePrecision.MS, influxHubLogPojo);
             System.out.println("saved " + influxHubLogPojo + "\n");
         }*/
