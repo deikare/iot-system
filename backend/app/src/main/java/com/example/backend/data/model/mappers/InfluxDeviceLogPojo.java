@@ -1,6 +1,7 @@
 package com.example.backend.data.model.mappers;
 
 import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceLogInterface;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 
@@ -34,6 +35,7 @@ public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo  implements Influx
                 '}';
     }
 
+    @JsonIgnore
     @Override
     public String getValueAsObject() {
         return getValue();
