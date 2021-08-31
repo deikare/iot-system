@@ -35,7 +35,7 @@ public class InfluxDeviceLogPojo extends InfluxDeviceBasePojo  implements Influx
                 '}';
     }
 
-    @JsonIgnore
+    @JsonIgnore // to not return replicated value in json
     @Override
     public String getValueAsObject() {
         return getValue();
