@@ -1,7 +1,7 @@
 # iot-system
 
 ## Generowanie certyfikatów:
-
+* `mkdir ./mounts` - stworzenie folderu służącego do montowania folderów z kontenerów w systemie
 * `./ca-generate-certs.sh` - skrypt generujący CA - certyfikat oraz klucz CA, a także dodaje cert CA do truststore'a montowanego we wszystkich składnikach Kafki
 * `./zoo-generate-certs.sh` - skrypt generujący certyfikat oraz klucz Zookeepera (procesów administrujących Kafką), a także tworzy keystore i truststore dla każdego node'a Zookeepera
 * `./kafka-generate-certs.sh` - skrypt generujący certyfikaty oraz klucze brokerów Kafki, a także tworzy keystore i truststore dla każdego node'a Kafki
