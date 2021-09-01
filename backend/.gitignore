@@ -34,4 +34,4 @@ build/
 
 certs/
 !certs/jre-custom-certs/
-!mounts
+mounts
