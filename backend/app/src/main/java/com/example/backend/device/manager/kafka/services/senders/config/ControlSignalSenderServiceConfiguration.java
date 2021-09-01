@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ControlSignalSenderServiceConfiguration {
     private final KafkaControlSignalProducer sender;
-    private final String topic = "sent_controls";
+    private final String topic = "sent_device_controls";
 
     public ControlSignalSenderServiceConfiguration(KafkaControlSignalProducer sender) {
         this.sender = sender;

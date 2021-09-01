@@ -20,7 +20,7 @@ public class DeviceControlConsumer {
         this.hubManagementService = hubManagementService;
     }
 
-    @KafkaListener(topics = "sent_controls", containerFactory = "deviceControlKafkaListenerContainerFactory")
+    @KafkaListener(topics = "sent_device_controls", containerFactory = "deviceControlKafkaListenerContainerFactory")
     public void listen(ControlSignal data) {
         logger.info("Received controlSignal: " + data.toString());
 
