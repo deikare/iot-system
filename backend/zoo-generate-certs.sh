@@ -4,6 +4,8 @@ CA_PATH="./certs/ca"
 ZOOKEEPER_PATH="./certs/zoo"
 VOLUMES_PATH="./mounts/zoo"
 
+sudo chmod -R 1000:1000 ./mounts
+
 if [ ! -d $ZOOKEEPER_PATH ] 
 then
     mkdir $ZOOKEEPER_PATH
