@@ -172,6 +172,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
       KAFKA_BROKER_ID: 1
 
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker1.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 1_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 1_sslkey_creds
@@ -207,6 +209,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
       KAFKA_BROKER_ID: 2
 
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker2.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 2_keystore_creds
       KAFKA_SSL_KEY_CREDENTIALS: 2_sslkey_creds
@@ -241,6 +245,8 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL_SSL
       KAFKA_ZOOKEEPER_CONNECT: "zoo1:3181,zoo2:3182,zoo3:3183"
       KAFKA_BROKER_ID: 3
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker3.keystore.jks
       KAFKA_SSL_KEYSTORE_CREDENTIALS: 3_keystore_creds
