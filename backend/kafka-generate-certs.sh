@@ -2,11 +2,18 @@
 
 CA_PATH="./certs/ca"
 KAFKA_PATH="./certs/kafka"
+VOLUMES_PATH="./mounts/kafka"
 
 if [ ! -d $KAFKA_PATH ] 
 then
     mkdir $KAFKA_PATH
 fi
+
+if [ ! -d $VOLUMES_PATH ] 
+then
+    mkdir $VOLUMES_PATH
+fi
+
 
 rm $KAFKA_PATH/*
 
@@ -32,6 +39,22 @@ STORETYPE="JKS"
 NODES_NUMBER=3
 
 for ((i=1;i<=NODES_NUMBER;i++)); do
+    if [ ! -d $VOLUMES_PATH/$i ] 
+    then
+        mkdir $VOLUMES_PATH/$i
+    fi
+
+    sudo chown -R 1000:1000 $VOLUMES_PATH/$i
+    
+
+    if [ ! -d $VOLUMES_PATH/$i/data ] 
+    then
+        mkdir $VOLUMES_PATH/$i/data
+    fi
+
+    sudo chown -R 1000:1000 $VOLUMES_PATH/$i/data
+
+
     CN_ITERATION=$CN$i
 
     SAN_ITERATION="dns:"$SAN$i,"dns:"$SERVER_FQDN
