@@ -2,16 +2,10 @@
 
 CA_PATH="./certs/ca"
 ZOOKEEPER_PATH="./certs/zoo"
-VOLUMES_PATH="./mounts/zoo"
 
 if [ ! -d $ZOOKEEPER_PATH ] 
 then
     mkdir $ZOOKEEPER_PATH
-fi
-
-if [ ! -d $VOLUMES_PATH ] 
-then
-    mkdir $VOLUMES_PATH
 fi
 
 rm $ZOOKEEPER_PATH/*
@@ -38,26 +32,6 @@ STORETYPE="JKS"
 NODES_NUMBER=3
 
 for ((i=1;i<=NODES_NUMBER;i++)); do
-    if [ ! -d $VOLUMES_PATH/$i ] 
-    then
-        mkdir $VOLUMES_PATH/$i
-    fi
-
-    if [ ! -d $VOLUMES_PATH/$i/data ] 
-    then
-        mkdir $VOLUMES_PATH/$i/data
-    fi
-
-        chown -R root:root $VOLUMES_PATH/$i/data
-
-
-    if [ ! -d $VOLUMES_PATH/$i/logs ] 
-    then
-        mkdir $VOLUMES_PATH/$i/logs
-    fi
-
-    chown -R root:root $VOLUMES_PATH/$i/logs
-
     CN_ITERATION=$CN$i
 
     SAN_ITERATION="dns:"$SAN$i

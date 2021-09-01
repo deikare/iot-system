@@ -186,7 +186,6 @@ services:
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: confluent1
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.broker1.truststore.jks
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: confluent1
-      
     volumes:
       - ./certs/kafka:/etc/kafka/secrets
       - ./certs/jre-custom-certs:/usr/lib/jvm/jre/lib/security
