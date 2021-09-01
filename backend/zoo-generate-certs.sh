@@ -2,6 +2,7 @@
 
 CA_PATH="./certs/ca"
 ZOOKEEPER_PATH="./certs/zoo"
+VOLUMES_PATH="./mounts/zoo"
 
 if [ ! -d $ZOOKEEPER_PATH ] 
 then
@@ -9,6 +10,11 @@ then
 fi
 
 rm $ZOOKEEPER_PATH/*
+
+if [ ! -d $VOLUMES_PATH ] 
+then
+    mkdir $VOLUMES_PATH
+fi
 
 COUNTRY="PL"
 STATE="Mazowieckie"
@@ -32,6 +38,30 @@ STORETYPE="JKS"
 NODES_NUMBER=3
 
 for ((i=1;i<=NODES_NUMBER;i++)); do
+    if [ ! -d $VOLUMES_PATH/$i ] 
+    then
+        mkdir $VOLUMES_PATH/$i
+    fi
+
+    sudo chown -R 1000:1000 $VOLUMES_PATH/$i
+
+    if [ ! -d $VOLUMES_PATH/$i/data ] 
+    then
+        mkdir $VOLUMES_PATH/$i/data
+    fi
+
+    sudo chown -R 1000:1000 $VOLUMES_PATH/$i/data
+
+    if [ ! -d $VOLUMES_PATH/$i/logs ] 
+    then
+        mkdir $VOLUMES_PATH/$i/logs
+    fi
+
+    sudo chown -R 1000:1000 $VOLUMES_PATH/$i/logs
+
+
+    
+
     CN_ITERATION=$CN$i
 
     SAN_ITERATION="dns:"$SAN$i
