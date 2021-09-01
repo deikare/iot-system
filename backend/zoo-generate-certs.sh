@@ -60,8 +60,6 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     fi
 
     sudo chown -R 1000:1000 $VOLUMES_PATH/$i/logs
-
-
     
 
     CN_ITERATION=$CN$i
