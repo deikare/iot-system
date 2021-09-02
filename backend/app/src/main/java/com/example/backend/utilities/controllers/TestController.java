@@ -52,17 +52,19 @@ public class TestController {
 
             for (int i = 1; i <= amountOfDevices; i++) {
                 Device device = new Device("D_" + hubNo + "_" + i, hub, DeviceType.BOTH);
-                logger.info("Preloading devices: " + deviceService.addDependentAndBindItToMaster(device, hub));
+                Device newDevice = deviceService.addDependentAndBindItToMasterById(device, hub.getId());
+                logger.info("Preloading devices: " + newDevice);
 
                 int amountOfControlSignals = ThreadLocalRandom.current().nextInt(1, 10);
 
                 for (int j = 1; j <= amountOfControlSignals; j++) {
                     ControlSignal controlSignal = new ControlSignal("Cs_" + hubNo + "_" + i + "_" + j, randomString(4), device);
-                    logger.info("Preloading controlSignals: " + controlSignalService.addDependentAndBindItToMaster(controlSignal, device));
+                    ControlSignal newControlSignal = controlSignalService.addDependentAndBindItToMasterById(controlSignal, newDevice.getId());
+                    logger.info("Preloading controlSignals: " + newControlSignal);
 
-                    device.addDependentToDependentsList(controlSignal);
+                    newDevice.addDependentToDependentsList(newControlSignal);
                 }
-                hub.addDependentToDependentsList(device);
+                hub.addDependentToDependentsList(newDevice);
             }
             hubNo++;
         }
