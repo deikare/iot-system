@@ -27,13 +27,11 @@ public class HubDiscoveryService {
     private final InfluxQueryService queryService;
 
     private final MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation;
-    private final EntityCrudSenderService<String, Hub> hubSender;
 
 
-    public HubDiscoveryService(InfluxQueryService queryService, MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
+    public HubDiscoveryService(InfluxQueryService queryService, MasterServiceImplementation<Hub, Device, String, HubNotFoundException> crudServiceImplementation) {
         this.queryService = queryService;
         this.crudServiceImplementation = crudServiceImplementation;
-        this.hubSender = hubSender;
     }
 
     @Scheduled(fixedRate = 10000)
