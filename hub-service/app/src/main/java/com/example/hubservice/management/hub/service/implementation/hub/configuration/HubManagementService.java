@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +52,11 @@ public class HubManagementService {
             initiateShutdownOnDelete();
         }
 
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void sendHubLogToTelegraf() {
+        telegrafSender.sendHubLogToTelegraf(getHub());
     }
 
     public Hub updateStack(Hub newStack) {
@@ -144,7 +150,6 @@ public class HubManagementService {
         else logger.info("Hub is stopped");
     }
 
-    //if false, status hasn't changed
     public void changeHubStatus(HubControlType hubControlSignal) throws TooManyHubsExistException, NoHubsFoundException {
         Hub currentHub = getHub();
 

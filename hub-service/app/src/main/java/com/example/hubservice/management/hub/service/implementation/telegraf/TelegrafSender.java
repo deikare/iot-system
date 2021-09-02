@@ -3,6 +3,7 @@ package com.example.hubservice.management.hub.service.implementation.telegraf;
 import com.example.hubservice.management.hub.model.Hub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -58,7 +59,6 @@ public class TelegrafSender {
         logger.info("Sending writeQuery to Telegraf: " + writeQuery);
         new RestTemplate().postForLocation(telegrafServerCall, writeQuery);
     }
-    //TODO add sqlite
 
     public String produceInfluxLineProtocolPoint(String bucket, String measurement, Long msTimestamp, String fieldKey, boolean isValueString, String fieldValueAsString, HashMap<String, String> tagPairs) {
         StringBuilder result = new StringBuilder(measurement + "," + bucketTagName + "=" + bucket);
