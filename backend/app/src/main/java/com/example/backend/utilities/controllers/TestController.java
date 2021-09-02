@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -61,15 +62,17 @@ public class TestController {
                     ControlSignal controlSignal = new ControlSignal("Cs_" + hubNo + "_" + i + "_" + j, randomString(4), device);
                     ControlSignal newControlSignal = controlSignalService.addDependentAndBindItToMasterById(controlSignal, newDevice.getId());
                     logger.info("Preloading controlSignals: " + newControlSignal);
-
-                    newDevice.addDependentToDependentsList(newControlSignal);
                 }
-                hub.addDependentToDependentsList(newDevice);
             }
             hubNo++;
         }
 
-        hubSender.postUpdates(hubs);
+        List<Hub> result = new ArrayList<>();
+
+        for (Hub hub : hubService.getAllObjects())
+            result.add(hub.deepCopy());
+
+        hubSender.postUpdates(result);
 
         return new ResponseEntity<>("Hubs loaded sent", HttpStatus.OK);
     }
