@@ -30,3 +30,12 @@
 * `docker-compose up -d mqtt telegraf postgres` - uruchomienie Mosquitto, Telegrafa i Postgresql
 * w oddzielnej konsoli `docker-compose logs -f` - uruchamia się w ten sposób proces wyświetlający logi wszystkich kontenerów
 * `docker-compose up -d hub` - uruchomienie huba
+
+
+### Przykładowe komendy
+* `curl --cacert <cacert> --cert <cert> -- key <key> https://$SERVER_FQDN/backend/data`
+* `curl --cacert <cacert> --cert <cert> -- key <key> https://$SERVER_FQDN/backend/logs`
+* `curl --cacert <cacert> --cert <cert> -- key <key> -X POST https://$SERVER_FQDN/backend/send_hub_control/{hubId}?controlType={START|STOP}`
+* `curl --cacert <cacert> --cert <cert> -- key <key> -X POST https://$SERVER_FQDN/backend/send_device_control/{controlSignalId}`
+* `curl --cacert <cacert> --cert <cert> -- key <key> -X POST https://$SERVER_FQDN/backend/control_signals?deviceId={deviceId} -H 'Content-Type:application/json' -d '{"name": "xyz", "messageContent": "OPEN_GATE"}'`
+
