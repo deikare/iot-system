@@ -32,7 +32,7 @@
 * `docker-compose up -d hub` - uruchomienie huba
 
 
-### Przykładowe komenty
+### Przykładowe komendy
 * `curl --cacert <cacert> --cert <cert> -- key <key> https://$SERVER_FQDN/backend/data`
 * `curl --cacert <cacert> --cert <cert> -- key <key> https://$SERVER_FQDN/backend/logs`
 * `curl --cacert <cacert> --cert <cert> -- key <key> -X POST https://$SERVER_FQDN/backend/send_hub_control/{hubId}?controlType={START|STOP}`
