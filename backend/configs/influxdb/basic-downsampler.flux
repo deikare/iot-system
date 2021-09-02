@@ -7,7 +7,7 @@ option task = {
 // Defines a data source
 data = from(bucket: "data")
   |> range(start: -task.every)
-  |> filter(fn: (r) => r._measurement == "data")
+  |> filter(fn: (r) => r._measurement == "deviceData")
 
 data
   // Windows and aggregates the data in to 10m averages
