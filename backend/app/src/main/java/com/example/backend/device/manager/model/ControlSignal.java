@@ -23,9 +23,8 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
 
     private String messageContent;
 
-    //eager fetch is imposed, because kafka couldn't serialize properly sending controls
     @JsonIgnore //used to avoid recursive call
-    @ManyToOne/*(fetch = FetchType.LAZY)*/
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "DEVICE_ID")
     private Device device;
 
@@ -57,9 +56,8 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
 
         if (this == o)
             return true;
-        if (!(o instanceof ControlSignal))
+        if (!(o instanceof ControlSignal controlSignal))
             return false;
-        ControlSignal controlSignal = (ControlSignal) o;
         return Objects.equals(this.id, controlSignal.id) && Objects.equals(this.name, controlSignal.name)
                 && Objects.equals(this.messageContent, controlSignal.messageContent)
                 && Objects.equals(this.device, controlSignal.device);
@@ -133,14 +131,8 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
     }
 
     @Override
-    public ControlSignal deepCopy() {
-        ControlSignal copy =  new ControlSignal(this.id, this.name, this.messageContent, this.device);
-
-        return copy;
-    }
-
-    @Override
     public void setMaster(Device master) {
         setDevice(master);
+        this.device.addDependentToDependentsList(this);
     }
 }

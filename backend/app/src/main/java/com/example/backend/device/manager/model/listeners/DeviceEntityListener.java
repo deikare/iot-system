@@ -1,7 +1,6 @@
 package com.example.backend.device.manager.model.listeners;
 
 import com.example.backend.device.manager.model.Device;
-import com.example.backend.device.manager.model.Hub;
 import com.example.backend.utilities.loggers.abstracts.CrudOperationType;
 import com.example.backend.utilities.loggers.abstracts.CrudServiceLogger;
 import org.slf4j.Logger;

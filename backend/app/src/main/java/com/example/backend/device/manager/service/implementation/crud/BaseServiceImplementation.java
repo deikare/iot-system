@@ -5,10 +5,12 @@ import com.example.backend.device.manager.model.interfaces.crud.BaseTypeInterfac
 import com.example.backend.device.manager.service.Builder;
 import com.example.backend.device.manager.service.interfaces.crud.BaseServiceInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 public class BaseServiceImplementation<
         B extends BaseTypeInterface<B>,
         K,
@@ -69,20 +71,13 @@ public class BaseServiceImplementation<
 
     @Override
     public List<B> deleteAllObjectsAndReturnThemListed() {
-        List<B> result = new ArrayList<>();
-
         List<B> objectsToDelete = getAllObjects();
-
-        for (B objectToDelete : objectsToDelete)
-            result.add(objectToDelete.deepCopy());
-
         deleteAllObjects();
-        return result;
+        return objectsToDelete;
     }
 
     private B deleteObjectAndReturnDeletedObject(B toDelete) {
-        B deletedObjectCopy = toDelete.deepCopy();
         repository.delete(toDelete);
-        return deletedObjectCopy;
+        return toDelete;
     }
 }

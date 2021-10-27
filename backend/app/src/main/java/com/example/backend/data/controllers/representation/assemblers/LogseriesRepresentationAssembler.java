@@ -24,8 +24,9 @@ public class LogseriesRepresentationAssembler extends RepresentationModelAssembl
         super(LogController.class, LogseriesRepresentationModel.class);
     }
 
+    @NotNull
     @Override
-    public LogseriesRepresentationModel toModel(DeviceLogseries<InfluxDeviceLogPojo> entity) {
+    public LogseriesRepresentationModel toModel(@NotNull DeviceLogseries<InfluxDeviceLogPojo> entity) {
         return null;
     }
 

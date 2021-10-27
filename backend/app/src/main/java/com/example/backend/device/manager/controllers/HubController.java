@@ -123,7 +123,8 @@ public class HubController {
     @DeleteMapping("/{id}")
     void deleteHub(@PathVariable String id) {
         try {
-            Hub result = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
+            Hub result = crudServiceImplementation.findObjectById(id); //TODO add difference between change of hub and delete of hub
+            crudServiceImplementation.deleteObjectById(id);
             hubSender.postRemove(result);
         }
         catch (HubNotFoundException e) {
@@ -136,7 +137,9 @@ public class HubController {
 
     @DeleteMapping
     void deleteAllHubs() {
-        List<Hub> deletedHubs = crudServiceImplementation.deleteAllObjectsAndReturnThemListed();
+        List<Hub> deletedHubs = crudServiceImplementation.getAllObjects();
+
+        crudServiceImplementation.deleteAllObjects();
 
         hubSender.postRemoves(deletedHubs);
 

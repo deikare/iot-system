@@ -3,7 +3,6 @@ package com.example.backend.device.manager.controllers;
 import com.example.backend.device.manager.controllers.assemblers.DeviceModelAssembler;
 import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
 import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
-import com.example.backend.device.manager.controllers.exceptions.HubInDeviceNotSpecifiedException;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.ControlSignal;
@@ -12,7 +11,7 @@ import com.example.backend.device.manager.model.DeviceType;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation;
-import com.example.backend.utilities.builders.lists.ListBuilder;
+import com.example.backend.device.manager.service.implementation.utilities.EntityLazilyFetchedFieldsInitializer;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
 import org.slf4j.Logger;
@@ -36,15 +35,18 @@ public class DeviceController {
     private final ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation;
     private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation;
 
+    private final EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer;
+
     private final EntityCrudSenderService<String, Hub> hubSender;
 
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
-    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
+    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
+        this.entityLazilyFetchedFieldsInitializer = entityLazilyFetchedFieldsInitializer;
         this.hubSender = hubSender;
     }
 
@@ -109,22 +111,19 @@ public class DeviceController {
     }
 
     @PostMapping
-    public EntityModel<Device> newDevice(@RequestParam(required = false) String hubId,
+    public EntityModel<Device> newDevice(@RequestParam String hubId,
                                          @RequestBody Device device) {
         Device result;
 
-        if (hubId == null)
-            try {
-                result = crudServiceImplementation.addDependentAndBindItToMaster(device, device.getHub());
-            }
-            catch (IllegalArgumentException e) {
-                HubInDeviceNotSpecifiedException hubNotSpecifiedException = new HubInDeviceNotSpecifiedException(device.getId());
-                CrudControllerLogger.produceErrorLog(logger, HttpMethodType.POST, hubNotSpecifiedException.getMessage());
-                throw hubNotSpecifiedException;
-            }
-        else result = crudServiceImplementation.addDependentAndBindItToMasterById(device, hubId);
+        try {
+            result = crudServiceImplementation.addDependentAndBindItToMasterById(device, hubId);
+        }
+        catch (HubNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.GET, e.getMessage());
+            throw e;
+        }
 
-        hubSender.postUpdate(result.getHub());
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "device", result);
 
@@ -148,7 +147,7 @@ public class DeviceController {
             throw e;
         }
 
-        hubSender.postUpdate(result.getHub());
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "device", result);
 
@@ -169,7 +168,7 @@ public class DeviceController {
             throw e;
         }
 
-        hubSender.postUpdate(result.getHub());
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "device", result);
 
@@ -180,7 +179,7 @@ public class DeviceController {
     void deleteDevice(@PathVariable Long id) {
         try {
             Device deletedDevice = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
-            hubSender.postUpdate(deletedDevice.getHub());
+            hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(deletedDevice));
         }
         catch (DeviceNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
@@ -194,9 +193,7 @@ public class DeviceController {
     void deleteAllDevices() {
         List<Device> deletedDevices = crudServiceImplementation.deleteAllObjectsAndReturnThemListed();
 
-        List<Hub> hubs = ListBuilder.hubListWithDevicesFromDeviceListBuilder(deletedDevices);
-
-        hubSender.postUpdates(hubs);
+        hubSender.postUpdates(entityLazilyFetchedFieldsInitializer.generateFetchedHubsBasedOnDevices(deletedDevices));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "devices", "true");
     }

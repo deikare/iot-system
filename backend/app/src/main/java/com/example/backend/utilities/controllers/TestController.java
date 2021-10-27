@@ -11,9 +11,9 @@ import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
+import com.example.backend.device.manager.service.implementation.utilities.EntityLazilyFetchedFieldsInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,14 +32,17 @@ public class TestController {
     private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService;
     private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService;
 
+    private final EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer;
+
     private final EntityCrudSenderService<String, Hub> hubSender;
 
     private final Logger logger = LoggerFactory.getLogger(TestController.class);
 
-    public TestController(MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService, EntityCrudSenderService<String, Hub> hubSender) {
+    public TestController(MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubService, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> deviceService, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalService, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
         this.hubService = hubService;
         this.deviceService = deviceService;
         this.controlSignalService = controlSignalService;
+        this.entityLazilyFetchedFieldsInitializer = entityLazilyFetchedFieldsInitializer;
         this.hubSender = hubSender;
     }
 
@@ -67,11 +70,8 @@ public class TestController {
             hubNo++;
         }
 
-        List<Hub> result = new ArrayList<>();
-
-        for (Hub hub : hubService.getAllObjects())
-            result.add(hub.deepCopy());
-
+        List<Hub> result = hubService.getAllObjects();
+        entityLazilyFetchedFieldsInitializer.initializeHubs(result);
         hubSender.postUpdates(result);
 
         return new ResponseEntity<>("Hubs loaded sent", HttpStatus.OK);

@@ -19,6 +19,7 @@ public interface ControlSignalRepository extends JpaRepository<ControlSignal, Lo
     Page<ControlSignal> findByMessageContentContainingAndDevice_Id(String messageContent, Long deviceId, Pageable pageable);
     Page<ControlSignal> findByNameContainingAndMessageContentContainingAndDevice_Id(String name, String messageContent, Long deviceId, Pageable pageable);
 
+
     @Override
     default Page<ControlSignal> findAllByNameContaining(String name, Pageable pageable) {
         return findByNameContaining(name, pageable);

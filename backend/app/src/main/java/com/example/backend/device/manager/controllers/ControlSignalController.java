@@ -1,15 +1,12 @@
 package com.example.backend.device.manager.controllers;
 
 import com.example.backend.device.manager.controllers.assemblers.ControlSignalModelAssembler;
-import com.example.backend.device.manager.controllers.exceptions.ControlSignalNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.DeviceInControlSignalNotSpecifiedException;
-import com.example.backend.device.manager.controllers.exceptions.DeviceNotFoundException;
-import com.example.backend.device.manager.controllers.exceptions.EntityNotModifiedException;
+import com.example.backend.device.manager.controllers.exceptions.*;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.*;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
-import com.example.backend.utilities.builders.lists.ListBuilder;
+import com.example.backend.device.manager.service.implementation.utilities.EntityLazilyFetchedFieldsInitializer;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
 import org.slf4j.Logger;
@@ -25,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//TODO szyfrowanie ssl kafka - serwer, zamienić postgresa w hubie na sqlite, zrównoleglić fetch z influxa
 @RestController
 @RequestMapping("/control_signals")
 public class ControlSignalController {
@@ -33,15 +31,18 @@ public class ControlSignalController {
     private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation;
     private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
+    private final EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer;
+
     private final EntityCrudSenderService<String, Hub> hubSender;
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalController.class);
 
-    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityCrudSenderService<String, Hub> hubSender) {
+    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
         this.crudServiceImplementation = crudServiceImplementation;
+        this.entityLazilyFetchedFieldsInitializer = entityLazilyFetchedFieldsInitializer;
         this.hubSender = hubSender;
     }
 
@@ -107,23 +108,19 @@ public class ControlSignalController {
     }
 
     @PostMapping
-    public EntityModel<ControlSignal> newControlSignal(@RequestParam(required = false) Long deviceId,
+    public EntityModel<ControlSignal> newControlSignal(@RequestParam Long deviceId,
                                          @RequestBody ControlSignal newControlSignal) {
         ControlSignal result;
 
-        if (deviceId == null) {
-            try {
-                result = crudServiceImplementation.addDependentAndBindItToMaster(newControlSignal, newControlSignal.getDevice());
-            }
-            catch (IllegalArgumentException e) {
-                DeviceInControlSignalNotSpecifiedException deviceNotSpecifiedException = new DeviceInControlSignalNotSpecifiedException(newControlSignal.getId());
-                CrudControllerLogger.produceErrorLog(logger, HttpMethodType.POST, deviceNotSpecifiedException.getMessage());
-                throw deviceNotSpecifiedException;
-            }
+        try {
+            result = crudServiceImplementation.addDependentAndBindItToMasterById(newControlSignal, deviceId);
         }
-        else result = crudServiceImplementation.addDependentAndBindItToMasterById(newControlSignal, deviceId);
+        catch (DeviceNotFoundException e) {
+            CrudControllerLogger.produceErrorLog(logger, HttpMethodType.GET, e.getMessage());
+            throw e;
+        }
 
-        hubSender.postUpdate(result.getDevice().getHub());
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "controlSignal", result);
 
@@ -147,7 +144,7 @@ public class ControlSignalController {
             throw e;
         }
 
-        hubSender.postUpdate(result.getDevice().getHub());
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlSignal", result);
 
@@ -168,7 +165,7 @@ public class ControlSignalController {
             throw e;
         }
 
-        hubSender.postUpdate(result.getDevice().getHub());
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlSignal", result);
 
@@ -179,7 +176,7 @@ public class ControlSignalController {
     void deleteControlSignal(@PathVariable Long id) {
         try {
             ControlSignal deletedControlSignal = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
-            hubSender.postUpdate(deletedControlSignal.getDevice().getHub());
+            hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(deletedControlSignal));
         }
         catch (ControlSignalNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
@@ -193,7 +190,7 @@ public class ControlSignalController {
     void deleteAllControlSignals() {
         List<ControlSignal> deletedControlSignals = crudServiceImplementation.deleteAllObjectsAndReturnThemListed();
 
-        hubSender.postUpdates(ListBuilder.hubListWithControlsFromControlSignalListBuilder(deletedControlSignals));
+        hubSender.postUpdates(entityLazilyFetchedFieldsInitializer.generateFetchedHubsBasedOnControlSignals(deletedControlSignals));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.DELETE, "controlSignals", "true");
     }

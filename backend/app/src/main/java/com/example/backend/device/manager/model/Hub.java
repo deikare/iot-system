@@ -6,9 +6,7 @@ import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterf
 import com.example.backend.device.manager.model.listeners.HubEntityListener;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @EntityListeners(HubEntityListener.class)
 @Entity
@@ -22,8 +20,9 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
     @Enumerated(EnumType.STRING)
     private InfluxHubStatusValue status;
 
-    @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL)
-    private final List<Device> devices = new ArrayList<>();
+    //TODO use transactional in service layer to assure correct items management
+    @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private final Set<Device> devices = new HashSet<>();
 
     public Hub(String id, String name, InfluxHubStatusValue status) {
         this.id = id;
@@ -58,7 +57,7 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
         this.status = status;
     }
 
-    public List<Device> getDevices() {
+    public Set<Device> getDevices() {
         return devices;
     }
 
@@ -76,9 +75,8 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
 
         if (this == o)
             return true;
-        if (!(o instanceof Hub))
+        if (!(o instanceof Hub hub))
             return false;
-        Hub hub = (Hub) o;
         return Objects.equals(this.id, hub.id) && Objects.equals(this.name, hub.name)
                 && Objects.equals(this.devices, hub.devices) && Objects.equals(this.status, hub.status);
     }
@@ -108,16 +106,6 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
         InfluxHubStatusValue newStatus = patch.getStatus();
         if (newStatus != null)
             setStatus(newStatus);
-    }
-
-    @Override
-    public Hub deepCopy() {
-        Hub copy =  new Hub(this.id, this.name, this.status);
-
-        for (Device device : devices) {
-            copy.addDependentToDependentsList(device.deepCopy());
-        }
-        return copy;
     }
 
     @Override

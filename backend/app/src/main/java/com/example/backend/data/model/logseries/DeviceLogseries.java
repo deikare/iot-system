@@ -4,7 +4,6 @@ import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceBaseInte
 import com.example.backend.data.model.timeseries.interfaces.InfluxDeviceLogInterface;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceLogseries<I extends InfluxDeviceLogInterface<String>> {

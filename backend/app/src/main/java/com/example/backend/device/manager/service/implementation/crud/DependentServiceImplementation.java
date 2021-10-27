@@ -5,6 +5,7 @@ import com.example.backend.device.manager.service.interfaces.crud.DependentServi
 import com.example.backend.device.manager.model.interfaces.crud.DependentTypeInterface;
 import com.example.backend.device.manager.model.interfaces.crud.MasterTypeInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DependentServiceImplementation<
         B extends DependentTypeInterface<B, M>,
@@ -32,10 +33,7 @@ public class DependentServiceImplementation<
     @Override
     public B addDependentAndBindItToMaster(B dependent, M master) {
         dependent.setMaster(master);
-        masterServiceImplementation.addDependentToListInObject(master, dependent);
-        B addedDependent = addObject(dependent);
-//        masterServiceImplementation.addDependentToListInObject(master, dependent);
-        return addedDependent;
+        return addObject(dependent);
     }
 }
 

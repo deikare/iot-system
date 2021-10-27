@@ -6,9 +6,7 @@ import com.example.backend.device.manager.model.listeners.DeviceEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @EntityListeners(DeviceEntityListener.class)
 @Entity
@@ -21,12 +19,12 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     private String name;
 
     @JsonIgnore //used to avoid recursive call
-    @ManyToOne/*(fetch = FetchType.LAZY)*/
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "HUB_ID")
     private Hub hub;
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    private final List<ControlSignal> controlSignals = new ArrayList<>();
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private final Set<ControlSignal> controlSignals = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
@@ -68,7 +66,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
         this.hub = hub;
     }
 
-    public List<ControlSignal> getControlSignals() {
+    public Set<ControlSignal> getControlSignals() {
         return controlSignals;
     }
 
@@ -95,11 +93,10 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
 
         if (this == o)
             return true;
-        if (!(o instanceof Device))
+        if (!(o instanceof Device device))
             return false;
-        Device device = (Device) o;
         return Objects.equals(this.id, device.id) && Objects.equals(this.name, device.name)
-                && Objects.equals(this.hub, device.controlSignals)
+                && Objects.equals(this.hub, device.hub)
                 && Objects.equals(this.deviceType, device.deviceType)
                 && Objects.equals(this.controlSignals, device.controlSignals);
     }
@@ -138,16 +135,6 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     }
 
     @Override
-    public Device deepCopy() {
-        Device copy =  new Device(this.id, this.name, this.hub, this.deviceType);
-
-        for (ControlSignal controlSignal : controlSignals) {
-            copy.addDependentToDependentsList(controlSignal.deepCopy());
-        }
-        return copy;
-    }
-
-    @Override
     public Device addDependentToDependentsList(ControlSignal dependent) {
         controlSignals.add(dependent);
         return this;
@@ -161,5 +148,6 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
     @Override
     public void setMaster(Hub master) {
         setHub(master);
+        this.hub.addDependentToDependentsList(this);
     }
 }
