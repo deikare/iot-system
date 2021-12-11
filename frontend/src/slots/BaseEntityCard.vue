@@ -24,7 +24,15 @@ export default {
   components: {
     BaseGridCard,
   },
-  props: ["entity"],
+  props: {
+    entity: {
+      type: Object,
+      required: true,
+      default() {
+        return { name: "not found", properties: [] };
+      },
+    },
+  },
 };
 </script>
 
@@ -36,7 +44,7 @@ export default {
 
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.4rem;
 }

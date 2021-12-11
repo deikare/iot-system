@@ -18,7 +18,25 @@ export default {
   components: {
     BaseEntityCard,
   },
-  props: ["entities", "linkGeneratorFunction"],
+  props: {
+    entities: {
+      type: Array,
+      required: true,
+      default() {
+        return [];
+      },
+    },
+
+    linkGeneratorFunction: {
+      type: Function,
+      required: true,
+      default() {
+        return function () {
+          return null;
+        };
+      },
+    },
+  },
 };
 </script>
 

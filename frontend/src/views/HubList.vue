@@ -11,28 +11,21 @@
     </form>
 
     <main>
-      <base-entity-grid
-        v-bind:entities="getEntities"
-        v-bind:link-generator-function="getHubLink"
-      ></base-entity-grid>
-
-      <base-paginator
-        v-bind:n="15"
-        v-bind:short-list-length="4"
-        v-bind:link-generator-function="getHubPaginatorLink"
-        v-bind:current-page="page"
-      ></base-paginator>
+      <base-entity-page
+        v-bind:entities-page="getEntitiesPage"
+        v-bind:entities-page-link-generator-function="getHubPaginatorLink"
+        v-bind:entity-link-generator-function="getHubLink"
+      ></base-entity-page>
     </main>
   </div>
 </template>
 
 <script>
-import BaseEntityGrid from "@/slots/BaseEntityGrid";
-import BasePaginator from "@/slots/BasePaginator";
+import BaseEntityPage from "@/slots/BaseEntityPage";
 export default {
   name: "HubList",
 
-  components: { BasePaginator, BaseEntityGrid },
+  components: { BaseEntityPage },
 
   data() {
     return {
@@ -103,27 +96,44 @@ export default {
     },
   },
 
-  props: ["page", "name"],
+  props: {
+    page: {
+      type: String,
+      required: true,
+      default: "1",
+    },
+
+    name: {
+      type: String,
+      required: false,
+      default: "",
+    },
+  },
 
   computed: {
-    getEntities() {
-      return this.hubs.map((hub) => {
-        return {
-          type: "Hub",
-          name: hub.name,
-          id: hub.id,
-          properties: [
-            {
-              key: "Id",
-              value: hub.id,
-            },
-            {
-              key: "State",
-              value: hub.state,
-            },
-          ],
-        };
-      });
+    getEntitiesPage() {
+      return {
+        entities: this.hubs.map((hub) => {
+          return {
+            type: "Hub",
+            name: hub.name,
+            id: hub.id,
+            properties: [
+              {
+                key: "Id",
+                value: hub.id,
+              },
+              {
+                key: "State",
+                value: hub.state,
+              },
+            ],
+          };
+        }),
+        n: 15,
+        shortListLength: 4,
+        currentPage: Number(this.page),
+      };
     },
   },
 
