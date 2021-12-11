@@ -16,7 +16,6 @@
         />
       </svg>
     </router-link>
-    <div v-else class="arrow-placeholder">&nbsp;</div>
 
     <ul class="links-list" v-if="isListShort">
       <router-link
@@ -24,7 +23,7 @@
         v-bind:key="'short-' + buttonLabel"
         v-bind:to="linkGeneratorFunction(buttonLabel)"
         v-bind:class="[
-          buttonLabel === Number(currentPage) ? 'number-link-active' : '',
+          buttonLabel === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
       >
@@ -37,7 +36,7 @@
         v-if="buttonLabelsShortArray[0] > 1"
         v-bind:to="linkGeneratorFunction(1)"
         v-bind:class="[
-          1 === Number(currentPage) ? 'number-link-active' : '',
+          1 === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
       >
@@ -51,7 +50,7 @@
         v-bind:key="'long-' + buttonLabel"
         v-bind:to="linkGeneratorFunction(buttonLabel)"
         v-bind:class="[
-          buttonLabel === Number(currentPage) ? 'number-link-active' : '',
+          buttonLabel === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
       >
@@ -69,7 +68,7 @@
         v-if="buttonLabelsShortArray[buttonLabelsShortArray.length - 1] < n"
         v-bind:to="linkGeneratorFunction(lastButtonLabel)"
         v-bind:class="[
-          n === Number(currentPage) ? 'number-link-active' : '',
+          n === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
       >
@@ -93,14 +92,39 @@
         />
       </svg>
     </router-link>
-    <div v-else class="arrow-placeholder">&nbsp;</div>
   </div>
 </template>
 
 <script>
 export default {
   name: "BasePaginator",
-  props: ["n", "shortListLength", "linkGeneratorFunction", "currentPage"],
+  props: {
+    n: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    shortListLength: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    currentPage: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    linkGeneratorFunction: {
+      type: Function,
+      required: true,
+      default() {
+        return function () {
+          return null;
+        };
+      },
+    },
+  },
+
   computed: {
     isComponentRenderable() {
       return this.n > 1;
@@ -115,11 +139,11 @@ export default {
     },
 
     leftArrowUrl() {
-      return this.linkGeneratorFunction(Number(this.currentPage) - 1);
+      return this.linkGeneratorFunction(this.currentPage - 1);
     },
 
     rightArrowUrl() {
-      return this.linkGeneratorFunction(Number(this.currentPage) + 1);
+      return this.linkGeneratorFunction(this.currentPage + 1);
     },
 
     isListShort() {
@@ -127,7 +151,7 @@ export default {
     },
 
     buttonLabelsArray() {
-      return Array.from({ length: this.n - 1 }, (element, idx) => idx + 1);
+      return Array.from({ length: this.n }, (element, idx) => idx + 1);
     },
 
     //only even numbers as shortListLength
@@ -135,8 +159,8 @@ export default {
       let delta = this.shortListLength / 2;
 
       return Array.from({ length: this.n }, (element, idx) => idx + 1).slice(
-        Math.max(Number(this.currentPage) - delta - 1, 0),
-        Math.min(Number(this.currentPage) + delta, this.n)
+        Math.max(this.currentPage - delta - 1, 0),
+        Math.min(this.currentPage + delta, this.n)
       );
     },
 
@@ -219,10 +243,5 @@ a:hover {
   color: var(--background-color);
   cursor: pointer;
   border-radius: 50%;
-}
-
-.arrow-placeholder {
-  width: 3.6rem;
-  height: 3.6rem;
 }
 </style>

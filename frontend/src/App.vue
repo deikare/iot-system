@@ -19,6 +19,8 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Condensed:wght@300;400;700&family=Roboto+Mono:wght@400;500;700&family=Rubik:wght@500;700&display=swap");
+
 /*
 SPACING SYSTEM (px)
 2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
@@ -37,7 +39,6 @@ GREY COLOR: #343a40
   --background-color: #f8f9fa;
   --card-color: #e9ecef;
 }
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto+Condensed:wght@300;400;700&family=Roboto+Mono:wght@400;500;700&family=Rubik:wght@500;700&display=swap");
 
 html {
   font-size: 62.5%;
