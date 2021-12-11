@@ -86,7 +86,7 @@ public class HubManagementService {
         return deviceService.isPresent(deviceId);
     }
 
-    public boolean isControlSignalPresent(Long controlSignalId) {
+    public boolean  isControlSignalPresent(Long controlSignalId) {
         return controlSignalService.isPresent(controlSignalId);
     }
 
