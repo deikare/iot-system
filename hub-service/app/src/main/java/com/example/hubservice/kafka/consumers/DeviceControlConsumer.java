@@ -33,7 +33,6 @@ public class DeviceControlConsumer {
             logger.info("Trying to send message: topic = " + topic + ", content = " + message);
             mqttClientService.publishMessage(topic, message);
         }
-
         else logger.info("Hub is stopped");
     }
 
