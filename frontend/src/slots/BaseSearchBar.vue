@@ -2,7 +2,7 @@
 
 <script>
 export default {
-  name: "SearchBar",
+  name: "BaseSearchBar",
 };
 </script>
 

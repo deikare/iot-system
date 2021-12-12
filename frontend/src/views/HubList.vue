@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <!--    TODO this component should pass list of active filters to base filtering based on query-->
     <form>
       <input
         name="name"
@@ -143,7 +144,13 @@ export default {
     },
 
     getHubPaginatorLink(index) {
-      return { name: "hubs", query: { page: index } };
+      return {
+        name: "hubs",
+        query: {
+          page: index,
+          ...(this.nameQuery !== "" && { name: this.nameQuery }),
+        },
+      };
     },
   },
 };
