@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <!--    TODO make work slots, so no styling for form is here needed-->
     <main>
       <base-entity-page
         v-bind:entities-page="getEntitiesPage"
@@ -10,16 +9,8 @@
         v-bind:active-filters="getActiveFilters"
       >
         <template v-slot:filter-form>
-          <form>
-            <input
-              name="name"
-              type="text"
-              placeholder="Find a hub named..."
-              v-model="nameQuery"
-            />
-            <button>Submit</button>
-          </form></template
-        >
+          <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
+        </template>
       </base-entity-page>
     </main>
   </div>
@@ -27,10 +18,11 @@
 
 <script>
 import BaseEntityPage from "@/slots/BaseEntityPage";
+import HubFiltering from "@/slots/HubFiltering";
 export default {
   name: "HubList",
 
-  components: { BaseEntityPage },
+  components: { HubFiltering, BaseEntityPage },
 
   data() {
     return {
@@ -192,13 +184,24 @@ export default {
     },
 
     deactivateFilter(key) {
-      if (key === "name")
-        this.$router.push({
-          name: "hubs",
-          query: {
-            page: 1,
-          },
-        });
+      let route = {
+        name: "hubs",
+        query: {
+          page: 1,
+        },
+      };
+      if (key === "name") this.$router.push(route);
+    },
+    newQuery(newQueryName) {
+      let route = {
+        name: "hubs",
+        query: {
+          page: 1,
+          name: newQueryName,
+        },
+      };
+
+      this.$router.push(route);
     },
   },
 };
@@ -212,27 +215,4 @@ SPACING SYSTEM (px)
 FONT SIZE SYSTEM (px)
 10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62 / 74 / 86 / 98
 */
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
-}
-
-form {
-  display: flex;
-  gap: 0.4rem;
-}
-
-input {
-  font-size: 1.8rem;
-  color: var(--main-color);
-  background-color: var(--background-color);
-  border: 1px solid var(--main-color);
-}
-
-button {
-  font-size: 1.8rem;
-  background-color: var(--card-color);
-  border: 1px solid var(--main-color);
-}
 </style>

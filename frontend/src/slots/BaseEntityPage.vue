@@ -1,21 +1,6 @@
 <template>
   <div class="container">
-    <base-filter-form>
-      <template v-slot:default>
-        <slot name="filter-form"> </slot>
-      </template>
-    </base-filter-form>
-
-    <!--    <form>-->
-    <!--      <slot name="filter-form"> </slot>-->
-    <!--      <input-->
-    <!--        name="name"-->
-    <!--        type="text"-->
-    <!--        placeholder="Find a hub named..."-->
-    <!--        v-model="nameQuery"-->
-    <!--      />-->
-    <!--      <button>Submit</button>-->
-    <!--    </form>-->
+    <slot name="filter-form"></slot>
 
     <base-filtering
       v-bind:filters="activeFilters"
@@ -40,11 +25,10 @@
 import BaseEntityGrid from "@/slots/BaseEntityGrid";
 import BasePaginator from "@/slots/BasePaginator";
 import BaseFiltering from "@/slots/BaseFiltering";
-import BaseFilterForm from "@/slots/BaseFilterForm";
 export default {
   name: "BaseEntityPage",
 
-  components: { BaseFilterForm, BaseFiltering, BasePaginator, BaseEntityGrid },
+  components: { BaseFiltering, BasePaginator, BaseEntityGrid },
 
   props: {
     entitiesPage: {
@@ -101,23 +85,5 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
-}
-
-form {
-  display: flex;
-  gap: 0.4rem;
-}
-
-input {
-  font-size: 1.8rem;
-  color: var(--main-color);
-  background-color: var(--background-color);
-  border: 1px solid var(--main-color);
-}
-
-button {
-  font-size: 1.8rem;
-  background-color: var(--card-color);
-  border: 1px solid var(--main-color);
 }
 </style>
