@@ -1,17 +1,17 @@
 <template>
-  <base-search-bar></base-search-bar>
+  <!--  <base-search-form v-on:addFilter="emitAddFilter"></base-search-form>-->
   <base-filter-list
-    v-on:deactivateFilter="popDeactivateFilter"
+    v-on:deactivateFilter="emitDeactivateFilter"
     v-bind:filters="filters"
   ></base-filter-list>
 </template>
 
 <script>
-import BaseSearchBar from "@/slots/BaseSearchBar";
 import BaseFilterList from "@/slots/BaseFilterList";
+// import BaseSearchForm from "@/slots/BaseSearchForm";
 export default {
   name: "BaseFiltering",
-  components: { BaseFilterList, BaseSearchBar },
+  components: { BaseFilterList },
   props: {
     filters: {
       type: Array,
@@ -21,9 +21,12 @@ export default {
       },
     },
   },
-  emits: ["deactivateFilter"],
+  emits: ["deactivateFilter", "newFilter"],
   methods: {
-    popDeactivateFilter(event) {
+    emitDeactivateFilter(event) {
+      this.$emit("deactivateFilter", event);
+    },
+    emitAddFilter(event) {
       this.$emit(event);
     },
   },

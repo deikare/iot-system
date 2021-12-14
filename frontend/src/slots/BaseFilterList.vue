@@ -1,13 +1,14 @@
 <template>
   <!--  TODO this component should return event to higher component,
   which should return whole query to the top-->
+  <!--  gets only active filters-->
   <ul v-if="isListRenderable">
-    <li class="filter" v-for="filter in activeFilters" v-bind:key="filter.id">
+    <li class="filter" v-for="filter in filters" v-bind:key="filter.id">
       <div class="filter-text">{{ filter.key }}: {{ filter.value }}</div>
-      <button v-on:click="deactivateFilter(filter.id)">
+      <button v-on:click="deactivateFilter(filter.key)" class="close-button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="close-button"
+          class="close-icon"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -16,7 +17,7 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            d="M6 18L18 6M6 6l12 12"
           />
         </svg>
       </button>
@@ -44,18 +45,61 @@ export default {
     isListRenderable() {
       return this.filters.length > 0;
     },
-
-    activeFilters() {
-      return this.filters.filter((element) => element.isActive);
-    },
   },
 
   methods: {
-    deactivateFilter(id) {
-      this.$emit("deactivateFilter", id);
+    deactivateFilter(key) {
+      this.$emit("deactivateFilter", key);
     },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+ul {
+  display: flex;
+  gap: 1.6rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+li {
+  list-style: none;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 1.8rem;
+
+  background-color: var(--main-color);
+  color: var(--background-color);
+  font-weight: bold;
+  padding: 0.2rem 0.8rem 0.2rem 0.8rem;
+  border-radius: 100rem;
+}
+
+.filter-text {
+  display: inline-block;
+}
+
+.close-button {
+  padding: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid var(--background-color);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-icon {
+  stroke: var(--background-color);
+
+  width: 1.4rem;
+  height: 1.4rem;
+}
+</style>
