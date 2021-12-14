@@ -38,6 +38,7 @@ GREY COLOR: #343a40
   /*--main-color: #343a40;*/
   --background-color: #f8f9fa;
   --card-color: #e9ecef;
+  --error-color: #f03e3e;
 }
 
 html {

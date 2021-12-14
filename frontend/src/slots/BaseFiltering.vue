@@ -1,5 +1,4 @@
 <template>
-  <!--  <base-search-form v-on:addFilter="emitAddFilter"></base-search-form>-->
   <base-filter-list
     v-on:deactivateFilter="emitDeactivateFilter"
     v-bind:filters="filters"
@@ -21,13 +20,10 @@ export default {
       },
     },
   },
-  emits: ["deactivateFilter", "newFilter"],
+  emits: ["deactivateFilter"],
   methods: {
     emitDeactivateFilter(event) {
       this.$emit("deactivateFilter", event);
-    },
-    emitAddFilter(event) {
-      this.$emit(event);
     },
   },
 };
