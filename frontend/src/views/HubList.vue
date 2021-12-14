@@ -1,22 +1,26 @@
 <template>
   <div class="container">
-    <!--    TODO this component should pass list of active filters to base filtering based on query-->
-    <form>
-      <input
-        name="name"
-        type="text"
-        placeholder="Find a hub named..."
-        v-model="nameQuery"
-      />
-      <button>Submit</button>
-    </form>
-
+    <!--    TODO make work slots, so no styling for form is here needed-->
     <main>
       <base-entity-page
         v-bind:entities-page="getEntitiesPage"
-        v-bind:entities-page-link-generator-function="getHubPaginatorLink"
         v-bind:entity-link-generator-function="getHubLink"
-      ></base-entity-page>
+        v-on:changePage="changePage"
+        v-on:deactivateFilter="deactivateFilter"
+        v-bind:active-filters="getActiveFilters"
+      >
+        <template v-slot:filter-form>
+          <form>
+            <input
+              name="name"
+              type="text"
+              placeholder="Find a hub named..."
+              v-model="nameQuery"
+            />
+            <button>Submit</button>
+          </form></template
+        >
+      </base-entity-page>
     </main>
   </div>
 </template>
@@ -95,6 +99,14 @@ export default {
     page() {
       console.log("hub-list", this.page);
     },
+
+    queriedName() {
+      console.log("name-hub-list", this.queriedName);
+    },
+
+    nameQuery() {
+      console.log(this.nameQuery);
+    },
   },
 
   props: {
@@ -104,7 +116,13 @@ export default {
       default: "1",
     },
 
-    name: {
+    queriedName: {
+      type: String,
+      required: false,
+      default: "",
+    },
+
+    test: {
       type: String,
       required: false,
       default: "",
@@ -131,10 +149,28 @@ export default {
             ],
           };
         }),
-        n: 15,
-        shortListLength: 4,
+        pagesNumber: 15,
         currentPage: Number(this.page),
       };
+    },
+
+    getActiveFilters() {
+      let result = [];
+      if (this.queriedName && this.queriedName !== "")
+        result.push({
+          id: 1,
+          key: "name",
+          value: this.queriedName,
+        });
+
+      if (this.test && this.test !== "")
+        result.push({
+          id: 2,
+          key: "test",
+          value: this.test,
+        });
+
+      return result;
     },
   },
 
@@ -143,14 +179,26 @@ export default {
       return { name: "hub", params: { id: id } };
     },
 
-    getHubPaginatorLink(index) {
-      return {
+    changePage(newPage) {
+      let route = {
         name: "hubs",
         query: {
-          page: index,
-          ...(this.nameQuery !== "" && { name: this.nameQuery }),
+          page: newPage,
+          ...(this.queriedName !== "" && { name: this.queriedName }),
         },
       };
+
+      this.$router.push(route);
+    },
+
+    deactivateFilter(key) {
+      if (key === "name")
+        this.$router.push({
+          name: "hubs",
+          query: {
+            page: 1,
+          },
+        });
     },
   },
 };

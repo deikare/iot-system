@@ -1,6 +1,9 @@
 <template>
   <div v-if="isComponentRenderable" class="paginator">
-    <router-link v-if="isLeftArrowVisible" v-bind:to="leftArrowUrl">
+    <button
+      v-if="isLeftArrowVisible"
+      v-on:click="emitChangePage(this.currentPage - 1)"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="arrow"
@@ -15,68 +18,77 @@
           d="M15 19l-7-7 7-7"
         />
       </svg>
-    </router-link>
+    </button>
 
     <ul class="links-list" v-if="isListShort">
-      <router-link
+      <button
         v-for="buttonLabel in buttonLabelsArray"
         v-bind:key="'short-' + buttonLabel"
-        v-bind:to="linkGeneratorFunction(buttonLabel)"
         v-bind:class="[
           buttonLabel === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
+        v-on:click="validateAndEmitChangePage(buttonLabel)"
       >
         {{ buttonLabel }}
-      </router-link>
+      </button>
     </ul>
 
     <ul class="links-list" v-else>
-      <router-link
+      <button
         v-if="buttonLabelsShortArray[0] > 1"
-        v-bind:to="linkGeneratorFunction(1)"
         v-bind:class="[
           1 === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
+        v-on:click="validateAndEmitChangePage(1)"
       >
         1
-      </router-link>
+      </button>
 
       <li v-if="buttonLabelsShortArray[0] > 2" class="triple-dots">&hellip;</li>
 
-      <router-link
+      <button
         v-for="buttonLabel in buttonLabelsShortArray"
         v-bind:key="'long-' + buttonLabel"
-        v-bind:to="linkGeneratorFunction(buttonLabel)"
         v-bind:class="[
           buttonLabel === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
+        v-on:click="validateAndEmitChangePage(buttonLabel)"
       >
         {{ buttonLabel }}
-      </router-link>
+      </button>
 
       <li
-        v-if="buttonLabelsShortArray[buttonLabelsShortArray.length - 1] < n - 1"
+        v-if="
+          buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
+          pagesNumber - 1
+        "
         class="triple-dots"
       >
         &hellip;
       </li>
 
-      <router-link
-        v-if="buttonLabelsShortArray[buttonLabelsShortArray.length - 1] < n"
-        v-bind:to="linkGeneratorFunction(lastButtonLabel)"
+      <button
+        v-if="
+          buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
+          pagesNumber
+        "
         v-bind:class="[
-          n === currentPage ? 'number-link-active' : '',
+          pagesNumber === currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
+        v-on:click="validateAndEmitChangePage(lastButtonLabel)"
       >
         {{ lastButtonLabel }}
-      </router-link>
+      </button>
     </ul>
 
-    <router-link v-if="isRightArrowVisible" v-bind:to="rightArrowUrl">
+    <button
+      v-if="isRightArrowVisible"
+      v-on:click="validateAndEmitChangePage(this.currentPage + 1)"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="arrow"
@@ -91,7 +103,7 @@
           d="M9 5l7 7-7 7"
         />
       </svg>
-    </router-link>
+    </button>
   </div>
 </template>
 
@@ -99,7 +111,7 @@
 export default {
   name: "BasePaginator",
   props: {
-    n: {
+    pagesNumber: {
       type: Number,
       required: true,
       default: 0,
@@ -114,20 +126,13 @@ export default {
       required: true,
       default: 0,
     },
-    linkGeneratorFunction: {
-      type: Function,
-      required: true,
-      default() {
-        return function () {
-          return null;
-        };
-      },
-    },
   },
+
+  emits: ["changePage"],
 
   computed: {
     isComponentRenderable() {
-      return this.n > 1;
+      return this.pagesNumber > 1;
     },
 
     isLeftArrowVisible() {
@@ -135,37 +140,45 @@ export default {
     },
 
     isRightArrowVisible() {
-      return this.currentPage < this.n;
-    },
-
-    leftArrowUrl() {
-      return this.linkGeneratorFunction(this.currentPage - 1);
-    },
-
-    rightArrowUrl() {
-      return this.linkGeneratorFunction(this.currentPage + 1);
+      return this.currentPage < this.pagesNumber;
     },
 
     isListShort() {
-      return this.n <= this.shortListLength;
+      return this.pagesNumber <= this.shortListLength;
     },
 
     buttonLabelsArray() {
-      return Array.from({ length: this.n }, (element, idx) => idx + 1);
+      return Array.from(
+        { length: this.pagesNumber },
+        (element, idx) => idx + 1
+      );
     },
 
     //only even numbers as shortListLength
     buttonLabelsShortArray() {
       let delta = this.shortListLength / 2;
 
-      return Array.from({ length: this.n }, (element, idx) => idx + 1).slice(
+      return Array.from(
+        { length: this.pagesNumber },
+        (element, idx) => idx + 1
+      ).slice(
         Math.max(this.currentPage - delta - 1, 0),
-        Math.min(this.currentPage + delta, this.n)
+        Math.min(this.currentPage + delta, this.pagesNumber)
       );
     },
 
     lastButtonLabel() {
-      return this.n;
+      return this.pagesNumber;
+    },
+  },
+
+  methods: {
+    validateAndEmitChangePage(page) {
+      if (this.currentPage !== page) this.emitChangePage(page);
+    },
+
+    emitChangePage(page) {
+      this.$emit("changePage", page);
     },
   },
 };
@@ -194,9 +207,11 @@ li {
   list-style: none;
 }
 
-a:link {
+button {
   color: var(--main-color);
   background-color: var(--background-color);
+  border-radius: 50%;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,30 +233,24 @@ a:link {
   stroke: var(--main-color);
 }
 
-a:hover {
+button:hover {
   background-color: var(--main-color);
   border-radius: 50%;
+  cursor: pointer;
 }
 
-a:hover > svg {
+button:hover > svg {
   stroke: var(--background-color);
 }
 
-a:hover.number-link {
+button:hover.number-link {
   color: var(--background-color);
-}
-
-a:hover {
-  background-color: var(--main-color);
-  color: var(--background-color);
-  cursor: pointer;
-  border-radius: 50%;
 }
 
 .number-link-active {
   background-color: var(--main-color);
   color: var(--background-color);
-  cursor: pointer;
+  cursor: text !important;
   border-radius: 50%;
 }
 </style>

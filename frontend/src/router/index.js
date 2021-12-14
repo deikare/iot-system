@@ -18,7 +18,8 @@ const routes = [
     path: "/hubs",
     name: "hubs",
     props: (route) => ({
-      searchedName: route.query.name,
+      queriedName: route.query.name,
+      test: route.query.test,
       page: route.query.page,
     }),
     component: HubList,
