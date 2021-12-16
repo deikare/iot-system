@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <main>
+      <button v-on:click="setEntitiesPage">Entities</button>
       <base-entity-page
-        v-bind:entities-page="getEntitiesPage"
+        v-bind:entities-page="entitiesPage"
         v-bind:entity-link-generator-function="getHubLink"
         v-on:changePage="changePage"
         v-on:deactivateFilter="deactivateFilter"
@@ -19,6 +20,7 @@
 <script>
 import BaseEntityPage from "@/slots/BaseEntityPage";
 import HubFiltering from "@/slots/HubFiltering";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "HubList",
 
@@ -26,63 +28,7 @@ export default {
 
   data() {
     return {
-      hubs: [
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130002",
-          name: "h1",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130003",
-          name: "h2",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130004",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130005",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130006",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130007",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130008",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130009",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130014",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130024",
-          name: "h3",
-          state: "Started",
-        },
-        {
-          id: "c5aa96be-57b3-11ec-bf63-0242ac130034",
-          name: "h3",
-          state: "Started",
-        },
-      ],
+      entitiesPage: {},
       nameQuery: "",
     };
   },
@@ -113,41 +59,14 @@ export default {
       required: false,
       default: "",
     },
-
-    test: {
-      type: String,
-      required: false,
-      default: "",
-    },
   },
 
   computed: {
-    getEntitiesPage() {
-      return {
-        entities: this.hubs.map((hub) => {
-          return {
-            type: "Hub",
-            name: hub.name,
-            id: hub.id,
-            properties: [
-              {
-                key: "Id",
-                value: hub.id,
-              },
-              {
-                key: "State",
-                value: hub.state,
-              },
-            ],
-          };
-        }),
-        pagesNumber: 15,
-        currentPage: Number(this.page),
-      };
-    },
+    ...mapGetters("hubs", ["getHubsPage"]),
 
     getActiveFilters() {
       let result = [];
+
       if (this.queriedName && this.queriedName !== "")
         result.push({
           id: 1,
@@ -155,24 +74,19 @@ export default {
           value: this.queriedName,
         });
 
-      if (this.test && this.test !== "")
-        result.push({
-          id: 2,
-          key: "test",
-          value: this.test,
-        });
-
       return result;
     },
   },
 
   methods: {
+    ...mapActions("hubs", ["loadNewHubsPage"]),
+
     getHubLink(id) {
       return { name: "hub", params: { id: id } };
     },
 
     changePage(newPage) {
-      let route = {
+      const route = {
         name: "hubs",
         query: {
           page: newPage,
@@ -203,6 +117,34 @@ export default {
 
       this.$router.push(route);
     },
+
+    fetchData() {
+      const queryParams = {
+        page: Number(this.page) - 1,
+        ...(this.queriedName !== "" && { name: this.queriedName }),
+      };
+
+      console.log(queryParams);
+
+      this.loadNewHubsPage({ queryParams: queryParams });
+      //TODO add https://next.router.vuejs.org/guide/advanced/data-fetching.html#fetching-after-navigation
+    },
+
+    setEntitiesPage() {
+      this.entitiesPage = this.getHubsPage;
+    },
+  },
+
+  created() {
+    this.$watch(
+      () => this.$route.params,
+      () => {
+        this.fetchData();
+      },
+      // fetch the data when the view is created and the data is
+      // already being observed
+      { immediate: true }
+    );
   },
 };
 </script>

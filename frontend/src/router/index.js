@@ -19,7 +19,6 @@ const routes = [
     name: "hubs",
     props: (route) => ({
       queriedName: route.query.name,
-      test: route.query.test,
       page: route.query.page,
     }),
     component: HubList,
