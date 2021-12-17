@@ -8,6 +8,7 @@
         v-on:deactivateFilter="deactivateFilter"
         v-bind:active-filters="getActiveFilters"
         v-bind:is-loaded="getLoaded"
+        v-bind:is-error="isError"
       >
         <template v-slot:filter-form>
           <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
