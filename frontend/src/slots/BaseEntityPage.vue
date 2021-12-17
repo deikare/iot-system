@@ -1,5 +1,7 @@
 <template>
-  <div class="container">
+  <entities-error v-if="isError"></entities-error>
+
+  <div v-else class="container">
     <slot name="filter-form"></slot>
 
     <base-filtering
@@ -26,10 +28,11 @@
 import BaseEntityGrid from "@/slots/BaseEntityGrid";
 import BasePaginator from "@/slots/BasePaginator";
 import BaseFiltering from "@/slots/BaseFiltering";
+import EntitiesError from "@/slots/EntitiesError";
 export default {
   name: "BaseEntityPage",
 
-  components: { BaseFiltering, BasePaginator, BaseEntityGrid },
+  components: { EntitiesError, BaseFiltering, BasePaginator, BaseEntityGrid },
 
   props: {
     entitiesPage: {
@@ -60,6 +63,13 @@ export default {
       },
     },
     isLoaded: {
+      type: Boolean,
+      required: true,
+      default() {
+        return false;
+      },
+    },
+    isError: {
       type: Boolean,
       required: true,
       default() {

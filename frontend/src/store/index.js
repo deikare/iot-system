@@ -11,6 +11,7 @@ const loadEntities = function (
   axios
     .get(url, {
       params: { ...queryParams, size: 16 },
+      timeout: 5000,
     })
     .then((response) => {
       commit("saveEntitiesPage", response.data);
