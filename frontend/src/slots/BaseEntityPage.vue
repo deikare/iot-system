@@ -10,6 +10,7 @@
     <base-entity-grid
       v-bind:link-generator-function="entityLinkGeneratorFunction"
       v-bind:entities="entitiesPage.entities"
+      v-bind:is-loaded="isLoaded"
     ></base-entity-grid>
 
     <base-paginator
@@ -56,6 +57,13 @@ export default {
       required: true,
       default() {
         return [];
+      },
+    },
+    isLoaded: {
+      type: Boolean,
+      required: true,
+      default() {
+        return false;
       },
     },
   },

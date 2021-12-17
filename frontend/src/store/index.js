@@ -30,7 +30,14 @@ const hubsPageModule = {
         .get("http://localhost:8080/hubs", {
           params: { ...queryParams, size: 16 },
         })
-        .then((response) => commit("saveNewHubsPage", response.data));
+        .then((response) => {
+          commit("saveNewHubsPage", response.data);
+          payload.ifSuccessHandler();
+        })
+        .catch((error) => {
+          console.console.log(error);
+          payload.ifErrorHandler();
+        });
     },
   },
   getters: {

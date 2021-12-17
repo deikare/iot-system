@@ -1,5 +1,6 @@
 <template>
-  <ul class="entities-list">
+  <div v-if="displayLoading" class="loading">Loading</div>
+  <ul v-else class="entities-list">
     <router-link
       v-bind:to="linkGeneratorFunction(entity.id)"
       class="entity-link"
@@ -35,6 +36,20 @@ export default {
           return null;
         };
       },
+    },
+
+    isLoaded: {
+      type: Boolean,
+      required: true,
+      default() {
+        return false;
+      },
+    },
+  },
+
+  computed: {
+    displayLoading() {
+      return !this.isLoaded;
     },
   },
 };
