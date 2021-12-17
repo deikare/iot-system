@@ -2,7 +2,6 @@
   <div class="container">
     <main>
       <base-entity-page
-        v-if="isLoaded"
         v-bind:entities-page="getEntitiesPage"
         v-bind:entity-link-generator-function="getHubLink"
         v-on:changePage="changePage"
@@ -14,8 +13,6 @@
           <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
         </template>
       </base-entity-page>
-      <div v-else class="loading">Loading placeholder</div>
-      <!--      TODO placeholder-->
     </main>
   </div>
 </template>
@@ -137,6 +134,7 @@ export default {
       };
 
       this.isLoaded = false;
+
       this.loadNewHubsPage({
         queryParams: queryParams,
         ifSuccessHandler: () => {
@@ -146,11 +144,11 @@ export default {
           this.entitiesPage = this.getHubsPage;
         },
         ifErrorHandler: () => {
+          this.isLoaded = true;
           this.isError = true;
           this.entitiesPage = {};
         },
       });
-      //TODO add https://next.router.vuejs.org/guide/advanced/data-fetching.html#fetching-after-navigation
     },
   },
 
