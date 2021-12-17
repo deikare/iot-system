@@ -1,5 +1,11 @@
 <template>
-  <div v-if="displayLoading" class="loading">Loading</div>
+  <div v-if="displayLoading">
+    <loading v-bind:active="displayLoading" color="var(--main-color)"></loading>
+  </div>
+  <div v-else-if="displayNoEntities" class="no-entities">
+    Your search did not match&nbsp;<b>any</b> &nbsp;entities, try different
+    query.
+  </div>
   <ul v-else class="entities-list">
     <router-link
       v-bind:to="linkGeneratorFunction(entity.id)"
@@ -14,10 +20,13 @@
 
 <script>
 import BaseEntityCard from "@/slots/BaseEntityCard";
+import Loading from "vue3-loading-overlay";
+
 export default {
   name: "BaseEntityGrid",
   components: {
     BaseEntityCard,
+    Loading,
   },
   props: {
     entities: {
@@ -51,6 +60,10 @@ export default {
     displayLoading() {
       return !this.isLoaded;
     },
+
+    displayNoEntities() {
+      return this.entities.length === 0;
+    },
   },
 };
 </script>
@@ -63,5 +76,15 @@ export default {
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
   grid-gap: 2rem;
+}
+
+.no-entities {
+  display: flex;
+  align-items: center;
+}
+
+.loading {
+  /*color: var(--main-color);*/
+  color: red;
 }
 </style>
