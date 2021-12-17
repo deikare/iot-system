@@ -1,18 +1,21 @@
 <template>
   <div class="container">
     <main>
-      <button v-on:click="setEntitiesPage">Entities</button>
       <base-entity-page
-        v-bind:entities-page="entitiesPage"
+        v-if="isLoaded"
+        v-bind:entities-page="getEntitiesPage"
         v-bind:entity-link-generator-function="getHubLink"
         v-on:changePage="changePage"
         v-on:deactivateFilter="deactivateFilter"
         v-bind:active-filters="getActiveFilters"
+        v-bind:is-loaded="getLoaded"
       >
         <template v-slot:filter-form>
           <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
         </template>
       </base-entity-page>
+      <div v-else class="loading">Loading placeholder</div>
+      <!--      TODO placeholder-->
     </main>
   </div>
 </template>
@@ -29,7 +32,8 @@ export default {
   data() {
     return {
       entitiesPage: {},
-      nameQuery: "",
+      isLoaded: false,
+      isError: false,
     };
   },
 
@@ -40,10 +44,6 @@ export default {
 
     queriedName() {
       console.log("name-hub-list", this.queriedName);
-    },
-
-    nameQuery() {
-      console.log(this.nameQuery);
     },
   },
 
@@ -75,6 +75,18 @@ export default {
         });
 
       return result;
+    },
+
+    getLoaded() {
+      return this.isLoaded;
+    },
+
+    getError() {
+      return this.isError;
+    },
+
+    getEntitiesPage() {
+      return this.entitiesPage;
     },
   },
 
@@ -124,26 +136,29 @@ export default {
         ...(this.queriedName !== "" && { name: this.queriedName }),
       };
 
-      console.log(queryParams);
+      this.isLoaded = false;
+      this.loadNewHubsPage({
+        queryParams: queryParams,
+        ifSuccessHandler: () => {
+          this.isLoaded = true;
+          this.isError = false;
 
-      this.loadNewHubsPage({ queryParams: queryParams });
+          this.entitiesPage = this.getHubsPage;
+        },
+        ifErrorHandler: () => {
+          this.isError = true;
+          this.entitiesPage = {};
+        },
+      });
       //TODO add https://next.router.vuejs.org/guide/advanced/data-fetching.html#fetching-after-navigation
-    },
-
-    setEntitiesPage() {
-      this.entitiesPage = this.getHubsPage;
     },
   },
 
   created() {
     this.$watch(
-      () => this.$route.params,
-      () => {
-        this.fetchData();
-      },
-      // fetch the data when the view is created and the data is
-      // already being observed
-      { immediate: true }
+      () => [this.page, this.queriedName],
+      () => this.fetchData(),
+      { immediate: true, deep: true }
     );
   },
 };
