@@ -1,6 +1,11 @@
 import { createStore } from "vuex";
 import axios from "axios";
 
+const axiosLoad = function (url, queryParams) {
+  const config = { params: { ...queryParams }, timeout: 5000 };
+  return axios.get(url, config);
+};
+
 const loadEntities = function (
   url,
   queryParams,
@@ -8,11 +13,12 @@ const loadEntities = function (
   ifSuccessHandler,
   ifErrorHandler
 ) {
-  axios
-    .get(url, {
-      params: { ...queryParams, size: 16 },
-      timeout: 5000,
-    })
+  const queryParamsWithSize = {
+    ...queryParams,
+    size: 16,
+  };
+
+  axiosLoad(url, queryParamsWithSize)
     .then((response) => {
       commit("saveEntitiesPage", response.data);
       console.log("Successfully fetched", response.data);
@@ -107,8 +113,47 @@ const hubsPageModule = {
   },
 };
 
+const hubModule = {
+  namespaced: true,
+  state() {
+    return {
+      hub: {
+        name: "",
+        id: "",
+        devices: [],
+      },
+    };
+  },
+  mutations: {
+    saveHub(state, data) {
+      state.hub = data;
+    },
+  },
+  actions: {
+    loadHub({ commit }, payload) {
+      const url = `http://localhost:8080/hubs/${payload.hubId}`;
+
+      axiosLoad(url, {})
+        .then((response) => {
+          console.log(response.data);
+          commit("saveHub", response.data);
+          return axiosLoad(
+            response.data["_links"].devices.href.split("{").at(0),
+            {}
+          );
+        })
+        .then((response) => {
+          console.log(response.data);
+        });
+    },
+  },
+
+  getters: {},
+};
+
 export default createStore({
   modules: {
     hubs: hubsPageModule,
+    hub: hubModule,
   },
 });

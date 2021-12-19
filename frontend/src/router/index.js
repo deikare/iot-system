@@ -35,7 +35,7 @@ const routes = [
     component: DeviceList,
   },
   {
-    path: "/devices/:deviceId(\\d+)",
+    path: "/devices/:id(\\d+)",
     name: "device",
     component: Device,
     props: true,
@@ -49,7 +49,6 @@ const routes = [
     path: "/:notFound(.*)",
     name: "not-found",
     component: NotFoundView,
-    props: true,
   },
 ];
 
@@ -58,8 +57,30 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
-  console.log("Routing: ", from, to);
+// eslint-disable-next-line no-unused-vars
+const isQueryValid = (query, allowed) => {
+  for (const key in query) {
+    if (!allowed.includes(key)) return false;
+  }
+
+  return true;
+};
+
+// eslint-disable-next-line no-unused-vars
+router.beforeEach((to, from, next) => {
+  console.log("Routing from", from, "to", to);
+
+  const allowedQuery = [];
+
+  if (to.name === "hubs") allowedQuery.push("page", "name");
+
+  if (!isQueryValid(to.query, allowedQuery)) {
+    console.log("Invalid query params, routing to not found");
+    next({
+      name: "not-found",
+      params: { notFound: "/notFound" },
+    });
+  } else next();
 });
 
 export default router;
