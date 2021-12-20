@@ -20,6 +20,10 @@ const routes = [
     props: (route) => ({
       queriedName: route.query.name,
       page: route.query.page,
+      activeQuery: {
+        ...(typeof route.query.name !== "undefined" &&
+          route.query.name !== "" && { name: route.query.name }),
+      },
     }),
     component: HubList,
   },

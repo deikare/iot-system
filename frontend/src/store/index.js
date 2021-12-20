@@ -89,7 +89,7 @@ const hubsPageModule = {
     },
   },
   actions: {
-    loadNewHubsPage({ commit }, payload) {
+    loadEntitiesPage({ commit }, payload) {
       const commitHandler = (data) => commit("saveEntitiesPage", data);
 
       loadEntities(
@@ -102,7 +102,7 @@ const hubsPageModule = {
     },
   },
   getters: {
-    getHubsPage(state) {
+    getEntitiesPage(state) {
       const mapperFunction = (hub) => {
         return {
           type: "Hub",

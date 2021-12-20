@@ -31,7 +31,10 @@ export default {
 
   computed: {
     newQueryEmitter() {
-      return () => this.$emit("newQuery", this.nameQuery);
+      return () => {
+        this.$emit("newQuery", this.nameQuery);
+        this.nameQuery = "";
+      };
     },
     queryValidator() {
       return () => this.nameQuery !== "";

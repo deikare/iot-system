@@ -5,7 +5,7 @@
     <slot name="filter-form"></slot>
 
     <base-filter-list
-      v-bind:filters="activeFilters"
+      v-bind:filters="activeQuery"
       v-on:deactivateFilter="emitDeactivateFilter"
     >
     </base-filter-list>
@@ -30,6 +30,8 @@ import BaseEntityGrid from "@/slots/BaseEntityGrid";
 import BasePaginator from "@/slots/BasePaginator";
 import EntitiesError from "@/slots/EntitiesError";
 import BaseFilterList from "@/slots/BaseFilterList";
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "BaseEntityPage",
 
@@ -40,17 +42,24 @@ export default {
     BaseEntityGrid,
   },
 
-  props: {
-    entitiesPage: {
-      type: Object,
-      required: true,
-      default() {
-        return {
-          entities: [],
-          pagesNumber: 0,
-          currentPage: 0,
-        };
+  data() {
+    return {
+      entitiesPage: {
+        entities: [],
+        pagesNumber: 0,
+        currentPage: 0,
       },
+      isLoaded: false,
+      isError: false,
+      shortListLength: 4,
+    };
+  },
+
+  props: {
+    namespace: {
+      type: String,
+      required: true,
+      default: "",
     },
     entityLinkGeneratorFunction: {
       type: Function,
@@ -61,44 +70,85 @@ export default {
         };
       },
     },
-    activeFilters: {
-      type: Array,
+    page: {
+      type: String,
       required: true,
-      default() {
-        return [];
-      },
+      default: "",
     },
-    isLoaded: {
-      type: Boolean,
+    activeQuery: {
+      type: Object,
       required: true,
       default() {
-        return false;
-      },
-    },
-    isError: {
-      type: Boolean,
-      required: true,
-      default() {
-        return false;
+        return {};
       },
     },
   },
 
   emits: ["changePage", "deactivateFilter"],
 
-  data() {
-    return {
-      shortListLength: 4,
-    };
+  computed: {
+    ...mapState({
+      getEntitiesPage(state, getters) {
+        return getters[`${this.namespace}/getEntitiesPage`];
+      },
+    }),
   },
 
   methods: {
+    ...mapActions({
+      loadEntitiesPage(dispatch, payload) {
+        return dispatch(`${this.namespace}/loadEntitiesPage`, payload);
+      },
+    }),
+
     emitChangePage(page) {
       this.$emit("changePage", page);
     },
     emitDeactivateFilter(key) {
       this.$emit("deactivateFilter", key);
     },
+
+    fetchData() {
+      const queryParams = {
+        page: Number(this.page) - 1,
+        ...this.activeQuery,
+      };
+
+      this.isLoaded = false;
+
+      this.loadEntitiesPage({
+        queryParams: queryParams,
+
+        ifSuccessHandler: () => {
+          this.isLoaded = true;
+          this.isError = false;
+
+          this.entitiesPage = this.getEntitiesPage;
+        },
+
+        ifErrorHandler: () => {
+          this.isLoaded = true;
+          this.isError = true;
+          this.entitiesPage = {};
+        },
+      });
+    },
+  },
+
+  created() {
+    this.$watch(
+      () => [this.activeQuery, this.page],
+      () => {
+        console.log(
+          this.activeQuery,
+          this.namespace,
+          this.page,
+          this.entityLinkGeneratorFunction
+        );
+        this.fetchData();
+      },
+      { immediate: true, deep: true }
+    );
   },
 };
 </script>
