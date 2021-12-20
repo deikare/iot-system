@@ -1,8 +1,8 @@
 <template>
   <ul v-if="isListRenderable">
-    <li class="filter" v-for="filter in filters" v-bind:key="filter.id">
-      <div class="filter-text">{{ filter.key }}: {{ filter.value }}</div>
-      <button v-on:click="deactivateFilter(filter.key)" class="close-button">
+    <li class="filter" v-for="(value, filter) in filters" v-bind:key="value">
+      <div class="filter-text">{{ filter }}: {{ value }}</div>
+      <button v-on:click="deactivateFilter(filter)" class="close-button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="close-icon"
@@ -28,10 +28,10 @@ export default {
 
   props: {
     filters: {
-      type: Array,
+      type: Object,
       required: true,
       default() {
-        return [];
+        return {};
       },
     },
   },
@@ -40,7 +40,7 @@ export default {
 
   computed: {
     isListRenderable() {
-      return this.filters.length > 0;
+      return Object.keys(this.filters).length > 0;
     },
   },
 

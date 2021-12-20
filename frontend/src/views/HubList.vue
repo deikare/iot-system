@@ -6,9 +6,11 @@
         v-bind:entity-link-generator-function="getHubLink"
         v-on:changePage="changePage"
         v-on:deactivateFilter="deactivateFilter"
-        v-bind:active-filters="getActiveFilters"
+        v-bind:active-query="activeQuery"
         v-bind:is-loaded="getLoaded"
         v-bind:is-error="isError"
+        namespace="hubs"
+        v-bind:page="page"
       >
         <template v-slot:filter-form>
           <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
@@ -21,7 +23,6 @@
 <script>
 import BaseEntityPage from "@/slots/BaseEntityPage";
 import HubFiltering from "@/slots/HubFiltering";
-import { mapGetters, mapActions } from "vuex";
 export default {
   name: "HubList",
 
@@ -57,24 +58,17 @@ export default {
       required: false,
       default: "",
     },
+
+    activeQuery: {
+      type: Object,
+      required: true,
+      default() {
+        return {};
+      },
+    },
   },
 
   computed: {
-    ...mapGetters("hubs", ["getHubsPage"]),
-
-    getActiveFilters() {
-      let result = [];
-
-      if (this.queriedName && this.queriedName !== "")
-        result.push({
-          id: 1,
-          key: "name",
-          value: this.queriedName,
-        });
-
-      return result;
-    },
-
     getLoaded() {
       return this.isLoaded;
     },
@@ -89,8 +83,6 @@ export default {
   },
 
   methods: {
-    ...mapActions("hubs", ["loadNewHubsPage"]),
-
     getHubLink(id) {
       return { name: "hub", params: { id: id } };
     },
@@ -128,7 +120,7 @@ export default {
       this.$router.push(route);
     },
 
-    fetchData() {
+    /*fetchData() {
       const queryParams = {
         page: Number(this.page) - 1,
         ...(this.queriedName !== "" && { name: this.queriedName }),
@@ -150,15 +142,7 @@ export default {
           this.entitiesPage = {};
         },
       });
-    },
-  },
-
-  created() {
-    this.$watch(
-      () => [this.page, this.queriedName],
-      () => this.fetchData(),
-      { immediate: true, deep: true }
-    );
+    },*/
   },
 };
 </script>
