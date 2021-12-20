@@ -47,16 +47,18 @@ const loadEntities = function (
 };
 
 const getEntities = function (entities, mapperFunction) {
-  return {
-    entities: entities.map((entity) => mapperFunction(entity)),
-  };
+  return entities.map((entity) => mapperFunction(entity));
 };
 
 const getPage = function (page) {
-  return {
+  const result = {
     pagesNumber: page.totalPages,
     currentPage: page.number + 1,
   };
+
+  console.log(result);
+
+  return result;
 };
 
 const saveEntitiesPage = function (state, data, entitiesContainerName) {
