@@ -1,5 +1,5 @@
 <template>
-  <entities-error v-if="isError"></entities-error>
+  <entities-error v-if="displayError"></entities-error>
 
   <div v-else class="container">
     <slot name="filter-form"></slot>
@@ -9,6 +9,19 @@
       v-on:deactivateFilter="emitDeactivateFilter"
     >
     </base-filter-list>
+
+    <loading-spinner
+      v-if="displayLoading"
+      v-bind:active="displayLoading"
+    ></loading-spinner>
+
+    <base-entities-grid-with-paginator
+      v-else
+      v-bind:entities="getEntities"
+      v-bind:short-list-length="shortListLength"
+      v-bind:page="getPage"
+      v-bind:link-generator-function="entityLinkGeneratorFunction"
+    ></base-entities-grid-with-paginator>
 
     <base-entity-grid
       v-bind:link-generator-function="entityLinkGeneratorFunction"
@@ -31,11 +44,15 @@ import BasePaginator from "@/slots/BasePaginator";
 import EntitiesError from "@/slots/EntitiesError";
 import BaseFilterList from "@/slots/BaseFilterList";
 import { mapState, mapActions } from "vuex";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import BaseEntitiesGridWithPaginator from "@/slots/BaseEntitiesGridWithPaginator";
 
 export default {
   name: "BaseEntityPage",
 
   components: {
+    BaseEntitiesGridWithPaginator,
+    LoadingSpinner,
     BaseFilterList,
     EntitiesError,
     BasePaginator,
@@ -51,15 +68,26 @@ export default {
       },
       isLoaded: false,
       isError: false,
-      shortListLength: 4,
     };
   },
 
   props: {
-    namespace: {
-      type: String,
+    transactionMappings: {
+      type: Object,
       required: true,
-      default: "",
+      default() {
+        return {
+          getters: {
+            namespace: "",
+            entities: "",
+            page: "",
+          },
+          actions: {
+            namespace: "",
+            loader: "",
+          },
+        };
+      },
     },
     entityLinkGeneratorFunction: {
       type: Function,
@@ -88,16 +116,38 @@ export default {
 
   computed: {
     ...mapState({
-      getEntitiesPage(state, getters) {
-        return getters[`${this.namespace}/getEntitiesPage`];
+      getEntities(state, getters) {
+        return getters[
+          `${this.transactionMappings.getters.namespace}/${this.transactionMappings.getters.entities}`
+        ];
+      },
+      getPage(state, getters) {
+        return getters[
+          `${this.transactionMappings.getters.namespace}/${this.transactionMappings.getters.page}`
+        ];
       },
     }),
+
+    displayLoading() {
+      return !this.isLoaded;
+    },
+
+    displayError() {
+      return this.isError;
+    },
+
+    shortListLength() {
+      return 4;
+    },
   },
 
   methods: {
     ...mapActions({
       loadEntitiesPage(dispatch, payload) {
-        return dispatch(`${this.namespace}/loadEntitiesPage`, payload);
+        return dispatch(
+          `${this.transactionMappings.actions.namespace}/${this.transactionMappings.actions.loader}`,
+          payload
+        );
       },
     }),
 
@@ -123,7 +173,7 @@ export default {
           this.isLoaded = true;
           this.isError = false;
 
-          this.entitiesPage = this.getEntitiesPage;
+          this.entitiesPage = this.getEntities;
         },
 
         ifErrorHandler: () => {
@@ -139,12 +189,6 @@ export default {
     this.$watch(
       () => [this.activeQuery, this.page],
       () => {
-        console.log(
-          this.activeQuery,
-          this.namespace,
-          this.page,
-          this.entityLinkGeneratorFunction
-        );
         this.fetchData();
       },
       { immediate: true, deep: true }

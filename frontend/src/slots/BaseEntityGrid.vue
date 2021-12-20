@@ -1,5 +1,4 @@
 <template>
-  <loading-spinner v-bind:active="displayLoading"></loading-spinner>
   <div v-if="displayNoEntities" class="no-entities">
     Your search did not match&nbsp;<b>any</b> &nbsp;entities, try different
     query.
@@ -18,12 +17,10 @@
 
 <script>
 import BaseEntityCard from "@/slots/BaseEntityCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default {
   name: "BaseEntityGrid",
   components: {
-    LoadingSpinner,
     BaseEntityCard,
   },
   props: {
@@ -31,7 +28,14 @@ export default {
       type: Array,
       required: true,
       default() {
-        return [];
+        return [
+          {
+            type: "",
+            name: "",
+            id: "",
+            properties: [],
+          },
+        ];
       },
     },
 
@@ -44,21 +48,9 @@ export default {
         };
       },
     },
-
-    isLoaded: {
-      type: Boolean,
-      required: true,
-      default() {
-        return false;
-      },
-    },
   },
 
   computed: {
-    displayLoading() {
-      return !this.isLoaded;
-    },
-
     displayNoEntities() {
       return this.entities.length === 0;
     },
