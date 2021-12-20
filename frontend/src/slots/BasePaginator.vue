@@ -2,7 +2,7 @@
   <div v-if="isComponentRenderable" class="paginator">
     <button
       v-if="isLeftArrowVisible"
-      v-on:click="emitChangePage(this.currentPage - 1)"
+      v-on:click="emitChangePage(this.page.currentPage - 1)"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +25,7 @@
         v-for="buttonLabel in buttonLabelsArray"
         v-bind:key="'short-' + buttonLabel"
         v-bind:class="[
-          buttonLabel === currentPage ? 'number-link-active' : '',
+          buttonLabel === page.currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
         v-on:click="validateAndEmitChangePage(buttonLabel)"
@@ -38,7 +38,7 @@
       <button
         v-if="buttonLabelsShortArray[0] > 1"
         v-bind:class="[
-          1 === currentPage ? 'number-link-active' : '',
+          1 === page.currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
         v-on:click="validateAndEmitChangePage(1)"
@@ -52,7 +52,7 @@
         v-for="buttonLabel in buttonLabelsShortArray"
         v-bind:key="'long-' + buttonLabel"
         v-bind:class="[
-          buttonLabel === currentPage ? 'number-link-active' : '',
+          buttonLabel === page.currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
         v-on:click="validateAndEmitChangePage(buttonLabel)"
@@ -63,7 +63,7 @@
       <li
         v-if="
           buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
-          pagesNumber - 1
+          page.pagesNumber - 1
         "
         class="triple-dots"
       >
@@ -73,10 +73,10 @@
       <button
         v-if="
           buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
-          pagesNumber
+          page.pagesNumber
         "
         v-bind:class="[
-          pagesNumber === currentPage ? 'number-link-active' : '',
+          page.pagesNumber === page.currentPage ? 'number-link-active' : '',
           'number-link',
         ]"
         v-on:click="validateAndEmitChangePage(lastButtonLabel)"
@@ -87,7 +87,7 @@
 
     <button
       v-if="isRightArrowVisible"
-      v-on:click="validateAndEmitChangePage(this.currentPage + 1)"
+      v-on:click="validateAndEmitChangePage(this.page.currentPage + 1)"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -111,20 +111,20 @@
 export default {
   name: "BasePaginator",
   props: {
-    pagesNumber: {
-      type: Number,
+    page: {
+      type: Object,
       required: true,
-      default: 0,
+      default() {
+        return {
+          pageNumber: 0,
+          currentPage: 0,
+        };
+      },
     },
     shortListLength: {
       type: Number,
-      required: true,
-      default: 0,
-    },
-    currentPage: {
-      type: Number,
-      required: true,
-      default: 0,
+      required: false,
+      default: 4,
     },
   },
 
@@ -132,24 +132,24 @@ export default {
 
   computed: {
     isComponentRenderable() {
-      return this.pagesNumber > 1;
+      return this.page.pageNumber > 1;
     },
 
     isLeftArrowVisible() {
-      return this.currentPage > 1;
+      return this.page.currentPage > 1;
     },
 
     isRightArrowVisible() {
-      return this.currentPage < this.pagesNumber;
+      return this.page.currentPage < this.page.pageNumber;
     },
 
     isListShort() {
-      return this.pagesNumber <= this.shortListLength;
+      return this.page.pageNumber <= this.shortListLength;
     },
 
     buttonLabelsArray() {
       return Array.from(
-        { length: this.pagesNumber },
+        { length: this.page.pageNumber },
         (element, idx) => idx + 1
       );
     },
@@ -159,27 +159,37 @@ export default {
       let delta = this.shortListLength / 2;
 
       return Array.from(
-        { length: this.pagesNumber },
+        { length: this.page.pageNumber },
         (element, idx) => idx + 1
       ).slice(
-        Math.max(this.currentPage - delta - 1, 0),
-        Math.min(this.currentPage + delta, this.pagesNumber)
+        Math.max(this.page.currentPage - delta - 1, 0),
+        Math.min(this.page.currentPage + delta, this.page.pageNumber)
       );
     },
 
     lastButtonLabel() {
-      return this.pagesNumber;
+      return this.page.pageNumber;
     },
   },
 
   methods: {
     validateAndEmitChangePage(page) {
-      if (this.currentPage !== page) this.emitChangePage(page);
+      if (this.page.currentPage !== page) this.emitChangePage(page);
     },
 
     emitChangePage(page) {
       this.$emit("changePage", page);
     },
+  },
+
+  watch: {
+    page() {
+      console.log(this.page);
+    },
+  },
+
+  created() {
+    console.log(this.page);
   },
 };
 </script>

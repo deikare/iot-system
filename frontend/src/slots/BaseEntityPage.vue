@@ -21,9 +21,10 @@
       v-bind:short-list-length="shortListLength"
       v-bind:page="getPage"
       v-bind:link-generator-function="entityLinkGeneratorFunction"
+      v-on:changePage="emitChangePage"
     ></base-entities-grid-with-paginator>
 
-    <base-entity-grid
+    <!--    <base-entity-grid
       v-bind:link-generator-function="entityLinkGeneratorFunction"
       v-bind:entities="entitiesPage.entities"
       v-bind:is-loaded="isLoaded"
@@ -34,13 +35,11 @@
       v-bind:short-list-length="shortListLength"
       v-bind:current-page="entitiesPage.currentPage"
       v-on:changePage="emitChangePage"
-    ></base-paginator>
+    ></base-paginator>-->
   </div>
 </template>
 
 <script>
-import BaseEntityGrid from "@/slots/BaseEntityGrid";
-import BasePaginator from "@/slots/BasePaginator";
 import EntitiesError from "@/slots/EntitiesError";
 import BaseFilterList from "@/slots/BaseFilterList";
 import { mapState, mapActions } from "vuex";
@@ -55,17 +54,10 @@ export default {
     LoadingSpinner,
     BaseFilterList,
     EntitiesError,
-    BasePaginator,
-    BaseEntityGrid,
   },
 
   data() {
     return {
-      entitiesPage: {
-        entities: [],
-        pagesNumber: 0,
-        currentPage: 0,
-      },
       isLoaded: false,
       isError: false,
     };
@@ -172,8 +164,6 @@ export default {
         ifSuccessHandler: () => {
           this.isLoaded = true;
           this.isError = false;
-
-          this.entitiesPage = this.getEntities;
         },
 
         ifErrorHandler: () => {

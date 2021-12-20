@@ -1,11 +1,15 @@
 <template>
   <div class="container">
     <base-entity-grid
-      v-bind:entities="entities"
+      v-bind:entities="getEntities"
       v-bind:link-generator-function="linkGeneratorFunction"
     ></base-entity-grid>
 
-    <base-paginator v-bind:></base-paginator>
+    <base-paginator
+      v-bind:page="page"
+      v-bind:short-list-length="shortListLength"
+      v-on:changePage="emitChangePage"
+    ></base-paginator>
   </div>
 </template>
 
@@ -46,6 +50,24 @@ export default {
         return () => {};
       },
     },
+  },
+
+  emits: ["changePage"],
+
+  computed: {
+    getEntities() {
+      return this.entities;
+    },
+  },
+
+  methods: {
+    emitChangePage(page) {
+      this.$emit("changePage", page);
+    },
+  },
+
+  created() {
+    console.log(this.entities);
   },
 };
 </script>

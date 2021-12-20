@@ -28,14 +28,7 @@ export default {
       type: Array,
       required: true,
       default() {
-        return [
-          {
-            type: "",
-            name: "",
-            id: "",
-            properties: [],
-          },
-        ];
+        return [];
       },
     },
 
@@ -53,6 +46,12 @@ export default {
   computed: {
     displayNoEntities() {
       return this.entities.length === 0;
+    },
+  },
+
+  watch: {
+    entities() {
+      console.log(this.entities);
     },
   },
 };
