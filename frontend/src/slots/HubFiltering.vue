@@ -1,52 +1,40 @@
 <template>
-  <div class="container" v-on:mouseleave="resetError">
-    <p v-if="isErrorRenderable">Hub name cannot be empty</p>
-    <form v-on:submit.prevent="validateAndEmitNewQuery">
+  <base-search-form
+    v-bind:new-query-emitter="newQueryEmitter"
+    v-bind:query-validator="queryValidator"
+  >
+    <template v-slot:error-message> Hub name cannot be empty </template>
+    <template v-slot:form>
       <input
+        class="input-text"
         name="name"
         type="text"
         placeholder="Find a hub named..."
         v-model="nameQuery"
       />
-      <button>Submit</button>
-    </form>
-  </div>
+    </template>
+  </base-search-form>
 </template>
 
 <script>
+import BaseSearchForm from "@/slots/BaseSearchForm";
 export default {
   name: "HubFiltering",
-
+  components: { BaseSearchForm },
   emits: ["newQuery"],
 
   data() {
     return {
       nameQuery: "",
-      isQueryValid: true,
     };
   },
 
   computed: {
-    isErrorRenderable() {
-      return !this.isQueryValid;
+    newQueryEmitter() {
+      return () => this.$emit("newQuery", this.nameQuery);
     },
-  },
-
-  methods: {
-    validateAndEmitNewQuery() {
-      if (this.nameQuery !== "") {
-        this.isQueryValid = true;
-        this.emitNewQuery();
-        this.nameQuery = "";
-      } else this.isQueryValid = false;
-    },
-
-    emitNewQuery() {
-      this.$emit("newQuery", this.nameQuery);
-    },
-
-    resetError() {
-      this.isQueryValid = true;
+    queryValidator() {
+      return () => this.nameQuery !== "";
     },
   },
 };

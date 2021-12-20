@@ -4,10 +4,11 @@
   <div v-else class="container">
     <slot name="filter-form"></slot>
 
-    <base-filtering
+    <base-filter-list
       v-bind:filters="activeFilters"
       v-on:deactivateFilter="emitDeactivateFilter"
-    ></base-filtering>
+    >
+    </base-filter-list>
 
     <base-entity-grid
       v-bind:link-generator-function="entityLinkGeneratorFunction"
@@ -27,12 +28,17 @@
 <script>
 import BaseEntityGrid from "@/slots/BaseEntityGrid";
 import BasePaginator from "@/slots/BasePaginator";
-import BaseFiltering from "@/slots/BaseFiltering";
 import EntitiesError from "@/slots/EntitiesError";
+import BaseFilterList from "@/slots/BaseFilterList";
 export default {
   name: "BaseEntityPage",
 
-  components: { EntitiesError, BaseFiltering, BasePaginator, BaseEntityGrid },
+  components: {
+    BaseFilterList,
+    EntitiesError,
+    BasePaginator,
+    BaseEntityGrid,
+  },
 
   props: {
     entitiesPage: {
