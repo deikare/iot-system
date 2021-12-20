@@ -1,8 +1,6 @@
 <template>
-  <div v-if="displayLoading">
-    <loading v-bind:active="displayLoading" color="var(--main-color)"></loading>
-  </div>
-  <div v-else-if="displayNoEntities" class="no-entities">
+  <loading-spinner v-bind:active="displayLoading"></loading-spinner>
+  <div v-if="displayNoEntities" class="no-entities">
     Your search did not match&nbsp;<b>any</b> &nbsp;entities, try different
     query.
   </div>
@@ -20,13 +18,13 @@
 
 <script>
 import BaseEntityCard from "@/slots/BaseEntityCard";
-import Loading from "vue3-loading-overlay";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default {
   name: "BaseEntityGrid",
   components: {
+    LoadingSpinner,
     BaseEntityCard,
-    Loading,
   },
   props: {
     entities: {
@@ -81,10 +79,5 @@ export default {
 .no-entities {
   display: flex;
   align-items: center;
-}
-
-.loading {
-  /*color: var(--main-color);*/
-  color: red;
 }
 </style>
