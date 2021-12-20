@@ -46,9 +46,14 @@ const loadEntities = function (
   );
 };
 
-const getEntitiesPage = function (entities, mapperFunction, page) {
+const getEntities = function (entities, mapperFunction) {
   return {
     entities: entities.map((entity) => mapperFunction(entity)),
+  };
+};
+
+const getPage = function (page) {
+  return {
     pagesNumber: page.totalPages,
     currentPage: page.number + 1,
   };
@@ -89,7 +94,7 @@ const hubsPageModule = {
     },
   },
   actions: {
-    loadEntitiesPage({ commit }, payload) {
+    loadEntities({ commit }, payload) {
       const commitHandler = (data) => commit("saveEntitiesPage", data);
 
       loadEntities(
@@ -102,7 +107,7 @@ const hubsPageModule = {
     },
   },
   getters: {
-    getEntitiesPage(state) {
+    getEntities(state) {
       const mapperFunction = (hub) => {
         return {
           type: "Hub",
@@ -122,11 +127,11 @@ const hubsPageModule = {
         };
       };
 
-      return getEntitiesPage(
-        state.entitiesPage.entities,
-        mapperFunction,
-        state.entitiesPage.page
-      );
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
+    getPage(state) {
+      return getPage(state.entitiesPage.page);
     },
   },
 };

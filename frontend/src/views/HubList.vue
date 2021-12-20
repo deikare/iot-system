@@ -2,15 +2,12 @@
   <div class="container">
     <main>
       <base-entity-page
-        v-bind:entities-page="getEntitiesPage"
+        v-bind:transaction-mappings="transactionMappings"
         v-bind:entity-link-generator-function="getHubLink"
+        v-bind:active-query="activeQuery"
+        v-bind:page="page"
         v-on:changePage="changePage"
         v-on:deactivateFilter="deactivateFilter"
-        v-bind:active-query="activeQuery"
-        v-bind:is-loaded="getLoaded"
-        v-bind:is-error="isError"
-        namespace="hubs"
-        v-bind:page="page"
       >
         <template v-slot:filter-form>
           <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
@@ -27,24 +24,6 @@ export default {
   name: "HubList",
 
   components: { HubFiltering, BaseEntityPage },
-
-  data() {
-    return {
-      entitiesPage: {},
-      isLoaded: false,
-      isError: false,
-    };
-  },
-
-  watch: {
-    page() {
-      console.log("hub-list", this.page);
-    },
-
-    queriedName() {
-      console.log("name-hub-list", this.queriedName);
-    },
-  },
 
   props: {
     page: {
@@ -69,16 +48,18 @@ export default {
   },
 
   computed: {
-    getLoaded() {
-      return this.isLoaded;
-    },
-
-    getError() {
-      return this.isError;
-    },
-
-    getEntitiesPage() {
-      return this.entitiesPage;
+    transactionMappings() {
+      return {
+        getters: {
+          namespace: "hubs",
+          entities: "getEntities",
+          page: "getPage",
+        },
+        actions: {
+          namespace: "hubs",
+          loader: "loadEntities",
+        },
+      };
     },
   },
 
@@ -119,30 +100,6 @@ export default {
 
       this.$router.push(route);
     },
-
-    /*fetchData() {
-      const queryParams = {
-        page: Number(this.page) - 1,
-        ...(this.queriedName !== "" && { name: this.queriedName }),
-      };
-
-      this.isLoaded = false;
-
-      this.loadNewHubsPage({
-        queryParams: queryParams,
-        ifSuccessHandler: () => {
-          this.isLoaded = true;
-          this.isError = false;
-
-          this.entitiesPage = this.getHubsPage;
-        },
-        ifErrorHandler: () => {
-          this.isLoaded = true;
-          this.isError = true;
-          this.entitiesPage = {};
-        },
-      });
-    },*/
   },
 };
 </script>
