@@ -6,10 +6,29 @@ const axiosLoad = function (url, queryParams) {
   return axios.get(url, config);
 };
 
+const axiosLoadWithHandlers = function (
+  url,
+  queryParams,
+  commitHandler,
+  ifSuccessHandler,
+  ifErrorHandler
+) {
+  axiosLoad(url, queryParams)
+    .then((response) => {
+      commitHandler(response.data);
+      console.log("Successfully fetched", response.data);
+      ifSuccessHandler();
+    })
+    .catch((error) => {
+      console.log("Error occurred during get", error);
+      ifErrorHandler();
+    });
+};
+
 const loadEntities = function (
   url,
   queryParams,
-  commit,
+  commitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
@@ -18,16 +37,13 @@ const loadEntities = function (
     size: 16,
   };
 
-  axiosLoad(url, queryParamsWithSize)
-    .then((response) => {
-      commit("saveEntitiesPage", response.data);
-      console.log("Successfully fetched", response.data);
-      ifSuccessHandler();
-    })
-    .catch((error) => {
-      console.log("Error occurred during get", error);
-      ifErrorHandler();
-    });
+  axiosLoadWithHandlers(
+    url,
+    queryParamsWithSize,
+    commitHandler,
+    ifSuccessHandler,
+    ifErrorHandler
+  );
 };
 
 const getEntitiesPage = function (entities, mapperFunction, page) {
@@ -74,10 +90,12 @@ const hubsPageModule = {
   },
   actions: {
     loadNewHubsPage({ commit }, payload) {
+      const commitHandler = (data) => commit("saveEntitiesPage", data);
+
       loadEntities(
         "http://localhost:8080/hubs",
         payload.queryParams,
-        commit,
+        commitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -96,7 +114,7 @@ const hubsPageModule = {
               value: hub["_links"].self.href.split("/").at(-1),
             },
             {
-              key: "State",
+              key: "Status",
               value: "Started",
               //  TODO add proper value in final backend
             },
@@ -120,35 +138,70 @@ const hubModule = {
       hub: {
         name: "",
         id: "",
+        status: "",
         devices: [],
       },
     };
   },
   mutations: {
     saveHub(state, data) {
-      state.hub = data;
+      state.hub = {
+        ...state.hub,
+        name: data.name,
+        id: data["_links"].self.href.split("/").at(-1),
+        status: "Started",
+        devices: [],
+      };
+
+      console.log("Successfully saved state", state);
     },
   },
   actions: {
     loadHub({ commit }, payload) {
-      const url = `http://localhost:8080/hubs/${payload.hubId}`;
+      const url = `http://localhost:8080/hubs/${payload.id}`;
+      const commitHandler = (data) => commit("saveHub", data);
 
-      axiosLoad(url, {})
-        .then((response) => {
-          console.log(response.data);
-          commit("saveHub", response.data);
-          return axiosLoad(
-            response.data["_links"].devices.href.split("{").at(0),
-            {}
-          );
-        })
-        .then((response) => {
-          console.log(response.data);
-        });
+      loadEntities(
+        url,
+        {},
+        commitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+
+      // axiosLoad(url, {})
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     commit("saveHub", response.data);
+      //     return axiosLoad(
+      //       response.data["_links"].devices.href.split("{").at(0),
+      //       {}
+      //     );
+      //   })
+      //   .then((response) => {
+      //     console.log(response.data);
+      //   });
     },
   },
 
-  getters: {},
+  getters: {
+    getProperties(state) {
+      const result = {
+        name: state.hub.name,
+        status: state.hub.status,
+      };
+      console.log("returning properties of hub", result);
+      return result;
+    },
+
+    displayLock(state) {
+      return state.hub.status === "Started";
+    },
+
+    displayUnlock(state) {
+      return state.hub.status === "Stopped";
+    },
+  },
 };
 
 export default createStore({

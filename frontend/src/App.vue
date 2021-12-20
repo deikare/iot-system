@@ -68,7 +68,7 @@ body {
 
   align-content: space-between;
 
-  max-width: 192rem;
+  min-width: 100vm;
 
   min-height: 100vh;
 
@@ -95,13 +95,13 @@ a:visited {
   height: 100%;
 }
 
-main {
+.main-with-margin {
   grid-column: 2;
   grid-row: 1;
   overflow: auto;
-}
 
-.main-with-margin {
+  height: 100%;
+
   margin-left: 1.6rem;
   margin-right: 1.6rem;
 
@@ -112,5 +112,8 @@ main {
   grid-column: 2;
   grid-row: 2;
   background-color: var(--main-color);
+  height: fit-content;
+
+  align-self: flex-end;
 }
 </style>

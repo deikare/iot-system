@@ -7,7 +7,6 @@
 
 <script>
 import BaseFilterList from "@/slots/BaseFilterList";
-// import BaseSearchForm from "@/slots/BaseSearchForm";
 export default {
   name: "BaseFiltering",
   components: { BaseFilterList },

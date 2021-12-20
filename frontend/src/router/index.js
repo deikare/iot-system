@@ -57,7 +57,6 @@ const router = createRouter({
   routes,
 });
 
-// eslint-disable-next-line no-unused-vars
 const isQueryValid = (query, allowed) => {
   for (const key in query) {
     if (!allowed.includes(key)) return false;
@@ -66,7 +65,6 @@ const isQueryValid = (query, allowed) => {
   return true;
 };
 
-// eslint-disable-next-line no-unused-vars
 router.beforeEach((to, from, next) => {
   console.log("Routing from", from, "to", to);
 

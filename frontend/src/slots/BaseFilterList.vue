@@ -1,7 +1,4 @@
 <template>
-  <!--  TODO this component should return event to higher component,
-  which should return whole query to the top-->
-  <!--  gets only active filters-->
   <ul v-if="isListRenderable">
     <li class="filter" v-for="filter in filters" v-bind:key="filter.id">
       <div class="filter-text">{{ filter.key }}: {{ filter.value }}</div>
