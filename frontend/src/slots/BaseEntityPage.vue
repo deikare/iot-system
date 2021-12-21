@@ -23,19 +23,6 @@
       v-bind:link-generator-function="entityLinkGeneratorFunction"
       v-on:changePage="emitChangePage"
     ></base-entities-grid-with-paginator>
-
-    <!--    <base-entity-grid
-      v-bind:link-generator-function="entityLinkGeneratorFunction"
-      v-bind:entities="entitiesPage.entities"
-      v-bind:is-loaded="isLoaded"
-    ></base-entity-grid>
-
-    <base-paginator
-      v-bind:pages-number="entitiesPage.pagesNumber"
-      v-bind:short-list-length="shortListLength"
-      v-bind:current-page="entitiesPage.currentPage"
-      v-on:changePage="emitChangePage"
-    ></base-paginator>-->
   </div>
 </template>
 
@@ -58,8 +45,8 @@ export default {
 
   data() {
     return {
-      isLoaded: false,
-      isError: false,
+      isBaseLoaded: false,
+      isBaseError: false,
     };
   },
 
@@ -121,11 +108,11 @@ export default {
     }),
 
     displayLoading() {
-      return !this.isLoaded;
+      return !this.isBaseLoaded;
     },
 
     displayError() {
-      return this.isError;
+      return this.isBaseError;
     },
 
     shortListLength() {
@@ -156,20 +143,19 @@ export default {
         ...this.activeQuery,
       };
 
-      this.isLoaded = false;
+      this.isBaseLoaded = false;
 
       this.loadEntitiesPage({
         queryParams: queryParams,
 
         ifSuccessHandler: () => {
-          this.isLoaded = true;
-          this.isError = false;
+          this.isBaseLoaded = true;
+          this.isBaseError = false;
         },
 
         ifErrorHandler: () => {
-          this.isLoaded = true;
-          this.isError = true;
-          this.entitiesPage = {};
+          this.isBaseLoaded = true;
+          this.isBaseError = true;
         },
       });
     },

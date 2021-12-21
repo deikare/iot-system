@@ -3,12 +3,13 @@
     <base-entity-properties
       class="properties"
       v-bind:properties="getProperties"
-      v-bind:is-loaded="isLoaded"
+      v-bind:is-loaded="isBaseLoaded"
+      v-bind:is-error="isBaseError"
     >
     </base-entity-properties>
 
     <base-grid-card class="children">
-      <template v-slot:header>Children</template>
+      <template v-slot:header><slot name="children-header"></slot></template>
       <template v-slot:default> </template>
     </base-grid-card>
 
@@ -26,9 +27,30 @@ import { mapState } from "vuex";
 
 export default {
   name: "BaseEntityDetails",
-  components: { BaseEntityProperties, BaseGridCard },
+  components: {
+    BaseEntityProperties,
+    BaseGridCard,
+  },
   props: {
-    isLoaded: {
+    isBaseLoaded: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+
+    isBaseError: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+
+    areChildrenLoaded: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+
+    areChildrenError: {
       type: Boolean,
       required: true,
       default: false,

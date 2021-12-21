@@ -51,14 +51,10 @@ const getEntities = function (entities, mapperFunction) {
 };
 
 const getPage = function (page) {
-  const result = {
-    pagesNumber: page.totalPages,
+  return {
+    pageNumber: page.totalPages,
     currentPage: page.number + 1,
   };
-
-  console.log(result);
-
-  return result;
 };
 
 const saveEntitiesPage = function (state, data, entitiesContainerName) {
@@ -124,6 +120,64 @@ const hubsPageModule = {
               key: "Status",
               value: "Started",
               //  TODO add proper value in final backend
+            },
+          ],
+        };
+      };
+
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
+    getPage(state) {
+      return getPage(state.entitiesPage.page);
+    },
+  },
+};
+
+const devicesPageModule = {
+  namespaced: true,
+  state() {
+    return {
+      entitiesPage: {
+        entities: [],
+        links: {},
+        page: {},
+      },
+    };
+  },
+  mutations: {
+    saveEntitiesPage(state, data) {
+      saveEntitiesPage(state, data, "devices");
+    },
+  },
+  actions: {
+    loadEntities({ commit }, payload) {
+      const commitHandler = (data) => commit("saveEntitiesPage", data);
+
+      loadEntities(
+        "http://localhost:8080/devices",
+        payload.queryParams,
+        commitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+  getters: {
+    getEntities(state) {
+      const mapperFunction = (device) => {
+        return {
+          type: "Device",
+          name: device.name,
+          id: device["_links"].self.href.split("/").at(-1),
+          properties: [
+            {
+              key: "Id",
+              value: device["_links"].self.href.split("/").at(-1),
+            },
+            {
+              key: "DeviceType",
+              value: device.deviceType,
             },
           ],
         };
@@ -215,5 +269,6 @@ export default createStore({
   modules: {
     hubs: hubsPageModule,
     hub: hubModule,
+    devices: devicesPageModule,
   },
 });
