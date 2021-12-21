@@ -36,6 +36,22 @@ const routes = [
   {
     path: "/devices",
     name: "devices",
+    props: (route) => ({
+      queriedName: route.query.name,
+      queriedHubId: route.query.hubId,
+      queriedDeviceType: route.query.deviceType,
+      page: route.query.page,
+      activeQuery: {
+        ...(typeof route.query.name !== "undefined" &&
+          route.query.name !== "" && { name: route.query.name }),
+        ...(typeof route.query.hubId !== "undefined" &&
+          route.query.hubId !== "" && { hubId: route.query.hubId }),
+        ...(typeof route.query.deviceType !== "undefined" &&
+          route.query.deviceType !== "" && {
+            deviceType: route.query.deviceType,
+          }),
+      },
+    }),
     component: DeviceList,
   },
   {
@@ -75,6 +91,9 @@ router.beforeEach((to, from, next) => {
   const allowedQuery = [];
 
   if (to.name === "hubs") allowedQuery.push("page", "name");
+
+  if (to.name === "devices")
+    allowedQuery.push("page", "name", "hubId", "deviceType");
 
   if (!isQueryValid(to.query, allowedQuery)) {
     console.log("Invalid query params, routing to not found");

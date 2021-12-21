@@ -47,9 +47,9 @@ export default {
     },
   },
 
-  computed: {
-    transactionMappings() {
-      return {
+  data() {
+    return {
+      transactionMappings: {
         getters: {
           namespace: "hubs",
           entities: "getEntities",
@@ -59,8 +59,8 @@ export default {
           namespace: "hubs",
           loader: "loadEntities",
         },
-      };
-    },
+      },
+    };
   },
 
   methods: {

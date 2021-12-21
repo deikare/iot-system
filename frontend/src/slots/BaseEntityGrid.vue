@@ -48,12 +48,6 @@ export default {
       return this.entities.length === 0;
     },
   },
-
-  watch: {
-    entities() {
-      console.log(this.entities);
-    },
-  },
 };
 </script>
 

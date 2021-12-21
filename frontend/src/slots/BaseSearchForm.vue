@@ -3,10 +3,16 @@
     <p class="error-message">
       <slot name="error-message" v-if="isErrorRenderable"></slot>
     </p>
-    <form v-on:submit.prevent="validateAndEmitNewQuery">
-      <slot name="form"></slot>
-      <button class="submit-form-button">Submit</button>
-    </form>
+    <div class="form-module">
+      <form v-on:submit.prevent="validateAndEmitNewQuery">
+        <slot name="form"></slot>
+        <button class="submit-form-button">Submit</button>
+      </form>
+
+      <div class="additional-buttons">
+        <slot name="additional-buttons"></slot>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -74,9 +80,17 @@ export default {
   font-weight: bold;
 }
 
-form {
+.form-module {
   display: flex;
   gap: 0.4rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+form {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
 }
 
 ::v-slotted(.input-text) {
@@ -84,9 +98,22 @@ form {
   color: var(--main-color);
   background-color: var(--background-color);
   border: 1px solid var(--main-color);
+  height: fit-content;
 }
 
 .submit-form-button {
+  font-size: 1.8rem;
+  background-color: var(--card-color);
+  border: 1px solid var(--main-color);
+  height: fit-content;
+}
+
+.additional-buttons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+::v-slotted(.additional-button) {
   font-size: 1.8rem;
   background-color: var(--card-color);
   border: 1px solid var(--main-color);

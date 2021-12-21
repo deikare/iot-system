@@ -75,7 +75,14 @@
       </template>
     </base-entity-header>
 
-    <base-entity-details v-bind:is-loaded="isHubLoaded" namespace="hub">
+    <base-entity-details
+      v-bind:is-base-loaded="isHubLoaded"
+      namespace="hub"
+      v-bind:is-base-error="isErrorInHub"
+      v-bind:are-children-loaded="areDevicesLoaded"
+      v-bind:are-children-error="isErrorInDevices"
+    >
+      <template v-slot:children-header>Devices</template>
     </base-entity-details>
   </div>
 </template>
@@ -94,6 +101,8 @@ export default {
     return {
       isHubLoaded: false,
       isErrorInHub: false,
+      areDevicesLoaded: false,
+      isErrorInDevices: false,
     };
   },
 
@@ -114,16 +123,16 @@ export default {
       console.log(this.id);
     },
 
-    fetchData() {
+    fetchHubData() {
       this.loadHub({
         id: this.id,
         ifSuccessHandler: () => {
           this.isHubLoaded = true;
-          this.isError = false;
+          this.isErrorInHub = false;
         },
         ifErrorHandler: () => {
-          this.isLoaded = true;
-          this.isError = true;
+          this.isHubLoaded = true;
+          this.isErrorInHub = true;
         },
       });
     },
@@ -136,7 +145,7 @@ export default {
   created() {
     this.$watch(
       () => this.id,
-      () => this.fetchData(),
+      () => this.fetchHubData(),
       { immediate: true, deep: true }
     );
   },

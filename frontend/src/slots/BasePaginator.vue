@@ -63,7 +63,7 @@
       <li
         v-if="
           buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
-          page.pagesNumber - 1
+          page.pageNumber - 1
         "
         class="triple-dots"
       >
@@ -73,7 +73,7 @@
       <button
         v-if="
           buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
-          page.pagesNumber
+          this.page.pageNumber
         "
         v-bind:class="[
           page.pagesNumber === page.currentPage ? 'number-link-active' : '',
@@ -132,7 +132,10 @@ export default {
 
   computed: {
     isComponentRenderable() {
-      return this.page.pageNumber > 1;
+      return (
+        this.page.pageNumber > 1 &&
+        this.page.currentPage <= this.page.pageNumber
+      );
     },
 
     isLeftArrowVisible() {
@@ -180,16 +183,6 @@ export default {
     emitChangePage(page) {
       this.$emit("changePage", page);
     },
-  },
-
-  watch: {
-    page() {
-      console.log(this.page);
-    },
-  },
-
-  created() {
-    console.log(this.page);
   },
 };
 </script>
