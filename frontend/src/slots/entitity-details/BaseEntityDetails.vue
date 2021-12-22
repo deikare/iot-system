@@ -8,28 +8,33 @@
     >
     </base-entity-properties>
 
-    <base-grid-card class="children">
+    <base-card class="children">
       <template v-slot:header><slot name="children-header"></slot></template>
       <template v-slot:default> </template>
-    </base-grid-card>
+    </base-card>
 
-    <base-grid-card class="data">
+    <base-card class="logs">
+      <template v-slot:header>Logs</template>
+      <template v-slot:default></template>
+    </base-card>
+
+    <base-card class="data">
       <template v-slot:header>Data</template>
       <template v-slot:default></template>
-    </base-grid-card>
+    </base-card>
   </main>
 </template>
 
 <script>
-import BaseGridCard from "@/slots/BaseGridCard";
-import BaseEntityProperties from "@/slots/BaseEntityProperties";
+import BaseCard from "@/slots/abstract/BaseCard";
+import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
 import { mapState } from "vuex";
 
 export default {
   name: "BaseEntityDetails",
   components: {
     BaseEntityProperties,
-    BaseGridCard,
+    BaseCard,
   },
   props: {
     isBaseLoaded: {
@@ -77,7 +82,7 @@ export default {
 main {
   display: grid;
   grid-template-rows: fit-content(10rem) repeat(2, 1fr);
-  grid-template-columns: 30% 1fr;
+  grid-template-columns: 20% 1fr 1fr;
   grid-gap: 1.6rem;
 }
 
@@ -110,13 +115,18 @@ div {
   grid-column: 1;
 }
 
-.data {
+.children {
+  grid-row: 3;
+  grid-column: 1;
+}
+
+.logs {
   grid-row: 2/-1;
   grid-column: 2;
 }
 
-.children {
-  grid-row: 3;
-  grid-column: 1;
+.data {
+  grid-row: 2/-1;
+  grid-column: 3;
 }
 </style>

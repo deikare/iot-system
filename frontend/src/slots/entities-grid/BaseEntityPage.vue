@@ -27,11 +27,11 @@
 </template>
 
 <script>
-import EntitiesError from "@/slots/EntitiesError";
-import BaseFilterList from "@/slots/BaseFilterList";
+import EntitiesError from "@/slots/abstract/EntitiesError";
+import BaseFilterList from "@/slots/abstract/BaseFilterList";
 import { mapState, mapActions } from "vuex";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import BaseEntitiesGridWithPaginator from "@/slots/BaseEntitiesGridWithPaginator";
+import BaseEntitiesGridWithPaginator from "@/slots/entities-grid/BaseEntitiesGridWithPaginator";
 
 export default {
   name: "BaseEntityPage",

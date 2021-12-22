@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: "BaseGridCard",
+  name: "BaseCard",
 };
 </script>
 

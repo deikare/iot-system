@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import BaseEntityCard from "@/slots/BaseEntityCard";
+import BaseEntityCard from "@/slots/abstract/BaseEntityCard";
 
 export default {
   name: "BaseEntityGrid",

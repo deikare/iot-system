@@ -1,6 +1,6 @@
 <template>
   <div class="entity-card">
-    <base-grid-card>
+    <base-card>
       <template v-slot:header>{{ entity.name }}</template>
 
       <template v-slot:default>
@@ -13,16 +13,16 @@
           </ul>
         </section>
       </template>
-    </base-grid-card>
+    </base-card>
   </div>
 </template>
 
 <script>
-import BaseGridCard from "@/slots/BaseGridCard";
+import BaseCard from "@/slots/abstract/BaseCard";
 export default {
   name: "BaseEntityCard",
   components: {
-    BaseGridCard,
+    BaseCard,
   },
   props: {
     entity: {

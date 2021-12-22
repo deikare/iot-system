@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import BaseEntityGrid from "@/slots/BaseEntityGrid";
-import BasePaginator from "@/slots/BasePaginator";
+import BaseEntityGrid from "@/slots/entities-grid/BaseEntityGrid";
+import BasePaginator from "@/slots/abstract/BasePaginator";
 export default {
   name: "BaseEntitiesGridWithPaginator",
   components: { BasePaginator, BaseEntityGrid },
