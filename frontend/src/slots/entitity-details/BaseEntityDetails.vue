@@ -1,42 +1,82 @@
 <template>
   <main>
-    <base-entity-properties
-      class="properties"
-      v-bind:properties="getProperties"
-      v-bind:is-loaded="isBaseLoaded"
-      v-bind:is-error="isBaseError"
-    >
-    </base-entity-properties>
+    <div class="first-column">
+      <base-entity-properties
+        class="properties"
+        v-bind:properties="baseProperties"
+        v-bind:is-loaded="isBaseLoaded"
+        v-bind:is-error="isBaseError"
+      >
+      </base-entity-properties>
 
-    <base-card class="children">
-      <template v-slot:header><slot name="children-header"></slot></template>
-      <template v-slot:default> </template>
-    </base-card>
+      <children-list
+        class="children-list"
+        v-bind:page="getChildrenPage"
+        v-bind:is-error="areChildrenError"
+        v-bind:is-loaded="areChildrenLoaded"
+        v-on:changeChildrenPage="emitChangeChildrenPage"
+      >
+        <template v-slot:children-header>
+          <slot name="children-header"></slot>
+        </template>
 
-    <base-card class="logs">
-      <template v-slot:header>Logs</template>
-      <template v-slot:default></template>
-    </base-card>
+        <template v-slot:default>
+          <children-list-item
+            v-for="child in getChildrenEntities"
+            v-bind:key="child"
+            v-bind:child-properties="child"
+          ></children-list-item>
+          <slot name="additional-content"></slot>
+        </template>
+      </children-list>
+    </div>
 
-    <base-card class="data">
-      <template v-slot:header>Data</template>
-      <template v-slot:default></template>
-    </base-card>
+    <div class="second-column">
+      <base-card class="logs">
+        <template v-slot:header>Logs</template>
+        <template v-slot:default>asd</template>
+      </base-card>
+    </div>
+
+    <div class="third-column">
+      <base-card class="data">
+        <template v-slot:header>Data</template>
+        <template v-slot:default>asd</template>
+      </base-card>
+    </div>
   </main>
 </template>
 
 <script>
 import BaseCard from "@/slots/abstract/BaseCard";
 import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
+import ChildrenList from "@/slots/entitity-details/ChildrenList";
+import ChildrenListItem from "@/slots/entitity-details/ChildrenListItem";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    ChildrenListItem,
+    ChildrenList,
     BaseEntityProperties,
     BaseCard,
   },
+
+  data() {
+    return {
+      areChildrenLoaded: false,
+      areChildrenError: false,
+    };
+  },
+
   props: {
+    id: {
+      type: String,
+      required: true,
+      default: "",
+    },
+
     isBaseLoaded: {
       type: Boolean,
       required: true,
@@ -49,41 +89,109 @@ export default {
       default: false,
     },
 
-    areChildrenLoaded: {
-      type: Boolean,
+    baseProperties: {
+      type: Object,
       required: true,
-      default: false,
+      default() {
+        return {};
+      },
     },
 
-    areChildrenError: {
-      type: Boolean,
+    transactionMappings: {
+      type: Object,
       required: true,
-      default: false,
-    },
-
-    namespace: {
-      type: String,
-      required: true,
-      default: "",
+      default() {
+        return {
+          children: {
+            namespace: "",
+            getters: {
+              entities: "",
+              page: "",
+            },
+            actions: {
+              loader: "",
+            },
+          },
+        };
+      },
     },
   },
 
+  emits: ["reloadBaseProperties", "changeChildrenPage"],
+
   computed: {
     ...mapState({
-      getProperties(state, getters) {
-        return getters[`${this.namespace}/getProperties`];
+      getChildrenEntities(state, getters) {
+        return getters[
+          `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.getters.entities}`
+        ];
+      },
+      getChildrenPage(state, getters) {
+        return getters[
+          `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.getters.page}`
+        ];
       },
     }),
+  },
+
+  methods: {
+    ...mapActions({
+      loadChildren(dispatch, payload) {
+        return dispatch(
+          `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.actions.loader}`,
+          payload
+        );
+      },
+    }),
+
+    fetchChildrenEntities(page) {
+      this.areChildrenLoaded = false;
+      this.areChildrenError = false;
+
+      const queryParams = {
+        page: page,
+        hubId: this.id,
+      };
+
+      console.log(queryParams);
+
+      this.loadChildren({
+        queryParams: {
+          page: page,
+          hubId: this.id,
+        },
+        ifSuccessHandler: () => {
+          this.areChildrenLoaded = true;
+          this.areChildrenError = false;
+        },
+        ifErrorHandler: () => {
+          this.areChildrenLoaded = true;
+          this.areChildrenError = true;
+        },
+      });
+    },
+
+    emitChangeChildrenPage(page) {
+      this.fetchChildrenEntities(page - 1);
+    },
+  },
+
+  watch: {
+    isBaseLoaded(newValue, oldValue) {
+      if (newValue === true && oldValue === false) {
+        this.fetchChildrenEntities(0);
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
 main {
-  display: grid;
-  grid-template-rows: fit-content(10rem) repeat(2, 1fr);
-  grid-template-columns: 20% 1fr 1fr;
-  grid-gap: 1.6rem;
+  display: flex;
+  flex: 0 0 25rem;
+  /*grid-template-columns: 20% 1fr 1fr;*/
+  gap: 1.6rem;
 }
 
 header {
@@ -100,33 +208,23 @@ header {
   gap: 2.4rem;
 }
 
-h2 {
-  font-size: 3.6rem;
-  color: var(--background-color);
-  margin: 0;
+.first-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 20%;
+
+  /*flex: 0 0 max-content;*/
 }
 
-div {
-  border: 1px solid black;
+.second-column,
+.third-column {
+  flex: 1;
 }
 
-.properties {
-  grid-row: 2;
-  grid-column: 1;
-}
-
-.children {
-  grid-row: 3;
-  grid-column: 1;
-}
-
-.logs {
-  grid-row: 2/-1;
-  grid-column: 2;
-}
-
-.data {
-  grid-row: 2/-1;
-  grid-column: 3;
+.children-list {
 }
 </style>

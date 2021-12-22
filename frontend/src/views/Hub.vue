@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hub-container">
     <base-entity-header>
       <template v-slot:icon>
         <svg
@@ -76,11 +76,12 @@
     </base-entity-header>
 
     <base-entity-details
+      v-bind:id="id"
       v-bind:is-base-loaded="isHubLoaded"
-      namespace="hub"
       v-bind:is-base-error="isErrorInHub"
-      v-bind:are-children-loaded="areDevicesLoaded"
-      v-bind:are-children-error="isErrorInDevices"
+      v-bind:base-properties="getProperties"
+      v-bind:transaction-mappings="transactionMappings"
+      v-on:changeChildrenPage="changeDevicePage"
     >
       <template v-slot:children-header>Devices</template>
     </base-entity-details>
@@ -101,8 +102,25 @@ export default {
     return {
       isHubLoaded: false,
       isErrorInHub: false,
-      areDevicesLoaded: false,
-      isErrorInDevices: false,
+      transactionMappings: {
+        base: {
+          namespace: "hub",
+          getters: {
+            properties: "getProperties",
+          },
+        },
+
+        children: {
+          namespace: "devices",
+          getters: {
+            entities: "getEntitiesAsChildren",
+            page: "getPage",
+          },
+          actions: {
+            loader: "loadEntities",
+          },
+        },
+      },
     };
   },
 
@@ -110,9 +128,7 @@ export default {
     id: {
       type: String,
       required: true,
-      default() {
-        return "";
-      },
+      default: "",
     },
   },
 
@@ -124,6 +140,9 @@ export default {
     },
 
     fetchHubData() {
+      this.isHubLoaded = false;
+      this.isErrorInHub = false;
+
       this.loadHub({
         id: this.id,
         ifSuccessHandler: () => {
@@ -136,10 +155,14 @@ export default {
         },
       });
     },
+
+    changeDevicePage(page) {
+      console.log(page);
+    },
   },
 
   computed: {
-    ...mapGetters("hub", ["displayLock", "displayUnlock"]),
+    ...mapGetters("hub", ["displayLock", "displayUnlock", "getProperties"]),
   },
 
   created() {
@@ -152,4 +175,10 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.hub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+</style>

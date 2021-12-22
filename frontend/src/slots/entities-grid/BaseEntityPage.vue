@@ -10,10 +10,7 @@
     >
     </base-filter-list>
 
-    <loading-spinner
-      v-if="displayLoading"
-      v-bind:active="displayLoading"
-    ></loading-spinner>
+    <loading-spinner v-if="displayLoading"></loading-spinner>
 
     <base-entities-grid-with-paginator
       v-else

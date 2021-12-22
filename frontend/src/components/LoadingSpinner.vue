@@ -12,19 +12,9 @@ export default {
     Loading,
   },
 
-  props: {
-    active: {
-      type: Boolean,
-      required: true,
-      default() {
-        return false;
-      },
-    },
-  },
-
   computed: {
     displayLoading() {
-      return this.active;
+      return true;
     },
   },
 };

@@ -4,6 +4,7 @@
       <div class="flexbox">
         <div class="inline">Properties</div>
 
+        <!--        TODO add routing to editing entity-->
         <router-link to="">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -25,10 +26,7 @@
 
     <template v-slot:default>
       <entities-error v-if="isError"></entities-error>
-      <loading-spinner
-        v-else-if="displayLoading"
-        v-bind:active="displayLoading"
-      ></loading-spinner>
+      <loading-spinner v-else-if="displayLoading"></loading-spinner>
       <ul v-else-if="displayProperties">
         <li v-for="property in propertiesAsArray" v-bind:key="property.key">
           <div class="to-uppercase">{{ property.key }}</div>
