@@ -1,5 +1,5 @@
 <template>
-  <base-grid-card>
+  <base-card>
     <template v-slot:header>
       <div class="flexbox">
         <div class="inline">Properties</div>
@@ -36,17 +36,17 @@
         </li>
       </ul>
     </template>
-  </base-grid-card>
+  </base-card>
 </template>
 
 <script>
-import BaseGridCard from "@/slots/BaseGridCard";
+import BaseCard from "@/slots/abstract/BaseCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import EntitiesError from "@/slots/EntitiesError";
+import EntitiesError from "@/slots/abstract/EntitiesError";
 
 export default {
   name: "BaseEntityProperties",
-  components: { EntitiesError, LoadingSpinner, BaseGridCard },
+  components: { EntitiesError, LoadingSpinner, BaseCard },
   props: {
     isLoaded: {
       type: Boolean,

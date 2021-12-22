@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import NotFoundView from "../views/NotFoundView";
 import Hub from "@/views/Hub";
-import HubList from "@/views/HubList";
-import DeviceList from "@/views/DeviceList";
+import HubGrid from "@/views/HubGrid";
 import Device from "@/views/Device";
 import Plots from "@/views/Plots";
+import DeviceGrid from "@/views/DeviceGrid";
 
 const routes = [
   {
@@ -25,7 +25,7 @@ const routes = [
           route.query.name !== "" && { name: route.query.name }),
       },
     }),
-    component: HubList,
+    component: HubGrid,
   },
   {
     path: "/hubs/:id(\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b)",
@@ -52,7 +52,7 @@ const routes = [
           }),
       },
     }),
-    component: DeviceList,
+    component: DeviceGrid,
   },
   {
     path: "/devices/:id(\\d+)",

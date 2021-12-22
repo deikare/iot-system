@@ -101,6 +101,14 @@ form {
   height: fit-content;
 }
 
+::v-slotted(.input-select) {
+  font-size: 1.8rem;
+}
+
+::v-slotted(.placeholder-option) {
+  color: var(--placeholder-color);
+}
+
 .submit-form-button {
   font-size: 1.8rem;
   background-color: var(--card-color);

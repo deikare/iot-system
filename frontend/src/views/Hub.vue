@@ -89,8 +89,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import BaseEntityDetails from "@/slots/BaseEntityDetails";
-import BaseEntityHeader from "@/slots/BaseEntityHeader";
+import BaseEntityDetails from "@/slots/entitity-details/BaseEntityDetails";
+import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
 
 export default {
   name: "Hub",

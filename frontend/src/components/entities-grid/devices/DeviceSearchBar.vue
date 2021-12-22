@@ -21,25 +21,18 @@
         v-model="hubIdQuery"
       />
 
-      <div class="device-types">
-        <p class="device-types-label">Device types:</p>
-        <ul class="device-types-list">
-          <li v-for="deviceType in deviceTypes" v-bind:key="deviceType.value">
-            <label>
-              <input
-                class="input-checkbox"
-                name="deviceType"
-                type="radio"
-                v-bind:value="deviceType.value"
-                v-bind:checked="deviceTypeQuery === deviceType.value"
-                v-model="deviceTypeQuery"
-                v-on:click.prevent="uncheckDeviceType(deviceType.value)"
-              />
-              {{ deviceType.label }}
-            </label>
-          </li>
-        </ul>
-      </div>
+      <select v-model="deviceTypeQuery" class="input-select">
+        <option class="placeholder-option" value="" selected>
+          -- select device type --
+        </option>
+        <option
+          v-for="deviceType in deviceTypes"
+          v-bind:key="deviceType.label"
+          v-bind:value="deviceType.value"
+        >
+          {{ deviceType.label }}
+        </option>
+      </select>
     </template>
 
     <template v-slot:additional-buttons>
@@ -49,7 +42,7 @@
 </template>
 
 <script>
-import BaseSearchForm from "@/slots/BaseSearchForm";
+import BaseSearchForm from "@/slots/abstract/BaseSearchForm";
 export default {
   name: "DeviceFiltering",
   components: { BaseSearchForm },
@@ -80,19 +73,38 @@ export default {
   computed: {
     newQueryEmitter() {
       return () => {
-        console.log(this.deviceTypeQuery);
+        const event = {
+          ...(this.nameQuery !== "" && {
+            name: this.nameQuery,
+          }),
+          ...(this.hubIdQuery !== "" && {
+            hubId: this.hubIdQuery,
+          }),
+          ...(this.deviceTypeQuery !== "" && {
+            deviceType: this.deviceTypeQuery,
+          }),
+        };
+
+        this.$emit("newQuery", event);
+
+        this.nameQuery = "";
+        this.hubIdQuery = "";
+        this.deviceTypeQuery = "";
       };
     },
     queryValidator() {
       return () => {
-        return true;
+        return (
+          this.deviceTypeQuery !== "" ||
+          this.nameQuery !== "" ||
+          this.hubIdQuery !== ""
+        );
       };
     },
   },
 
   methods: {
     uncheckDeviceType(clickedValue) {
-      console.log(clickedValue);
       if (this.deviceTypeQuery === clickedValue) this.deviceTypeQuery = null;
       else this.deviceTypeQuery = clickedValue;
     },
@@ -100,25 +112,13 @@ export default {
 
   watch: {
     deviceTypeQuery() {
-      console.log(this.deviceTypeQuery);
+      console.log(this.deviceTypeQuery, typeof this.deviceTypeQuery);
     },
   },
 };
 </script>
 
 <style scoped>
-.device-types {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.device-types-label {
-  margin: 0;
-}
-
 ul {
   list-style-type: none;
   display: flex;

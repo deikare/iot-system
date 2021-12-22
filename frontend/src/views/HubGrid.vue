@@ -10,7 +10,7 @@
         v-on:deactivateFilter="deactivateFilter"
       >
         <template v-slot:filter-form>
-          <hub-filtering v-on:newQuery="newQuery"></hub-filtering>
+          <hub-search-bar v-on:newQuery="newQuery"></hub-search-bar>
         </template>
       </base-entity-page>
     </main>
@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import BaseEntityPage from "@/slots/BaseEntityPage";
-import HubFiltering from "@/slots/HubFiltering";
+import BaseEntityPage from "@/slots/entities-grid/BaseEntityPage";
+import HubSearchBar from "@/components/entities-grid/hubs/HubSearchBar";
 export default {
-  name: "HubList",
+  name: "HubGrid",
 
-  components: { HubFiltering, BaseEntityPage },
+  components: { HubSearchBar, BaseEntityPage },
 
   props: {
     page: {
@@ -62,6 +62,8 @@ export default {
       },
     };
   },
+
+  //TODO button delete hub
 
   methods: {
     getHubLink(id) {

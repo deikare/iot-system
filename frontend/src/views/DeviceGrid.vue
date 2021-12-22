@@ -10,7 +10,7 @@
         v-on:deactivateFilter="deactivateFilter"
       >
         <template v-slot:filter-form>
-          <device-filtering v-on:newQuery="newQuery"></device-filtering>
+          <device-search-bar v-on:newQuery="newQuery"></device-search-bar>
         </template>
       </base-entity-page>
     </main>
@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import BaseEntityPage from "@/slots/BaseEntityPage";
-import DeviceFiltering from "@/slots/DeviceFiltering";
+import BaseEntityPage from "@/slots/entities-grid/BaseEntityPage";
+import DeviceSearchBar from "@/components/entities-grid/devices/DeviceSearchBar";
 
 export default {
-  name: "DeviceList",
-  components: { DeviceFiltering, BaseEntityPage },
+  name: "DeviceGrid",
+  components: { DeviceSearchBar, BaseEntityPage },
 
   props: {
     page: {
@@ -105,14 +105,17 @@ export default {
       };
       this.$router.push(route);
     },
-    newQuery(newQueryName) {
+    newQuery(event) {
+      console.log(event);
       let route = {
         name: "devices",
         query: {
           page: 1,
-          name: newQueryName,
+          ...event,
         },
       };
+
+      console.log(route);
 
       this.$router.push(route);
     },

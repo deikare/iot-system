@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import TheNavigation from "@/views/TheNavigation";
-import TheFooter from "@/views/TheFooter";
+import TheNavigation from "@/components/the-singletons/TheNavigation";
+import TheFooter from "@/components/the-singletons/TheFooter";
 
 export default {
   components: {
@@ -39,6 +39,7 @@ GREY COLOR: #343a40
   --background-color: #f8f9fa;
   --card-color: #e9ecef;
   --error-color: #f03e3e;
+  --placeholder-color: rgb(117, 117, 117);
 }
 
 html {

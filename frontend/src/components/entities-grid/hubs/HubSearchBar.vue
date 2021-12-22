@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import BaseSearchForm from "@/slots/BaseSearchForm";
+import BaseSearchForm from "@/slots/abstract/BaseSearchForm";
 export default {
   name: "HubFiltering",
   components: { BaseSearchForm },
