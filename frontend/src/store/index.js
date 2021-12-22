@@ -51,10 +51,12 @@ const getEntities = function (entities, mapperFunction) {
 };
 
 const getPage = function (page) {
-  return {
-    pageNumber: page.totalPages,
+  const result = {
+    totalPages: page.totalPages,
     currentPage: page.number + 1,
   };
+  console.log("Returning page", result);
+  return result;
 };
 
 const saveEntitiesPage = function (state, data, entitiesContainerName) {
@@ -181,6 +183,18 @@ const devicesPageModule = {
             },
           ],
         };
+      };
+
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
+    getEntitiesAsChildren(state) {
+      const mapperFunction = (device) => {
+        return [
+          { key: "name", value: device.name },
+          { key: "id", value: device.id },
+          { key: "type", value: device.type },
+        ];
       };
 
       return getEntities(state.entitiesPage.entities, mapperFunction);

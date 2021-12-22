@@ -1,27 +1,52 @@
 <template>
-  <ul class="list">
-    <li class="item" v-for="(item, index) in items" v-bind:key="index">
+  <div class="container">
+    <ul class="list">
       <base-list-item>
         <template v-slot:default>
-          {{ item.content }}
+          <slot></slot>
         </template>
       </base-list-item>
-    </li>
-  </ul>
+    </ul>
+
+    <base-paginator
+      v-bind:page="page"
+      v-bind:short-list-length="shortListLength"
+      v-on:changePage="emitChangePage"
+      class="card-background"
+    >
+    </base-paginator>
+  </div>
 </template>
 
 <script>
+import BasePaginator from "@/slots/abstract/BasePaginator";
 import BaseListItem from "@/slots/abstract/BaseListItem";
 export default {
   name: "BaseList",
-  components: { BaseListItem },
+  components: { BaseListItem, BasePaginator },
   props: {
-    items: {
-      type: Array,
+    page: {
+      type: Object,
       required: true,
       default() {
-        return [];
+        return {
+          totalPages: 0,
+          currentPage: 0,
+        };
       },
+    },
+    shortListLength: {
+      type: Number,
+      required: false,
+      default: 2,
+    },
+  },
+
+  emits: ["changePage"],
+
+  methods: {
+    emitChangePage(page) {
+      this.$emit("changePage", page);
     },
   },
 
@@ -30,13 +55,20 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .list {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
 
-.item {
-  border-bottom: 1px solid var(--main-color);
+.card-background {
+  background-color: var(--card-color);
 }
 </style>

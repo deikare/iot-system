@@ -63,7 +63,7 @@
       <li
         v-if="
           buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
-          page.pageNumber - 1
+          page.totalPages - 1
         "
         class="triple-dots"
       >
@@ -73,7 +73,7 @@
       <button
         v-if="
           buttonLabelsShortArray[buttonLabelsShortArray.length - 1] <
-          this.page.pageNumber
+          this.page.totalPages
         "
         v-bind:class="[
           page.pagesNumber === page.currentPage ? 'number-link-active' : '',
@@ -116,7 +116,7 @@ export default {
       required: true,
       default() {
         return {
-          pageNumber: 0,
+          totalPages: 0,
           currentPage: 0,
         };
       },
@@ -133,8 +133,8 @@ export default {
   computed: {
     isComponentRenderable() {
       return (
-        this.page.pageNumber > 1 &&
-        this.page.currentPage <= this.page.pageNumber
+        this.page.totalPages > 1 &&
+        this.page.currentPage <= this.page.totalPages
       );
     },
 
@@ -143,16 +143,16 @@ export default {
     },
 
     isRightArrowVisible() {
-      return this.page.currentPage < this.page.pageNumber;
+      return this.page.currentPage < this.page.totalPages;
     },
 
     isListShort() {
-      return this.page.pageNumber <= this.shortListLength;
+      return this.page.totalPages <= this.shortListLength;
     },
 
     buttonLabelsArray() {
       return Array.from(
-        { length: this.page.pageNumber },
+        { length: this.page.totalPages },
         (element, idx) => idx + 1
       );
     },
@@ -162,16 +162,16 @@ export default {
       let delta = this.shortListLength / 2;
 
       return Array.from(
-        { length: this.page.pageNumber },
+        { length: this.page.totalPages },
         (element, idx) => idx + 1
       ).slice(
         Math.max(this.page.currentPage - delta - 1, 0),
-        Math.min(this.page.currentPage + delta, this.page.pageNumber)
+        Math.min(this.page.currentPage + delta, this.page.totalPages)
       );
     },
 
     lastButtonLabel() {
-      return this.page.pageNumber;
+      return this.page.totalPages;
     },
   },
 
@@ -184,6 +184,8 @@ export default {
       this.$emit("changePage", page);
     },
   },
+
+  //TODO split buttons to different components
 };
 </script>
 
@@ -191,7 +193,7 @@ export default {
 .paginator {
   display: flex;
 
-  margin: 2rem;
+  margin: 1rem 0.8rem;
   gap: 1.2rem;
   align-items: center;
   justify-content: center;
