@@ -1,14 +1,17 @@
 <template>
-  <ul class="child-item">
+  <button class="child-item">
     <div
       class="child-property"
       v-for="(property, index) in childProperties"
       v-bind:key="index"
     >
-      {{ property.key }}: {{ property.value }}
-      {{ index === childProperties.length - 1 ? "" : "," }}
+      {{
+        index === childProperties.length - 1
+          ? `${property.key}: ${property.value}`
+          : `${property.key}: ${property.value},`
+      }}
     </div>
-  </ul>
+  </button>
 </template>
 
 <script>
@@ -31,6 +34,12 @@ export default {
 .child-item {
   list-style-type: none;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-bottom: 1px solid var(--main-color);
+}
+
+.child-property {
 }
 </style>
