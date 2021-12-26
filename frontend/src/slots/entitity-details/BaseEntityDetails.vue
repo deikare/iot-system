@@ -20,7 +20,7 @@
           <slot name="children-header"></slot>
         </template>
 
-        <template v-slot:default>
+        <template v-slot:entity-item>
           <children-list-item
             v-for="child in getChildrenEntities"
             v-bind:key="child"

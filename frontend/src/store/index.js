@@ -192,8 +192,8 @@ const devicesPageModule = {
       const mapperFunction = (device) => {
         return [
           { key: "name", value: device.name },
-          { key: "id", value: device.id },
-          { key: "type", value: device.type },
+          { key: "id", value: device["_links"].self.href.split("/").at(-1) },
+          { key: "type", value: device.deviceType },
         ];
       };
 

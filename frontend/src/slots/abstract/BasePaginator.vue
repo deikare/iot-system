@@ -198,7 +198,7 @@ export default {
   align-items: center;
   justify-content: center;
 
-  background-color: var(--background-color);
+  background-color: transparent;
 }
 
 .links-list {
@@ -214,7 +214,7 @@ li {
 
 button {
   color: var(--main-color);
-  background-color: var(--background-color);
+  background-color: transparent;
   border-radius: 50%;
   border: none;
   display: flex;
@@ -229,7 +229,7 @@ button {
   width: 4.8rem;
   height: 4.8rem;
   border-radius: 50%;
-  background: var(--background-color);
+  background: transparent;
 }
 
 .arrow {

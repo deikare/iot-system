@@ -7,28 +7,45 @@
       <button>asd</button>
     </template>
     <template v-slot:default>
-      <base-list-with-loaders
-        v-bind:page="page"
-        v-bind:is-error="isError"
-        v-bind:is-loaded="isLoaded"
-        v-on:changePage="emitChangeChildrenPage"
-      >
-        <template v-slot:default>
-          <slot></slot>
-        </template>
-      </base-list-with-loaders>
+      <loading-spinner v-if="displayLoading"> </loading-spinner>
+
+      <entities-error v-else-if="isError"></entities-error>
+      <div class="children-list" v-else>
+        <base-list>
+          <template v-slot:default>
+            <slot name="entity-item"></slot>
+          </template>
+        </base-list>
+        <base-paginator
+          v-bind:page="page"
+          v-bind:short-list-length="shortListLength"
+          v-on:changePage="emitChangeChildrenPage"
+        ></base-paginator>
+      </div>
     </template>
   </base-card>
 </template>
 
 <script>
 import BaseCard from "@/slots/abstract/BaseCard";
-import BaseListWithLoaders from "@/slots/abstract/BaseListWithLoaders";
+import BaseList from "@/slots/abstract/BaseList";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import BasePaginator from "@/slots/abstract/BasePaginator";
+import EntitiesError from "@/slots/abstract/EntitiesError";
 export default {
   name: "ChildrenList",
   components: {
-    BaseListWithLoaders,
+    EntitiesError,
+    BasePaginator,
+    LoadingSpinner,
+    BaseList,
     BaseCard,
+  },
+
+  data() {
+    return {
+      shortListLength: 2,
+    };
   },
 
   props: {
@@ -51,6 +68,12 @@ export default {
           currentPage: 0,
         };
       },
+    },
+  },
+
+  computed: {
+    displayLoading() {
+      return !this.isLoaded;
     },
   },
 
