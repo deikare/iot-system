@@ -9,30 +9,19 @@
       >
       </base-entity-properties>
 
-      <children-list
-        class="children-list"
+      <children-list-with-paginator
+        class="children-list-with-paginator"
+        v-bind:children-properties="getChildrenProperties"
         v-bind:page="getChildrenPage"
         v-bind:is-error="areChildrenError"
         v-bind:is-loaded="areChildrenLoaded"
         v-on:changeChildrenPage="changeChildrenPage"
+        v-on:childClicked="emitChildClicked"
       >
         <template v-slot:children-header>
           <slot name="children-header"></slot>
         </template>
-
-        <template v-slot:entity-item>
-          <children-list-item
-            v-for="child in getChildrenEntities"
-            v-bind:key="child"
-            v-bind:child-properties="child"
-            v-on:childClicked="emitChildClicked"
-          >
-            <template v-slot:additional>
-              <slot name="additional-content"></slot>
-            </template>
-          </children-list-item>
-        </template>
-      </children-list>
+      </children-list-with-paginator>
     </div>
 
     <div class="second-column">
@@ -55,14 +44,12 @@
 import BaseCard from "@/slots/abstract/BaseCard";
 import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
 import { mapState, mapActions } from "vuex";
-import ChildrenList from "@/slots/entitity-details/ChildrenList";
-import ChildrenListItem from "@/slots/entitity-details/ChildrenListItem";
+import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
 
 export default {
   name: "BaseEntityDetails",
   components: {
-    ChildrenListItem,
-    ChildrenList,
+    ChildrenListWithPaginator,
     BaseEntityProperties,
     BaseCard,
   },
@@ -125,7 +112,7 @@ export default {
 
   computed: {
     ...mapState({
-      getChildrenEntities(state, getters) {
+      getChildrenProperties(state, getters) {
         return getters[
           `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.getters.entities}`
         ];
@@ -224,8 +211,6 @@ header {
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: 20%;
-
-  /*flex: 0 0 max-content;*/
 }
 
 .second-column,
@@ -233,6 +218,6 @@ header {
   flex: 1;
 }
 
-.children-list {
+.children-list-with-paginator {
 }
 </style>

@@ -19,7 +19,6 @@ div {
   border: 2px solid var(--main-color);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 h2 {
