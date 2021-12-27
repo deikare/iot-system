@@ -83,6 +83,7 @@
       v-bind:transaction-mappings="transactionMappings"
       v-on:changeChildrenPage="changeDevicePage"
       v-on:childClicked="goToDevice"
+      v-on:changeProperties="changePropertiesAndReload"
     >
       <template v-slot:children-header>Devices</template>
     </base-entity-details>
@@ -139,7 +140,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("hub", ["loadHub", "deleteHub"]),
+    ...mapActions("hub", ["loadHub", "deleteHub", "patchHub"]),
 
     showId() {
       console.log(this.id);
@@ -188,6 +189,23 @@ export default {
 
     deleteDevice(deviceId) {
       console.log(deviceId);
+    },
+
+    changePropertiesAndReload() {
+      const payload = {
+        id: this.id,
+        data: { name: "ASD" },
+        //TODO - custom overlayed window for editing an entity
+        ifSuccessHandler: () => {
+          this.fetchHubData();
+        },
+        ifErrorHandler: () => {
+          //TODO - case if there is no entity which mod was requested
+        },
+      };
+
+      this.patchHub(payload);
+      console.log("change", this.id);
     },
   },
 
