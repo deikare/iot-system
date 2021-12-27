@@ -77,6 +77,50 @@ const saveEntitiesPage = function (state, data, entitiesContainerName) {
   console.log("Successfully saved", state.entitiesPage);
 };
 
+const axiosDelete = function (url) {
+  const config = { timeout: 5000 };
+  return axios.delete(url, config);
+};
+
+const axiosDeleteWithHandlers = function (
+  url,
+  ifSuccessHandler,
+  ifErrorHandler
+) {
+  axiosDelete(url)
+    .then(() => {
+      console.log("Successfully deleted");
+      ifSuccessHandler();
+    })
+    .catch((error) => {
+      console.log("Error occurred during get", error);
+      ifErrorHandler();
+    });
+};
+
+const axiosPatch = function (url, data) {
+  const config = { timeout: 5000 };
+
+  return axios.patch(url, data, config);
+};
+
+const axiosPatchWithHandlers = function (
+  url,
+  data,
+  ifSuccessHandler,
+  ifErrorHandler
+) {
+  axiosPatch(url, data)
+    .then((response) => {
+      console.log("Succesfully patched", response.data);
+      ifSuccessHandler();
+    })
+    .catch((error) => {
+      console.log("Error occurred during get", error);
+      ifErrorHandler();
+    });
+};
+
 const hubsPageModule = {
   namespaced: true,
   state() {
@@ -164,7 +208,29 @@ const devicesPageModule = {
         payload.ifErrorHandler
       );
     },
+
+    deleteAllEntities({ commit }, payload) {
+      console.log(commit, payload);
+      axiosDeleteWithHandlers(
+        "http://localhost:8080/devices",
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    deleteDevice({ commit }, payload) {
+      console.log(commit, payload);
+
+      const url = `http://localhost:8080/devices/${payload.id}`;
+
+      axiosDeleteWithHandlers(
+        url,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
   },
+
   getters: {
     getEntities(state) {
       const mapperFunction = (device) => {
@@ -256,6 +322,29 @@ const hubModule = {
       //   .then((response) => {
       //     console.log(response.data);
       //   });
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    deleteHub({ commit }, payload) {
+      const url = `http://localhost:8080/hubs/${payload.id}`;
+
+      axiosDeleteWithHandlers(
+        url,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    patchHub({ commit }, payload) {
+      const url = `http://localhost:8080/hubs/${payload.id}`;
+
+      axiosPatchWithHandlers(
+        url,
+        payload.data,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
     },
   },
 

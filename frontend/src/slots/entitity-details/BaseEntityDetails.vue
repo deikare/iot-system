@@ -6,6 +6,7 @@
         v-bind:properties="baseProperties"
         v-bind:is-loaded="isBaseLoaded"
         v-bind:is-error="isBaseError"
+        v-on:changeProperties="emitChangeProperties"
       >
       </base-entity-properties>
 
@@ -17,6 +18,7 @@
         v-bind:is-loaded="areChildrenLoaded"
         v-on:changeChildrenPage="changeChildrenPage"
         v-on:childClicked="emitChildClicked"
+        v-on:deleteChild="deleteChildAndReload"
       >
         <template v-slot:children-header>
           <slot name="children-header"></slot>
@@ -101,6 +103,7 @@ export default {
             },
             actions: {
               loader: "",
+              deleter: "",
             },
           },
         };
@@ -130,6 +133,13 @@ export default {
       loadChildren(dispatch, payload) {
         return dispatch(
           `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.actions.loader}`,
+          payload
+        );
+      },
+
+      deleteChild(dispatch, payload) {
+        return dispatch(
+          `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.actions.deleter}`,
           payload
         );
       },
@@ -168,6 +178,22 @@ export default {
 
     emitChildClicked(childId) {
       this.$emit("childClicked", childId);
+    },
+
+    deleteChildAndReload(childId) {
+      const payload = {
+        id: childId,
+        ifSuccessHandler: () => {
+          this.fetchChildrenEntities(this.getChildrenPage.currentPage - 1);
+          //TODO add custom toasts
+        },
+        ifErrorHandler: () => {
+          //TODO add custom toasts
+          console.log("error");
+        },
+      };
+
+      this.deleteChild(payload);
     },
   },
 
