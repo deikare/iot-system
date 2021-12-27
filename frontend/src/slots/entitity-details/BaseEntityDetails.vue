@@ -111,7 +111,12 @@ export default {
     },
   },
 
-  emits: ["reloadBaseProperties", "changeChildrenPage", "childClicked"],
+  emits: [
+    "reloadBaseProperties",
+    "changeChildrenPage",
+    "childClicked",
+    "changeProperties",
+  ],
 
   computed: {
     ...mapState({
@@ -178,6 +183,10 @@ export default {
 
     emitChildClicked(childId) {
       this.$emit("childClicked", childId);
+    },
+
+    emitChangeProperties() {
+      this.$emit("changeProperties");
     },
 
     deleteChildAndReload(childId) {
