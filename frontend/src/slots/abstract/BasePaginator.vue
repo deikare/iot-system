@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isComponentRenderable" class="paginator">
+  <div v-if="isComponentRenderable" class="paginator-body">
     <button
       v-if="isLeftArrowVisible"
       v-on:click="emitChangePage(this.page.currentPage - 1)"
@@ -190,7 +190,7 @@ export default {
 </script>
 
 <style scoped>
-.paginator {
+.paginator-body {
   display: flex;
 
   margin: 1rem 0.8rem;

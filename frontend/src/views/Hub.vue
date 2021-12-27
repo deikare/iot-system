@@ -56,7 +56,7 @@
           </svg>
         </button>
 
-        <button>
+        <button v-on:click="removeHub">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="action-icon"
@@ -85,24 +85,6 @@
       v-on:childClicked="goToDevice"
     >
       <template v-slot:children-header>Devices</template>
-      <template v-slot:additional-content>
-        <button class="delete-button" v-on:click="deleteDevice">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="delete-icon"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-        </button>
-      </template>
     </base-entity-details>
   </div>
 </template>
@@ -137,6 +119,7 @@ export default {
           },
           actions: {
             loader: "loadEntities",
+            deleter: "deleteDevice",
           },
         },
       },
@@ -156,7 +139,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("hub", ["loadHub"]),
+    ...mapActions("hub", ["loadHub", "deleteHub"]),
 
     showId() {
       console.log(this.id);
@@ -179,6 +162,22 @@ export default {
       });
     },
 
+    removeHub() {
+      const payload = {
+        id: this.id,
+        ifSuccessHandler: () => {
+          this.$router.push({ name: "hubs" });
+        },
+        ifErrorHandler: () => {
+          //TODO add custom toasts
+        },
+      };
+
+      console.log("hub", payload);
+
+      this.deleteHub(payload);
+    },
+
     changeDevicePage(page) {
       console.log(page);
     },
@@ -188,7 +187,6 @@ export default {
     },
 
     deleteDevice(deviceId) {
-      //TODO need to figure out way of getting deviceId, perhaps just own list component
       console.log(deviceId);
     },
   },

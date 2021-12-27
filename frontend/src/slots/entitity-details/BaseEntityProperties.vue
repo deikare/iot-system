@@ -5,7 +5,7 @@
         <div class="inline">Properties</div>
 
         <!--        TODO add routing to editing entity-->
-        <button class="edit-button">
+        <button class="edit-button" v-on:click="emitChangeProperties">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="edit-icon"
@@ -65,6 +65,8 @@ export default {
     },
   },
 
+  emits: ["changeProperties"],
+
   computed: {
     displayLoading() {
       return !this.isLoaded;
@@ -83,7 +85,11 @@ export default {
     },
   },
 
-  methods: {},
+  methods: {
+    emitChangeProperties() {
+      this.$emit("changeProperties");
+    },
+  },
 };
 </script>
 
