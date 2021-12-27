@@ -193,7 +193,7 @@ const devicesPageModule = {
         return [
           { key: "name", value: device.name },
           { key: "id", value: device["_links"].self.href.split("/").at(-1) },
-          { key: "type", value: device.deviceType },
+          // { key: "type", value: device.deviceType },
         ];
       };
 

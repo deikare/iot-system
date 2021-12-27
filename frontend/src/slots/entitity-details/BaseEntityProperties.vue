@@ -108,6 +108,7 @@ export default {
 .edit-button {
   stroke: var(--background-color);
   height: 2.4rem;
+  width: 2.4rem;
 
   display: flex;
   align-items: center;

@@ -82,8 +82,27 @@
       v-bind:base-properties="getProperties"
       v-bind:transaction-mappings="transactionMappings"
       v-on:changeChildrenPage="changeDevicePage"
+      v-on:childClicked="goToDevice"
     >
       <template v-slot:children-header>Devices</template>
+      <template v-slot:additional-content>
+        <button class="delete-button" v-on:click="deleteDevice">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="delete-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </template>
     </base-entity-details>
   </div>
 </template>
@@ -132,6 +151,10 @@ export default {
     },
   },
 
+  computed: {
+    ...mapGetters("hub", ["displayLock", "displayUnlock", "getProperties"]),
+  },
+
   methods: {
     ...mapActions("hub", ["loadHub"]),
 
@@ -159,10 +182,15 @@ export default {
     changeDevicePage(page) {
       console.log(page);
     },
-  },
 
-  computed: {
-    ...mapGetters("hub", ["displayLock", "displayUnlock", "getProperties"]),
+    goToDevice(deviceId) {
+      this.$router.push({ name: "device", params: { id: deviceId } });
+    },
+
+    deleteDevice(deviceId) {
+      //TODO need to figure out way of getting deviceId, perhaps just own list component
+      console.log(deviceId);
+    },
   },
 
   created() {
@@ -180,5 +208,27 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  width: fit-content;
+  height: fit-content;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-icon {
+  stroke: var(--main-color);
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.delete-button:hover > .delete-icon {
+  border: 2px solid var(--main-color);
+  border-radius: 50%;
 }
 </style>

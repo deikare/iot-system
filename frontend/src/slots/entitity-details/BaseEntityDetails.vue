@@ -14,7 +14,7 @@
         v-bind:page="getChildrenPage"
         v-bind:is-error="areChildrenError"
         v-bind:is-loaded="areChildrenLoaded"
-        v-on:changeChildrenPage="emitChangeChildrenPage"
+        v-on:changeChildrenPage="changeChildrenPage"
       >
         <template v-slot:children-header>
           <slot name="children-header"></slot>
@@ -25,8 +25,12 @@
             v-for="child in getChildrenEntities"
             v-bind:key="child"
             v-bind:child-properties="child"
-          ></children-list-item>
-          <slot name="additional-content"></slot>
+            v-on:childClicked="emitChildClicked"
+          >
+            <template v-slot:additional>
+              <slot name="additional-content"></slot>
+            </template>
+          </children-list-item>
         </template>
       </children-list>
     </div>
@@ -117,7 +121,7 @@ export default {
     },
   },
 
-  emits: ["reloadBaseProperties", "changeChildrenPage"],
+  emits: ["reloadBaseProperties", "changeChildrenPage", "childClicked"],
 
   computed: {
     ...mapState({
@@ -171,8 +175,12 @@ export default {
       });
     },
 
-    emitChangeChildrenPage(page) {
+    changeChildrenPage(page) {
       this.fetchChildrenEntities(page - 1);
+    },
+
+    emitChildClicked(childId) {
+      this.$emit("childClicked", childId);
     },
   },
 
