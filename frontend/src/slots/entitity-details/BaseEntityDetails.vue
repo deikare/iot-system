@@ -10,6 +10,10 @@
       >
       </base-entity-properties>
 
+      <base-entity-properties-modifier
+        v-bind:entity-properties="propertiesModifier"
+      ></base-entity-properties-modifier>
+
       <children-list-with-paginator
         class="children-list-with-paginator"
         v-bind:children-properties="getChildrenProperties"
@@ -47,10 +51,12 @@ import BaseCard from "@/slots/abstract/BaseCard";
 import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
 import { mapState, mapActions } from "vuex";
 import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
+import BaseEntityPropertiesModifier from "@/slots/entitity-details/BaseEntityPropertiesModifier";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    BaseEntityPropertiesModifier,
     ChildrenListWithPaginator,
     BaseEntityProperties,
     BaseCard,
@@ -107,6 +113,14 @@ export default {
             },
           },
         };
+      },
+    },
+
+    propertiesModifier: {
+      type: Array,
+      required: true,
+      default() {
+        return [];
       },
     },
   },
