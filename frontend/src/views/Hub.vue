@@ -22,40 +22,6 @@
 
       <!--      class action-icon is required to style icons-->
       <template v-if="isHubLoaded" v-slot:buttons>
-        <button v-if="displayUnlock">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="action-icon"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-            />
-          </svg>
-        </button>
-
-        <button v-else-if="displayLock">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="action-icon"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
-        </button>
-
         <button v-on:click="removeHub">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,6 +47,7 @@
       v-bind:is-base-error="isErrorInHub"
       v-bind:base-properties="getProperties"
       v-bind:transaction-mappings="transactionMappings"
+      v-bind:properties-modifier="propertiesModifier"
       v-on:changeChildrenPage="changeDevicePage"
       v-on:childClicked="goToDevice"
       v-on:changeProperties="changePropertiesAndReload"
@@ -124,6 +91,22 @@ export default {
           },
         },
       },
+      propertiesModifier: [
+        {
+          type: "text",
+          initialValue: "asd",
+          label: "name",
+        },
+        {
+          type: "select",
+          initialValue: "Started",
+          label: "status",
+          options: [
+            { label: "Started", value: "Started" }, //because label can differ from value
+            { label: "Stopped", value: "Stopped" },
+          ],
+        },
+      ],
     };
   },
 
