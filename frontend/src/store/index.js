@@ -20,8 +20,13 @@ const axiosLoadWithHandlers = function (
       ifSuccessHandler();
     })
     .catch((error) => {
-      console.log("Error occurred during get", error);
-      ifErrorHandler();
+      console.log(
+        "Error occurred during get",
+        error,
+        error.response,
+        error.request
+      );
+      ifErrorHandler(error);
     });
 };
 
@@ -93,8 +98,13 @@ const axiosDeleteWithHandlers = function (
       ifSuccessHandler();
     })
     .catch((error) => {
-      console.log("Error occurred during get", error);
-      ifErrorHandler();
+      console.log(
+        "Error occurred during delete",
+        error,
+        error.response,
+        error.request
+      );
+      ifErrorHandler(error);
     });
 };
 
@@ -112,12 +122,17 @@ const axiosPatchWithHandlers = function (
 ) {
   axiosPatch(url, data)
     .then((response) => {
-      console.log("Succesfully patched", response.data);
+      console.log("Successfully patched", response.data);
       ifSuccessHandler();
     })
     .catch((error) => {
-      console.log("Error occurred during get", error);
-      ifErrorHandler();
+      console.log(
+        "Error occurred during patch",
+        error,
+        error.response,
+        error.request
+      );
+      ifErrorHandler(error);
     });
 };
 
@@ -337,7 +352,7 @@ const hubModule = {
 
     // eslint-disable-next-line no-unused-vars
     patchHub({ commit }, payload) {
-      const url = `http://localhost:8080/hubs/${payload.id}`;
+      const url = `http://localhost:8080/hubs/${payload.id}23`;
 
       axiosPatchWithHandlers(
         url,
@@ -371,6 +386,8 @@ const hubModule = {
     },
   },
 };
+
+//TODO add module for creating storing toasts - module should produce ids
 
 export default createStore({
   modules: {
