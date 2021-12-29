@@ -1,38 +1,47 @@
 <template>
   <base-card>
-    <template v-slot:header>
-      <div class="flexbox">
-        <div class="inline">Properties</div>
-
-        <!--        TODO add routing to editing entity-->
-        <button class="edit-button" v-on:click="emitChangeProperties">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="edit-icon"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-            />
-          </svg>
-        </button>
-      </div>
-    </template>
+    <template v-slot:header> Properties </template>
 
     <template v-slot:default>
       <entities-error v-if="isError"></entities-error>
       <loading-spinner v-else-if="displayLoading"></loading-spinner>
-      <ul v-else-if="displayProperties">
-        <li v-for="property in propertiesAsArray" v-bind:key="property.key">
-          <div class="to-uppercase">{{ property.key }}</div>
-          : {{ property.value }}
-        </li>
-      </ul>
+
+      <div class="properties-modifier" v-else-if="displayProperties">
+        <div
+          class="property-container"
+          v-for="(property, index) in entityProperties"
+          v-bind:key="property.label"
+        >
+          <div class="property-label">{{ property.label }}:</div>
+
+          <input
+            class="property-modifier text-modifier"
+            type="text"
+            v-if="property.type === `text`"
+            v-model="newValues[index].value"
+            size="15"
+          />
+          <select
+            class="property-modifier select-modifier"
+            v-else-if="property.type === `select`"
+            v-model="newValues[index].value"
+          >
+            <option disabled value="">Please select one</option>
+            <option
+              v-for="option in property.options"
+              v-bind:key="option.value"
+              v-bind:value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="buttons" v-if="displayButtons">
+          <button class="submit-button" v-on:click="reset">Reset</button>
+          <button class="submit-button" v-on:click="submit">Submit</button>
+        </div>
+      </div>
     </template>
   </base-card>
 </template>
@@ -45,6 +54,15 @@ import EntitiesError from "@/slots/abstract/EntitiesError";
 export default {
   name: "BaseEntityProperties",
   components: { EntitiesError, LoadingSpinner, BaseCard },
+
+  data() {
+    return {
+      newValues: this.entityProperties.map((property) => {
+        return { label: property.label, value: property.initialValue };
+      }),
+    };
+  },
+
   props: {
     isLoaded: {
       type: Boolean,
@@ -56,11 +74,11 @@ export default {
       required: true,
       default: false,
     },
-    properties: {
-      type: Object,
+    entityProperties: {
+      type: Array,
       required: true,
       default() {
-        return {};
+        return [];
       },
     },
   },
@@ -76,69 +94,112 @@ export default {
       return this.isLoaded;
     },
 
-    propertiesAsArray() {
-      const result = [];
-      for (const [key, value] of Object.entries(this.properties)) {
-        result.push({ key: key, value: value });
+    displayButtons() {
+      let areNewValues = false;
+      for (const key in Object.keys(this.newValues)) {
+        const proxy = this.newValues[key];
+        if (
+          proxy.value !== undefined &&
+          proxy.value !== null &&
+          proxy.value !== this.entityProperties[Number(key)].initialValue
+        ) {
+          areNewValues = true;
+          break;
+        }
       }
-      return result;
+      return !this.isError && this.isLoaded && areNewValues;
     },
   },
 
   methods: {
-    emitChangeProperties() {
-      this.$emit("changeProperties");
+    submit() {
+      let newData = {};
+
+      for (const key in Object.keys(this.newValues)) {
+        const proxy = this.newValues[key];
+        if (proxy.value !== undefined && proxy.value !== null) {
+          newData[proxy.label] = proxy.value;
+        }
+      }
+
+      if (
+        !(
+          newData &&
+          Object.keys(newData).length === 0 &&
+          Object.getPrototypeOf(newData) === Object.prototype
+        )
+      )
+        this.$emit("changeProperties", newData);
+    },
+
+    reset() {
+      for (const key in Object.keys(this.newValues))
+        this.newValues[key].value =
+          this.entityProperties[Number(key)].initialValue;
+    },
+  },
+
+  watch: {
+    //workaround for bugged reactivity
+    isLoaded(newValue, oldValue) {
+      if (newValue === true && oldValue === false) this.reset();
     },
   },
 };
 </script>
 
 <style scoped>
-.flexbox {
+.properties-modifier {
+  padding-left: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-bottom: 0.2rem;
+}
+
+.property-container {
   display: flex;
   gap: 0.8rem;
   align-items: center;
   justify-content: center;
 }
 
-.inline {
-  display: inline-block;
-  color: var(--background-color);
-}
-
-.to-uppercase {
-  display: inline-block;
+.property-label {
   text-transform: capitalize;
 }
 
-.edit-button {
-  background: transparent;
-  border: transparent;
-
-  width: 3.6rem;
-  height: 3.6rem;
-
-  border-radius: 50%;
+.property-modifier {
+  font-size: 1.6rem;
+  color: var(--main-color);
 }
 
-.edit-icon {
-  stroke: var(--background-color);
-  height: 2.4rem;
-  width: 2.4rem;
+.text-modifier {
+  background: transparent;
+  border: none;
 
+  color: var(--main-color);
+}
+
+.text-modifier:focus {
+  outline-width: 0;
+  border-bottom: 2px solid var(--main-color);
+}
+
+.select-modifier {
+  background: transparent;
+  border: 2px solid var(--main-color);
+}
+
+.buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.8rem;
 }
 
-.edit-button:hover,
-.edit-button:active {
-  cursor: pointer;
-  background-color: var(--background-color);
-}
-
-.edit-button:hover > .edit-icon,
-.edit-button:active > .edit-icon {
-  stroke: var(--main-color);
+.submit-button {
+  align-self: center;
 }
 </style>

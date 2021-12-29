@@ -45,9 +45,7 @@
       v-bind:id="id"
       v-bind:is-base-loaded="isHubLoaded"
       v-bind:is-base-error="isErrorInHub"
-      v-bind:base-properties="getProperties"
       v-bind:transaction-mappings="transactionMappings"
-      v-bind:properties-modifier="propertiesModifier"
       v-on:changeChildrenPage="changeDevicePage"
       v-on:childClicked="goToDevice"
       v-on:changeProperties="changePropertiesAndReload"
@@ -58,7 +56,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 import BaseEntityDetails from "@/slots/entitity-details/BaseEntityDetails";
 import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
 
@@ -91,22 +89,6 @@ export default {
           },
         },
       },
-      propertiesModifier: [
-        {
-          type: "text",
-          initialValue: "asd",
-          label: "name",
-        },
-        {
-          type: "select",
-          initialValue: "Started",
-          label: "status",
-          options: [
-            { label: "Started", value: "Started" }, //because label can differ from value
-            { label: "Stopped", value: "Stopped" },
-          ],
-        },
-      ],
     };
   },
 
@@ -116,10 +98,6 @@ export default {
       required: true,
       default: "",
     },
-  },
-
-  computed: {
-    ...mapGetters("hub", ["displayLock", "displayUnlock", "getProperties"]),
   },
 
   methods: {
@@ -174,10 +152,10 @@ export default {
       console.log(deviceId);
     },
 
-    changePropertiesAndReload() {
+    changePropertiesAndReload(data) {
       const payload = {
         id: this.id,
-        data: { name: "ASD" },
+        data: data,
         //TODO - custom overlayed window for editing an entity
         ifSuccessHandler: () => {
           this.fetchHubData();
