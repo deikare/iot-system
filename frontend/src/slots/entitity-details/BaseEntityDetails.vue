@@ -1,45 +1,60 @@
 <template>
-  <main>
-    <div class="first-column">
-      <base-entity-properties
-        class="properties"
-        v-bind:entity-properties="getBaseProperties"
-        v-bind:is-loaded="isBaseLoaded"
-        v-bind:is-error="isBaseError"
-        v-on:changeProperties="emitChangeProperties"
-      >
-      </base-entity-properties>
+  <div class="entity-container">
+    <base-entity-header
+      v-bind:is-base-loaded="isBaseLoaded"
+      v-on:deleteEntity="removeBaseEntityThenRoute"
+    >
+      <template v-slot:icon>
+        <slot name="icon"></slot>
+      </template>
 
-      <children-list-with-paginator
-        class="children-list-with-paginator"
-        v-bind:children-properties="getChildrenProperties"
-        v-bind:page="getChildrenPage"
-        v-bind:is-error="areChildrenError"
-        v-bind:is-loaded="areChildrenLoaded"
-        v-on:changeChildrenPage="changeChildrenPage"
-        v-on:childClicked="emitChildClicked"
-        v-on:deleteChild="deleteChildAndReload"
-      >
-        <template v-slot:children-header>
-          <slot name="children-header"></slot>
-        </template>
-      </children-list-with-paginator>
-    </div>
+      <template v-slot:entityId>
+        <slot name="entityId"></slot>
+      </template>
+    </base-entity-header>
 
-    <div class="second-column">
-      <base-card class="logs">
-        <template v-slot:header>Logs</template>
-        <template v-slot:default>asd</template>
-      </base-card>
-    </div>
+    <main>
+      <div class="first-column">
+        <base-entity-properties
+          class="properties"
+          v-bind:entity-properties="getBaseProperties"
+          v-bind:is-loaded="isBaseLoaded"
+          v-bind:is-error="isBaseError"
+          v-on:changeProperties="patchBasePropertiesAndReload"
+        >
+        </base-entity-properties>
 
-    <div class="third-column">
-      <base-card class="data">
-        <template v-slot:header>Data</template>
-        <template v-slot:default>asd</template>
-      </base-card>
-    </div>
-  </main>
+        <children-list-with-paginator
+          class="children-list-with-paginator"
+          v-bind:children-properties="getChildrenProperties"
+          v-bind:page="getChildrenPage"
+          v-bind:is-error="areChildrenError"
+          v-bind:is-loaded="areChildrenLoaded"
+          v-on:changeChildrenPage="changeChildrenPage"
+          v-on:childClicked="emitChildClicked"
+          v-on:deleteChild="deleteChildAndReload"
+        >
+          <template v-slot:children-header>
+            <slot name="children-header"></slot>
+          </template>
+        </children-list-with-paginator>
+      </div>
+
+      <div class="second-column">
+        <base-card class="logs">
+          <template v-slot:header>Logs</template>
+          <template v-slot:default>asd</template>
+        </base-card>
+      </div>
+
+      <div class="third-column">
+        <base-card class="data">
+          <template v-slot:header>Data</template>
+          <template v-slot:default>asd</template>
+        </base-card>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -47,10 +62,12 @@ import BaseCard from "@/slots/abstract/BaseCard";
 import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
 import { mapState, mapActions } from "vuex";
 import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
+import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    BaseEntityHeader,
     ChildrenListWithPaginator,
     BaseEntityProperties,
     BaseCard,
@@ -58,9 +75,10 @@ export default {
 
   data() {
     return {
+      isBaseLoaded: false,
+      isBaseError: false,
       areChildrenLoaded: false,
       areChildrenError: false,
-      currentEntityProperties: [],
     };
   },
 
@@ -69,18 +87,6 @@ export default {
       type: String,
       required: true,
       default: "",
-    },
-
-    isBaseLoaded: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-
-    isBaseError: {
-      type: Boolean,
-      required: true,
-      default: false,
     },
 
     transactionMappings: {
@@ -92,6 +98,11 @@ export default {
             namespace: "",
             getters: {
               properties: "",
+            },
+            actions: {
+              loader: "",
+              deleter: "",
+              patcher: "",
             },
           },
           children: {
@@ -108,14 +119,19 @@ export default {
         };
       },
     },
+
+    ifBaseDeletedRoute: {
+      type: Object,
+      required: true,
+      default() {
+        return {
+          name: "",
+        };
+      },
+    },
   },
 
-  emits: [
-    "reloadBaseProperties",
-    "changeChildrenPage",
-    "childClicked",
-    "changeProperties",
-  ],
+  emits: ["childClicked"],
 
   computed: {
     ...mapState({
@@ -139,6 +155,24 @@ export default {
 
   methods: {
     ...mapActions({
+      loadBaseEntity(dispatch, payload) {
+        return dispatch(
+          `${this.transactionMappings.base.namespace}/${this.transactionMappings.base.actions.loader}`,
+          payload
+        );
+      },
+      deleteBaseEntity(dispatch, payload) {
+        return dispatch(
+          `${this.transactionMappings.base.namespace}/${this.transactionMappings.base.actions.deleter}`,
+          payload
+        );
+      },
+      patchBaseEntity(dispatch, payload) {
+        return dispatch(
+          `${this.transactionMappings.base.namespace}/${this.transactionMappings.base.actions.patcher}`,
+          payload
+        );
+      },
       loadChildren(dispatch, payload) {
         return dispatch(
           `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.actions.loader}`,
@@ -153,6 +187,53 @@ export default {
         );
       },
     }),
+
+    fetchBaseEntity() {
+      this.isBaseLoaded = false;
+      this.isBaseError = false;
+
+      this.loadBaseEntity({
+        id: this.id,
+        ifSuccessHandler: () => {
+          this.isBaseLoaded = true;
+          this.isBaseError = false;
+        },
+        ifErrorHandler: () => {
+          this.isBaseLoaded = true;
+          this.isBaseError = true;
+        },
+      });
+    },
+
+    removeBaseEntityThenRoute() {
+      const payload = {
+        id: this.id,
+        ifSuccessHandler: () => {
+          this.$router.push(this.ifBaseDeletedRoute);
+        },
+        ifErrorHandler: () => {
+          //TODO add custom toasts
+        },
+      };
+
+      this.deleteBaseEntity(payload);
+    },
+
+    patchBasePropertiesAndReload(data) {
+      const payload = {
+        id: this.id,
+        data: data,
+        //TODO - custom overlayed window for editing an entity
+        ifSuccessHandler: () => {
+          this.fetchBaseEntity();
+        },
+        ifErrorHandler: () => {
+          //TODO - case if there is no entity which mod was requested
+        },
+      };
+
+      this.patchBaseEntity(payload);
+    },
 
     fetchChildrenEntities(page) {
       this.areChildrenLoaded = false;
@@ -189,10 +270,6 @@ export default {
       this.$emit("childClicked", childId);
     },
 
-    emitChangeProperties(data) {
-      this.$emit("changeProperties", data);
-    },
-
     deleteChildAndReload(childId) {
       const payload = {
         id: childId,
@@ -210,21 +287,29 @@ export default {
     },
   },
 
-  watch: {
-    isBaseLoaded(newValue, oldValue) {
-      if (newValue === true && oldValue === false) {
+  created() {
+    this.$watch(
+      () => this.id,
+      () => {
+        this.fetchBaseEntity();
         this.fetchChildrenEntities(0);
-      }
-    },
+      },
+      { immediate: true, deep: true }
+    );
   },
 };
 </script>
 
 <style scoped>
+.entity-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
 main {
   display: flex;
   flex: 0 0 25rem;
-  /*grid-template-columns: 20% 1fr 1fr;*/
   gap: 1.6rem;
 }
 

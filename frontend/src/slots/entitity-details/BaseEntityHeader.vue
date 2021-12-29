@@ -8,8 +8,23 @@
       </h2>
     </div>
 
-    <div class="button-list">
-      <slot name="buttons"></slot>
+    <div class="button-list" v-if="isBaseLoaded">
+      <button v-on:click="emitDeleteEntity" class="action-button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="action-icon"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+      </button>
     </div>
   </div>
 </template>
@@ -17,6 +32,22 @@
 <script>
 export default {
   name: "BaseEntityHeader",
+
+  props: {
+    isBaseLoaded: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+  },
+
+  emits: ["deleteEntity"],
+
+  methods: {
+    emitDeleteEntity() {
+      this.$emit("deleteEntity");
+    },
+  },
 };
 </script>
 
@@ -60,7 +91,7 @@ h2 {
   gap: 0.8rem;
 }
 
-::v-slotted(button) {
+button {
   background-color: transparent;
   border: none;
   border-radius: 100rem;
@@ -75,21 +106,21 @@ h2 {
   justify-content: center;
 }
 
-::v-slotted(.action-icon) {
+.action-icon {
   width: 3.2rem;
   height: 3.2rem;
   background-color: transparent;
   stroke: var(--background-color);
 }
 
-::v-slotted(button):hover,
-::v-slotted(button):active {
+button:hover,
+button:active {
   cursor: pointer;
   background-color: var(--background-color);
 }
 
-::v-slotted(button):hover > svg,
-::v-slotted(button):active > svg {
+button:hover > svg,
+button:active > svg {
   stroke: var(--main-color);
 }
 </style>
