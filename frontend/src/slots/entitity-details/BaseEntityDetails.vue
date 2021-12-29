@@ -223,11 +223,11 @@ export default {
       const payload = {
         id: this.id,
         data: data,
-        //TODO - custom overlayed window for editing an entity
         ifSuccessHandler: () => {
           this.fetchBaseEntity();
         },
-        ifErrorHandler: () => {
+        ifErrorHandler: (error) => {
+          console.log(error);
           //TODO - case if there is no entity which mod was requested
         },
       };
@@ -255,7 +255,8 @@ export default {
           this.areChildrenLoaded = true;
           this.areChildrenError = false;
         },
-        ifErrorHandler: () => {
+        ifErrorHandler: (error) => {
+          console.log(error);
           this.areChildrenLoaded = true;
           this.areChildrenError = true;
         },
@@ -277,7 +278,8 @@ export default {
           this.fetchChildrenEntities(this.getChildrenPage.currentPage - 1);
           //TODO add custom toasts
         },
-        ifErrorHandler: () => {
+        ifErrorHandler: (error) => {
+          console.log(error);
           //TODO add custom toasts
           console.log("error");
         },
