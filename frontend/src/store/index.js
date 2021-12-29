@@ -350,20 +350,24 @@ const hubModule = {
 
   getters: {
     getProperties(state) {
-      const result = {
-        name: state.hub.name,
-        status: state.hub.status,
-      };
+      const result = [
+        {
+          type: "text",
+          initialValue: state.hub.name,
+          label: "name",
+        },
+        {
+          type: "select",
+          initialValue: state.hub.status,
+          label: "status",
+          options: [
+            { label: "Started", value: "Started" }, //because label can differ from value
+            { label: "Stopped", value: "Stopped" },
+          ],
+        },
+      ];
       console.log("returning properties of hub", result);
       return result;
-    },
-
-    displayLock(state) {
-      return state.hub.status === "Started";
-    },
-
-    displayUnlock(state) {
-      return state.hub.status === "Stopped";
     },
   },
 };

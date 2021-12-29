@@ -3,16 +3,12 @@
     <div class="first-column">
       <base-entity-properties
         class="properties"
-        v-bind:properties="baseProperties"
+        v-bind:entity-properties="getBaseProperties"
         v-bind:is-loaded="isBaseLoaded"
         v-bind:is-error="isBaseError"
         v-on:changeProperties="emitChangeProperties"
       >
       </base-entity-properties>
-
-      <base-entity-properties-modifier
-        v-bind:entity-properties="propertiesModifier"
-      ></base-entity-properties-modifier>
 
       <children-list-with-paginator
         class="children-list-with-paginator"
@@ -51,12 +47,10 @@ import BaseCard from "@/slots/abstract/BaseCard";
 import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
 import { mapState, mapActions } from "vuex";
 import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
-import BaseEntityPropertiesModifier from "@/slots/entitity-details/BaseEntityPropertiesModifier";
 
 export default {
   name: "BaseEntityDetails",
   components: {
-    BaseEntityPropertiesModifier,
     ChildrenListWithPaginator,
     BaseEntityProperties,
     BaseCard,
@@ -66,6 +60,7 @@ export default {
     return {
       areChildrenLoaded: false,
       areChildrenError: false,
+      currentEntityProperties: [],
     };
   },
 
@@ -88,19 +83,17 @@ export default {
       default: false,
     },
 
-    baseProperties: {
-      type: Object,
-      required: true,
-      default() {
-        return {};
-      },
-    },
-
     transactionMappings: {
       type: Object,
       required: true,
       default() {
         return {
+          base: {
+            namespace: "",
+            getters: {
+              properties: "",
+            },
+          },
           children: {
             namespace: "",
             getters: {
@@ -113,14 +106,6 @@ export default {
             },
           },
         };
-      },
-    },
-
-    propertiesModifier: {
-      type: Array,
-      required: true,
-      default() {
-        return [];
       },
     },
   },
@@ -142,6 +127,11 @@ export default {
       getChildrenPage(state, getters) {
         return getters[
           `${this.transactionMappings.children.namespace}/${this.transactionMappings.children.getters.page}`
+        ];
+      },
+      getBaseProperties(state, getters) {
+        return getters[
+          `${this.transactionMappings.base.namespace}/${this.transactionMappings.base.getters.properties}`
         ];
       },
     }),
@@ -199,8 +189,8 @@ export default {
       this.$emit("childClicked", childId);
     },
 
-    emitChangeProperties() {
-      this.$emit("changeProperties");
+    emitChangeProperties(data) {
+      this.$emit("changeProperties", data);
     },
 
     deleteChildAndReload(childId) {
