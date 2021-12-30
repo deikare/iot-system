@@ -150,7 +150,7 @@ export default {
 
 .control-button {
   background: var(--main-color);
-  border: none;
+  border: 2px solid transparent;
   height: 3.6rem;
   width: 3.6rem;
   border-radius: 50%;
@@ -161,9 +161,9 @@ export default {
 }
 
 .control-icon {
-  stroke: var(--background-color);
-  height: 3.6rem;
-  width: 3.6rem;
+  stroke: var(--card-color);
+  height: 3rem;
+  width: 3rem;
 
   display: inline-flex;
   align-items: center;
@@ -173,10 +173,6 @@ export default {
 .control-button:hover,
 .control-button:active {
   cursor: pointer;
-  background: var(--background-color);
-}
-
-.control-button:hover > .control-icon {
-  stroke: var(--main-color);
+  border: 2px solid var(--card-color);
 }
 </style>

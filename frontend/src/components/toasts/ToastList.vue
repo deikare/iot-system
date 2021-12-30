@@ -16,14 +16,13 @@ import { mapGetters, mapMutations } from "vuex";
 import Toast from "@/components/toasts/Toast";
 export default {
   name: "ToastList",
-  // eslint-disable-next-line vue/no-unused-components
   components: { Toast },
 
   props: {
     timeout: {
       type: Number,
       required: false,
-      default: 5000,
+      default: 2500,
     },
   },
 

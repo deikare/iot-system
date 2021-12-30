@@ -182,7 +182,7 @@ button {
   color: var(--main-color);
   background-color: transparent;
   border-radius: 50%;
-  border: none;
+  border: 2px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,12 +191,8 @@ button {
 }
 
 button:hover {
-  background-color: var(--main-color);
   border-radius: 50%;
+  border: 2px solid var(--main-color);
   cursor: pointer;
-}
-
-button:hover > svg {
-  stroke: var(--background-color);
 }
 </style>
