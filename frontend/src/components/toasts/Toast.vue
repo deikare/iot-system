@@ -22,7 +22,15 @@
 
 <script>
 export default {
-  name: "BaseToast",
+  name: "Toast",
+
+  data() {
+    return {
+      timeoutHandler: () =>
+        setTimeout(() => this.emitCloseToast(), this.timeout),
+      timeoutObject: null,
+    };
+  },
 
   props: {
     message: {
@@ -35,14 +43,25 @@ export default {
         };
       },
     },
+
+    timeout: {
+      type: Number,
+      required: false,
+      default: 5000,
+    },
   },
 
   emits: ["closeToast"],
 
   methods: {
     emitCloseToast() {
+      clearTimeout(this.timeoutObject);
       this.$emit("closeToast", this.message.id);
     },
+  },
+
+  mounted() {
+    this.timeoutObject = this.timeoutHandler();
   },
 };
 </script>

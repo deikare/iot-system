@@ -1,13 +1,12 @@
 <template>
-  <div>adasdasd</div>
-  <base-toast v-bind:message="message"> </base-toast>
+  <toast-list></toast-list>
 </template>
 
 <script>
-import BaseToast from "@/slots/abstract/BaseToast";
+import ToastList from "@/components/toasts/ToastList";
 export default {
   name: "Device",
-  components: { BaseToast },
+  components: { ToastList },
   data() {
     return {
       message: {

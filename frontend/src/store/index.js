@@ -387,6 +387,77 @@ const hubModule = {
   },
 };
 
+const dummyMessages = () => {
+  let map = new Map();
+  let counter = 0;
+
+  for (const message in ["1", "2", "3", "4"]) {
+    map.set(
+      Date.now().toString(36) + Math.random().toString(36).substr(2),
+      message
+    );
+    counter++;
+  }
+
+  return {
+    map: map,
+    counter: counter,
+  };
+};
+
+const messagesModule = {
+  namespaced: true,
+  state() {
+    const newMap = dummyMessages();
+    console.log(newMap);
+    return {
+      // messages: new Map(),
+      // messagesChangeTracker: 0, //so vue sees map for reactivity
+
+      messages: newMap.map,
+      messagesChangeTracker: newMap.counter, //so vue sees map for reactivity
+    };
+  },
+
+  mutations: {
+    add(state, message) {
+      state.messages.set(
+        Date.now().toString(36) + Math.random().toString(36).substr(2),
+        message
+      );
+      state.messagesChangeTracker += 1;
+      console.log("Added message", message);
+    },
+    remove(state, id) {
+      if (state.messages.delete(id)) {
+        state.messagesChangeTracker -= 1;
+        console.log("Deleted message of", id);
+      }
+    },
+    clear(state) {
+      state.messages.clear();
+      state.messagesChangeTracker = 0;
+      console.log("Clear toasts", state.messagesChangeTracker);
+    },
+  },
+
+  getters: {
+    getMessages(state) {
+      return (
+        state.messagesChangeTracker &&
+        Array.from(state.messages)
+          .reverse()
+          .map((entry) => {
+            return {
+              id: entry[0],
+              content: entry[1],
+            };
+          })
+      );
+    },
+  },
+};
+
 //TODO add module for creating storing toasts - module should produce ids
 
 export default createStore({
@@ -394,5 +465,6 @@ export default createStore({
     hubs: hubsPageModule,
     hub: hubModule,
     devices: devicesPageModule,
+    messages: messagesModule,
   },
 });
