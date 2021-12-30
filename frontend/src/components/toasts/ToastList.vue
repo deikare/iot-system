@@ -23,8 +23,7 @@ export default {
     timeout: {
       type: Number,
       required: false,
-      // default: 5000,
-      default: 123123123,
+      default: 5000,
     },
   },
 
