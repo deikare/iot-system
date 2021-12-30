@@ -89,12 +89,14 @@ const axiosDelete = function (url) {
 
 const axiosDeleteWithHandlers = function (
   url,
+  messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
   axiosDelete(url)
     .then(() => {
       console.log("Successfully deleted");
+      messageCommitHandler({ type: "info", content: "Successfully deleted" });
       ifSuccessHandler();
     })
     .catch((error) => {
@@ -117,12 +119,15 @@ const axiosPatch = function (url, data) {
 const axiosPatchWithHandlers = function (
   url,
   data,
+  messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
   axiosPatch(url, data)
     .then((response) => {
       console.log("Successfully patched", response.data);
+      messageCommitHandler({ type: "info", content: "Successfully patched" });
+
       ifSuccessHandler();
     })
     .catch((error) => {
@@ -352,11 +357,17 @@ const hubModule = {
 
     // eslint-disable-next-line no-unused-vars
     patchHub({ commit }, payload) {
-      const url = `http://localhost:8080/hubs/${payload.id}23`;
+      const url = `http://localhost:8080/hubs/${payload.id}`;
+
+      const messageCommitHandler = (message) => {
+        //TODO it works
+        commit("messages/add", message, { root: true });
+      };
 
       axiosPatchWithHandlers(
         url,
         payload.data,
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -387,6 +398,7 @@ const hubModule = {
   },
 };
 
+// eslint-disable-next-line no-unused-vars
 const dummyMessages = () => {
   let map = new Map();
   let counter = 0;
@@ -416,14 +428,12 @@ const dummyMessages = () => {
 const messagesModule = {
   namespaced: true,
   state() {
-    const newMap = dummyMessages();
-    console.log("CHUJ", newMap);
     return {
-      // messages: new Map(),
-      // messagesChangeTracker: 0, //so vue sees map for reactivity
+      messages: new Map(),
+      messagesChangeTracker: 0, //so vue sees map for reactivity
 
-      messages: newMap.map,
-      messagesChangeTracker: newMap.counter, //so vue sees map for reactivity
+      // messages: newMap.map,
+      // messagesChangeTracker: newMap.counter, //so vue sees map for reactivity
     };
   },
 

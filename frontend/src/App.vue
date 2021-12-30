@@ -2,7 +2,8 @@
   <the-navigation class="navigation-bar"></the-navigation>
   <main class="main-with-margin">
     <toast-list class="all-toasts"></toast-list>
-    <router-view class="main-view" />
+
+    <router-view class="main-view"> </router-view>
   </main>
   <the-footer class="footer"></the-footer>
 </template>
@@ -113,14 +114,15 @@ a:visited {
   margin-right: 1.6rem;
 
   margin-top: 3.2rem;
+
+  position: relative;
 }
 
 .all-toasts {
-  position: absolute;
+  position: fixed;
 }
 
 .main-view {
-  /*position: relative;*/
 }
 
 .footer {
