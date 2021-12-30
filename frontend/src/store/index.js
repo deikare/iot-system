@@ -1,6 +1,16 @@
 import { createStore } from "vuex";
 import axios from "axios";
 
+const sendErrorMessage = (messageCommitHandler, error) => {
+  const message = { type: "error", content: "" };
+  if (error.response)
+    message.content = `Server responded with: ${error.response.data}`;
+  else if (error.request) message.content = `Server not responding`;
+  else message.content = "Unexpected error, please refresh";
+
+  messageCommitHandler(message);
+};
+
 const axiosLoad = function (url, queryParams) {
   const config = { params: { ...queryParams }, timeout: 5000 };
   return axios.get(url, config);
@@ -10,6 +20,7 @@ const axiosLoadWithHandlers = function (
   url,
   queryParams,
   commitHandler,
+  messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
@@ -26,6 +37,7 @@ const axiosLoadWithHandlers = function (
         error.response,
         error.request
       );
+      sendErrorMessage(messageCommitHandler, error);
       ifErrorHandler(error);
     });
 };
@@ -34,6 +46,7 @@ const loadEntities = function (
   url,
   queryParams,
   commitHandler,
+  messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
@@ -46,6 +59,7 @@ const loadEntities = function (
     url,
     queryParamsWithSize,
     commitHandler,
+    messageCommitHandler,
     ifSuccessHandler,
     ifErrorHandler
   );
@@ -106,6 +120,7 @@ const axiosDeleteWithHandlers = function (
         error.response,
         error.request
       );
+      sendErrorMessage(messageCommitHandler, error);
       ifErrorHandler(error);
     });
 };
@@ -137,6 +152,7 @@ const axiosPatchWithHandlers = function (
         error.response,
         error.request
       );
+      sendErrorMessage(messageCommitHandler, error);
       ifErrorHandler(error);
     });
 };
@@ -161,10 +177,15 @@ const hubsPageModule = {
     loadEntities({ commit }, payload) {
       const commitHandler = (data) => commit("saveEntitiesPage", data);
 
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
       loadEntities(
         "http://localhost:8080/hubs",
         payload.queryParams,
         commitHandler,
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -220,19 +241,31 @@ const devicesPageModule = {
     loadEntities({ commit }, payload) {
       const commitHandler = (data) => commit("saveEntitiesPage", data);
 
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
       loadEntities(
         "http://localhost:8080/devices",
         payload.queryParams,
         commitHandler,
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
     },
 
+    //TODO check if delete
     deleteAllEntities({ commit }, payload) {
       console.log(commit, payload);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
       axiosDeleteWithHandlers(
         "http://localhost:8080/devices",
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -243,8 +276,13 @@ const devicesPageModule = {
 
       const url = `http://localhost:8080/devices/${payload.id}`;
 
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
       axiosDeleteWithHandlers(
         url,
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -322,10 +360,15 @@ const hubModule = {
       const url = `http://localhost:8080/hubs/${payload.id}`;
       const commitHandler = (data) => commit("saveHub", data);
 
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
       loadEntities(
         url,
         {},
         commitHandler,
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -348,8 +391,13 @@ const hubModule = {
     deleteHub({ commit }, payload) {
       const url = `http://localhost:8080/hubs/${payload.id}`;
 
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
       axiosDeleteWithHandlers(
         url,
+        messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
@@ -360,7 +408,6 @@ const hubModule = {
       const url = `http://localhost:8080/hubs/${payload.id}`;
 
       const messageCommitHandler = (message) => {
-        //TODO it works
         commit("messages/add", message, { root: true });
       };
 

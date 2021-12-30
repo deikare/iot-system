@@ -1,14 +1,8 @@
-<template>
-  asd
-  <!--  <toast-list></toast-list>-->
-</template>
+<template>asd</template>
 
 <script>
-import ToastList from "@/components/toasts/ToastList";
 export default {
   name: "Device",
-  // eslint-disable-next-line vue/no-unused-components
-  components: { ToastList },
 };
 </script>
 

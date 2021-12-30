@@ -93,11 +93,11 @@ h2 {
 
 button {
   background-color: transparent;
-  border: none;
+  border: 3px solid transparent;
   border-radius: 100rem;
 
-  width: 3.6rem;
-  height: 3.6rem;
+  width: 4rem;
+  height: 4rem;
 
   padding: 0;
 
@@ -116,11 +116,6 @@ button {
 button:hover,
 button:active {
   cursor: pointer;
-  background-color: var(--background-color);
-}
-
-button:hover > svg,
-button:active > svg {
-  stroke: var(--main-color);
+  border: 3px solid var(--background-color);
 }
 </style>

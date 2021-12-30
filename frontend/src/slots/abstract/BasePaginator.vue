@@ -216,7 +216,7 @@ button {
   color: var(--main-color);
   background-color: transparent;
   border-radius: 50%;
-  border: none;
+  border: 4px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,6 +229,8 @@ button {
   width: 4.8rem;
   height: 4.8rem;
   border-radius: 50%;
+  border: 4px solid transparent;
+
   background: transparent;
 }
 
@@ -239,17 +241,8 @@ button {
 }
 
 button:hover {
-  background-color: var(--main-color);
-  border-radius: 50%;
+  border: 3px solid var(--main-color);
   cursor: pointer;
-}
-
-button:hover > svg {
-  stroke: var(--background-color);
-}
-
-button:hover.number-link {
-  color: var(--background-color);
 }
 
 .number-link-active {
