@@ -4,7 +4,7 @@
       v-for="message in getMessages"
       v-bind:key="message.id"
       v-bind:message="message"
-      v-bind:timeout="123000000"
+      v-bind:timeout="timeout"
       v-on:closeToast="removeToast"
     >
     </toast>
@@ -23,7 +23,8 @@ export default {
     timeout: {
       type: Number,
       required: false,
-      default: 5000,
+      // default: 5000,
+      default: 123123123,
     },
   },
 
@@ -43,8 +44,11 @@ export default {
 
 <style scoped>
 .toast-list {
+  max-width: 20%;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.8rem;
+  flex: 0 1 auto;
 }
 </style>

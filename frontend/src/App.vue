@@ -1,7 +1,8 @@
 <template>
   <the-navigation class="navigation-bar"></the-navigation>
   <main class="main-with-margin">
-    <router-view />
+    <toast-list class="all-toasts"></toast-list>
+    <router-view class="main-view" />
   </main>
   <the-footer class="footer"></the-footer>
 </template>
@@ -9,9 +10,11 @@
 <script>
 import TheNavigation from "@/components/the-singletons/TheNavigation";
 import TheFooter from "@/components/the-singletons/TheFooter";
+import ToastList from "@/components/toasts/ToastList";
 
 export default {
   components: {
+    ToastList,
     TheNavigation,
     TheFooter,
   },
@@ -40,6 +43,9 @@ GREY COLOR: #343a40
   --card-color: #e9ecef;
   --error-color: #f03e3e;
   --placeholder-color: rgb(117, 117, 117);
+  --toast-color: #f8f9fa;
+  --success-color: #0ca678;
+  --warning-color: #fab005;
 }
 
 html {
@@ -107,6 +113,14 @@ a:visited {
   margin-right: 1.6rem;
 
   margin-top: 3.2rem;
+}
+
+.all-toasts {
+  position: absolute;
+}
+
+.main-view {
+  /*position: relative;*/
 }
 
 .footer {

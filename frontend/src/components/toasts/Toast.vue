@@ -1,5 +1,10 @@
 <template>
   <div class="toast">
+    <div class="type-block">
+      <div class="color-block" v-bind:style="blockColor">&nbsp;</div>
+      <status-icon v-bind:type="message.type"></status-icon>
+    </div>
+
     <div class="toast-message">{{ message.content }}</div>
     <button class="close-button" v-on:click="emitCloseToast">
       <svg
@@ -21,9 +26,10 @@
 </template>
 
 <script>
+import StatusIcon from "@/components/toasts/StatusIcon";
 export default {
   name: "Toast",
-
+  components: { StatusIcon },
   data() {
     return {
       timeoutHandler: () =>
@@ -39,6 +45,7 @@ export default {
       default() {
         return {
           id: "",
+          type: "",
           content: "",
         };
       },
@@ -52,6 +59,19 @@ export default {
   },
 
   emits: ["closeToast"],
+
+  computed: {
+    blockColor() {
+      return {
+        backgroundColor:
+          this.message.type === "info"
+            ? `var(--success-color)`
+            : this.message.type === "error"
+            ? `var(--warning-color)`
+            : `transparent`,
+      };
+    },
+  },
 
   methods: {
     emitCloseToast() {
@@ -69,47 +89,72 @@ export default {
 <style scoped>
 .toast {
   display: flex;
-  background: var(--main-color);
+  background: var(--toast-color);
+
+  flex-basis: 0;
 
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1.2rem;
 
   padding: 1rem 1.2rem;
 
-  max-width: 50%;
+  /*min-width: fit-content;*/
+  /*max-width: 100%;*/
+  border-radius: 5px;
+
+  box-shadow: 0 1rem 1.5rem 0 rgba(0, 0, 0, 0.1);
+}
+
+.type-block {
+  display: flex;
+  align-self: stretch;
+  gap: 1.2rem;
+}
+
+.color-block {
+  width: 0.3rem;
+  min-height: 100%;
+  display: inline-block;
+  border-radius: 100rem;
+  content: "";
+  align-self: stretch;
 }
 
 .toast-message {
-  color: var(--background-color);
+  color: var(--main-color);
   display: flex;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 
   text-align: start;
+
+  justify-self: flex-start;
 }
 
 .close-button {
   width: 3.6rem;
   height: 3.6rem;
 
+  justify-self: flex-end;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: var(--main-color);
+  background: transparent;
   border: 2px solid transparent;
   border-radius: 50%;
 }
 
 .close-button:hover,
 .close-button:active {
-  border: 2px solid var(--background-color);
+  border: 2px solid var(--main-color);
   cursor: pointer;
 }
 
 .close-icon {
   background: transparent;
-  stroke: var(--background-color);
+  stroke: var(--main-color);
 
   width: 2.4rem;
   height: 2.4rem;
