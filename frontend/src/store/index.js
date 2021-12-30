@@ -391,11 +391,19 @@ const dummyMessages = () => {
   let map = new Map();
   let counter = 0;
 
-  for (const message in ["1", "2", "3", "4"]) {
-    map.set(
-      Date.now().toString(36) + Math.random().toString(36).substr(2),
-      message
+  const lorems =
+    "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid asperiores cum deleniti enim eum fuga, itaque natus porro quia quos repellat repudiandae sed voluptate. At consectetur nobis praesentium repellendus sit.".split(
+      /[,|.]+/
     );
+
+  console.log(lorems);
+
+  for (const message of lorems) {
+    map.set(Date.now().toString(36) + Math.random().toString(36).substr(2), {
+      type: "info",
+      content: message,
+    });
+    console.log(message);
     counter++;
   }
 
@@ -409,7 +417,7 @@ const messagesModule = {
   namespaced: true,
   state() {
     const newMap = dummyMessages();
-    console.log(newMap);
+    console.log("CHUJ", newMap);
     return {
       // messages: new Map(),
       // messagesChangeTracker: 0, //so vue sees map for reactivity
@@ -420,13 +428,13 @@ const messagesModule = {
   },
 
   mutations: {
-    add(state, message) {
+    add(state, payload) {
       state.messages.set(
         Date.now().toString(36) + Math.random().toString(36).substr(2),
-        message
+        { type: payload.type, content: payload.content }
       );
       state.messagesChangeTracker += 1;
-      console.log("Added message", message);
+      console.log("Added message", payload.content);
     },
     remove(state, id) {
       if (state.messages.delete(id)) {
@@ -450,7 +458,8 @@ const messagesModule = {
           .map((entry) => {
             return {
               id: entry[0],
-              content: entry[1],
+              type: entry[1].type,
+              content: entry[1].content,
             };
           })
       );
