@@ -33,7 +33,10 @@
     </div>
     <entity-list-with-paginator
       v-bind:buttons-properties="buttonsProperties"
-      v-bind:
+      v-bind:entities-properties="getParentsProperties"
+      v-bind:page="getParentsPage"
+      v-bind:is-error="areParentsError"
+      v-bind:is-loaded="areParentsLoaded"
     ></entity-list-with-paginator>
     <div class="buttons"></div>
   </div>
@@ -41,6 +44,8 @@
 
 <script>
 import EntityListWithPaginator from "@/components/entity-list/EntityListWithPaginator";
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "EntityCreator",
   components: { EntityListWithPaginator },
@@ -53,8 +58,10 @@ export default {
         isEditVisible: false,
         isDeleteVisible: false,
       },
-      areParentLoaded: false,
-      areParentError: false,
+      areParentsLoaded: false,
+      areParentsError: false,
+      newParentProperties: this.initialParentProperties,
+      isParentChosen: this.initialParentProperties.length > 0,
     };
   },
 
@@ -66,16 +73,58 @@ export default {
         return [];
       },
     },
-    parentId: {
-      type: String,
+    initialParentProperties: {
+      type: Array,
       required: false,
-      default: "",
+      default() {
+        return [];
+      },
+    },
+    parentsTransactionMappings: {
+      type: Object,
+      required: true,
+      default() {
+        return {
+          namespace: "",
+          getters: {
+            entities: "",
+            page: "",
+          },
+          actions: {
+            loader: "",
+          },
+        };
+      },
     },
   },
 
   emits: ["newEntity"],
 
+  computed: {
+    ...mapState({
+      getParentsProperties(state, getters) {
+        return getters[
+          `${this.parentsTransactionMappings.namespace}/${this.parentsTransactionMappings.getters.entities}`
+        ];
+      },
+      getParentsPage(state, getters) {
+        return getters[
+          `${this.parentsTransactionMappings.namespace}/${this.parentsTransactionMappings.getters.page}`
+        ];
+      },
+    }),
+  },
+
   methods: {
+    ...mapActions({
+      loadParents(dispatch, payload) {
+        return dispatch(
+          `${this.parentsTransactionMappings.namespace}/${this.parentsTransactionMappings.actions.loader}`,
+          payload
+        );
+      },
+    }),
+
     submit() {
       let newData = {};
 
@@ -93,14 +142,47 @@ export default {
           Object.getPrototypeOf(newData) === Object.prototype
         )
       )
-        this.$emit("changeProperties", newData);
+        this.$emit("newEntity", {
+          entity: newData,
+          parentId: this.newParentId,
+        });
     },
+
+    //TODO make getEntities as one implementation in store
+    //TODO add changePage, saving parent, style a bit more
 
     reset() {
       for (const key in Object.keys(this.newValues))
         this.newValues[key].value =
           this.entityProperties[Number(key)].initialValue;
     },
+
+    fetchParents(page) {
+      this.areParentsLoaded = false;
+      this.areParentsError = false;
+
+      this.loadParents({
+        queryParams: { page: page },
+        ifSuccessHandler: () => {
+          this.areParentsLoaded = true;
+          this.areParentsError = false;
+        },
+        ifErrorHandler: () => {
+          this.areParentsLoaded = true;
+          this.areParentsError = true;
+        },
+      });
+    },
+  },
+
+  created() {
+    this.$watch(
+      () => this.id,
+      () => {
+        this.fetchParents(0);
+      },
+      { immediate: true, deep: true }
+    );
   },
 };
 </script>

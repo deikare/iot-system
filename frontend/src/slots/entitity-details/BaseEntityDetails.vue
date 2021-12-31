@@ -15,9 +15,8 @@
 
     <main>
       <entity-creator
-        v-if="false"
         v-bind:entity-properties="newChildProperties"
-        v-bind:parent-id="id"
+        v-bind:parents-transaction-mappings="parentsTransactionMappings"
       ></entity-creator>
       <div class="first-column">
         <base-entity-properties
@@ -124,6 +123,16 @@ export default {
               deleter: "",
             },
           },
+          parents: {
+            namespace: "",
+            getters: {
+              entities: "",
+              page: "",
+            },
+            actions: {
+              loader: "",
+            },
+          },
         };
       },
     },
@@ -178,6 +187,10 @@ export default {
         ];
       },
     }),
+
+    parentsTransactionMappings() {
+      return this.transactionMappings.parents;
+    },
   },
 
   methods: {
@@ -268,7 +281,7 @@ export default {
 
       const queryParams = {
         page: page,
-        hubId: this.id,
+        hubId: this.id, //TODO
       };
 
       console.log(queryParams);
@@ -276,7 +289,7 @@ export default {
       this.loadChildren({
         queryParams: {
           page: page,
-          hubId: this.id,
+          hubId: this.id, //TODO
         },
         ifSuccessHandler: () => {
           this.areChildrenLoaded = true;
