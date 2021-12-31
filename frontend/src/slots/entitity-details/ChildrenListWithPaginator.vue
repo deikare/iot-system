@@ -25,38 +25,44 @@
       </div>
     </template>
 
-    <loading-spinner v-if="displayLoading"> </loading-spinner>
+    <entity-list-with-paginator
+      v-bind:is-loaded="isLoaded"
+      v-bind:is-error="isError"
+      v-bind:entities-properties="childrenProperties"
+      v-bind:buttons-properties="buttonsProperties"
+      v-bind:page="page"
+      v-on:entityClicked="emitChildClicked"
+      v-on:editEntity="emitEditChild"
+      v-on:deleteEntity="emitDeleteChild"
+      v-on:changePage="emitChangeChildrenPage"
+    ></entity-list-with-paginator>
 
-    <entities-error v-else-if="isError"></entities-error>
-    <div class="children-list-with-paginator" v-else>
-      <entity-list
-        v-bind:entities-properties="childrenProperties"
-        v-bind:buttons-properties="buttonsProperties"
-        v-on:entityClicked="emitChildClicked"
-        v-on:editEntity="emitEditChild"
-        v-on:deleteEntity="emitDeleteChild"
-      ></entity-list>
-      <two-way-paginator
-        v-bind:page="page"
-        v-on:changePage="emitChangeChildrenPage"
-      ></two-way-paginator>
-    </div>
+    <!--    <loading-spinner v-if="displayLoading"> </loading-spinner>-->
+
+    <!--    <entities-error v-else-if="isError"></entities-error>-->
+    <!--    <div class="children-list-with-paginator" v-else>-->
+    <!--      <entity-list-->
+    <!--        v-bind:entities-properties="childrenProperties"-->
+    <!--        v-bind:buttons-properties="buttonsProperties"-->
+    <!--        v-on:entityClicked="emitChildClicked"-->
+    <!--        v-on:editEntity="emitEditChild"-->
+    <!--        v-on:deleteEntity="emitDeleteChild"-->
+    <!--      ></entity-list>-->
+    <!--      <two-way-paginator-->
+    <!--        v-bind:page="page"-->
+    <!--        v-on:changePage="emitChangeChildrenPage"-->
+    <!--      ></two-way-paginator>-->
+    <!--    </div>-->
   </base-card>
 </template>
 
 <script>
 import BaseCard from "@/slots/abstract/BaseCard";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import EntitiesError from "@/slots/abstract/EntitiesError";
-import TwoWayPaginator from "@/components/entitity-details/TwoWayPaginator";
-import EntityList from "@/slots/entitity-details/EntityList";
+import EntityListWithPaginator from "@/components/entity-list/EntityListWithPaginator";
 export default {
   name: "ChildrenListWithPagination",
   components: {
-    EntityList,
-    TwoWayPaginator,
-    EntitiesError,
-    LoadingSpinner,
+    EntityListWithPaginator,
     BaseCard,
   },
 
