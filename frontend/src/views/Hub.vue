@@ -69,8 +69,21 @@ export default {
             deleter: "deleteDevice",
           },
         },
+
+        parents: {
+          namespace: "hubs",
+          getters: {
+            entities: "getEntitiesAsParents",
+            page: "getPage",
+          },
+          actions: {
+            loader: "loadEntities",
+          },
+        },
       },
+
       ifHubDeletedRoute: { name: "hubs" },
+
       newDeviceProperties: [
         {
           type: "text",

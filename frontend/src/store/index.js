@@ -215,6 +215,17 @@ const hubsPageModule = {
       return getEntities(state.entitiesPage.entities, mapperFunction);
     },
 
+    getEntitiesAsParents(state) {
+      const mapperFunction = (hub) => {
+        return [
+          { key: "name", value: hub.name },
+          { key: "id", value: hub["_links"].self.href.split("/").at(-1) },
+        ];
+      };
+
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
     getPage(state) {
       return getPage(state.entitiesPage.page);
     },
