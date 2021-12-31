@@ -1,13 +1,13 @@
 <template>
-  <div class="child-item" v-on:click="emitChildEvent(`childClicked`)">
-    <div class="child-properties">
+  <div class="entity-item" v-on:click="emitEntityEvent(`entityClicked`)">
+    <div class="entity-properties">
       <div
-        class="child-property"
-        v-for="(property, index) in childProperties"
+        class="entity-property"
+        v-for="(property, index) in entityProperties"
         v-bind:key="index"
       >
         {{
-          index === childProperties.length - 1
+          index === entityProperties.length - 1
             ? `${property.key}: ${property.value}`
             : `${property.key}: ${property.value}, `
         }}
@@ -18,7 +18,8 @@
     <div class="additional-buttons">
       <button
         class="additional-button"
-        v-on:click.stop="emitChildEvent(`editChild`)"
+        v-if="buttonsProperties.isEditVisible"
+        v-on:click.stop="emitEntityEvent(`editEntity`)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +39,8 @@
 
       <button
         class="additional-button"
-        v-on:click.stop="emitChildEvent(`deleteChild`)"
+        v-if="buttonsProperties.isDeleteVisible"
+        v-on:click.stop="emitEntityEvent(`deleteEntity`)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -61,37 +63,47 @@
 
 <script>
 export default {
-  name: "ChildrenListItem",
+  name: "EntityListItem",
 
   props: {
-    childProperties: {
+    entityProperties: {
       type: Array,
       required: true,
       default() {
         return [];
       },
     },
+    buttonsProperties: {
+      type: Object,
+      required: false,
+      default() {
+        return {
+          isEditVisible: true,
+          isDeleteVisible: true,
+        };
+      },
+    },
   },
 
   computed: {
-    childId() {
-      return this.childProperties.find((property) => property.key === "id")
+    entityId() {
+      return this.entityProperties.find((property) => property.key === "id")
         .value;
     },
   },
 
-  emits: ["childClicked", "editChild", "deleteChild"],
+  emits: ["entityClicked", "editEntity", "deleteEntity"],
 
   methods: {
-    emitChildEvent(eventName) {
-      this.$emit(eventName, this.childId);
+    emitEntityEvent(eventName) {
+      this.$emit(eventName, this.entityId);
     },
   },
 };
 </script>
 
 <style scoped>
-.child-item {
+.entity-item {
   list-style-type: none;
   display: inline-flex;
   width: 100%;
@@ -108,23 +120,23 @@ export default {
   font-size: 1.6rem;
 }
 
-.child-item:hover,
-.child-item:active {
+.entity-item:hover,
+.entity-item:active {
   border-bottom: 2px solid var(--main-color);
   border-top: 1px solid var(--main-color);
   cursor: pointer;
 }
 
-.child-item:first-child:hover,
-.child-item:first-child:active {
+.entity-item:first-child:hover,
+.entity-item:first-child:active {
   border-top: 2px solid var(--main-color);
 }
 
-.child-properties {
+.entity-properties {
   display: flex;
 }
 
-.child-property {
+.entity-property {
   display: flex;
 }
 
