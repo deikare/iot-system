@@ -5,7 +5,7 @@
 
     <div class="entity-list-with-paginator" v-else>
       <entity-list
-        entitiesProperties="entitiesProperties"
+        v-bind:entities-properties="entitiesProperties"
         v-bind:buttons-properties="buttonsProperties"
         v-on:entityClicked="emitEntityClicked"
         v-on:editEntity="emitEditEntity"
@@ -14,7 +14,7 @@
 
       <two-way-paginator
         v-bind:page="page"
-        v-on:changePage="emitChangeEntityPage"
+        v-on:changePage="emitChangePage"
       ></two-way-paginator>
     </div>
   </div>
@@ -23,7 +23,7 @@
 <script>
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EntitiesError from "@/slots/abstract/EntitiesError";
-import EntityList from "@/slots/entitity-details/EntityList";
+import EntityList from "@/components/entity-list/EntityList";
 import TwoWayPaginator from "@/components/entitity-details/TwoWayPaginator";
 export default {
   name: "EntityListWithPaginator",
@@ -70,7 +70,7 @@ export default {
     },
   },
 
-  emits: ["changeEntityPage", "entityClicked", "editEntity", "deleteEntity"],
+  emits: ["changePage", "entityClicked", "editEntity", "deleteEntity"],
 
   computed: {
     displayLoading() {
@@ -79,8 +79,8 @@ export default {
   },
 
   methods: {
-    emitChangeEntityPage(page) {
-      this.$emit("changeEntityPage", page);
+    emitChangePage(page) {
+      this.$emit("changePage", page);
     },
 
     emitEntityClicked(entityId) {
@@ -110,5 +110,6 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 </style>

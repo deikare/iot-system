@@ -15,6 +15,7 @@
 
     <main>
       <entity-creator
+        v-if="false"
         v-bind:entity-properties="newChildProperties"
         v-bind:parent-id="id"
       ></entity-creator>

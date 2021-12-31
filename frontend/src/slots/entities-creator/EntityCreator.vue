@@ -31,22 +31,30 @@
         </select>
       </div>
     </div>
-    <children-list-with-pagination></children-list-with-pagination>
+    <entity-list-with-paginator
+      v-bind:buttons-properties="buttonsProperties"
+      v-bind:
+    ></entity-list-with-paginator>
     <div class="buttons"></div>
   </div>
 </template>
 
 <script>
-import ChildrenListWithPagination from "@/slots/entitity-details/ChildrenListWithPaginator";
+import EntityListWithPaginator from "@/components/entity-list/EntityListWithPaginator";
 export default {
   name: "EntityCreator",
-  components: { ChildrenListWithPagination },
-
+  components: { EntityListWithPaginator },
   data() {
     return {
       newValues: this.entityProperties.map((property) => {
         return { label: property.label, value: property.initialValue };
       }),
+      buttonsProperties: {
+        isEditVisible: false,
+        isDeleteVisible: false,
+      },
+      areParentLoaded: false,
+      areParentError: false,
     };
   },
 

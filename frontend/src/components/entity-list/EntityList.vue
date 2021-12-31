@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import EntityListItem from "@/slots/entitity-details/EntityListItem";
+import EntityListItem from "@/components/entity-list/EntityListItem";
 import BaseList from "@/slots/abstract/BaseList";
 export default {
   name: "EntityList",
