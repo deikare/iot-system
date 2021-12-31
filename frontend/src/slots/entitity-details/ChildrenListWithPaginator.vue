@@ -29,12 +29,13 @@
 
     <entities-error v-else-if="isError"></entities-error>
     <div class="children-list-with-paginator" v-else>
-      <children-list
-        v-bind:children-properties="childrenProperties"
-        v-on:childClicked="emitChildClicked"
-        v-on:editChild="emitEditChild"
-        v-on:deleteChild="emitDeleteChild"
-      ></children-list>
+      <entity-list
+        v-bind:entities-properties="childrenProperties"
+        v-bind:buttons-properties="buttonsProperties"
+        v-on:entityClicked="emitChildClicked"
+        v-on:editEntity="emitEditChild"
+        v-on:deleteEntity="emitDeleteChild"
+      ></entity-list>
       <two-way-paginator
         v-bind:page="page"
         v-on:changePage="emitChangeChildrenPage"
@@ -48,11 +49,11 @@ import BaseCard from "@/slots/abstract/BaseCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EntitiesError from "@/slots/abstract/EntitiesError";
 import TwoWayPaginator from "@/components/entitity-details/TwoWayPaginator";
-import ChildrenList from "@/slots/entitity-details/ChildrenList";
+import EntityList from "@/slots/entitity-details/EntityList";
 export default {
   name: "ChildrenListWithPagination",
   components: {
-    ChildrenList,
+    EntityList,
     TwoWayPaginator,
     EntitiesError,
     LoadingSpinner,
@@ -92,6 +93,17 @@ export default {
       required: true,
       default() {
         return [];
+      },
+    },
+
+    buttonsProperties: {
+      type: Object,
+      required: false,
+      default() {
+        return {
+          isEditVisible: true,
+          isDeleteVisible: true,
+        };
       },
     },
   },

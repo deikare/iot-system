@@ -6,6 +6,8 @@
       v-bind:is-base-error="isErrorInHub"
       v-bind:transaction-mappings="transactionMappings"
       v-bind:if-base-deleted-route="ifHubDeletedRoute"
+      v-bind:new-child-properties="newDeviceProperties"
+      v-bind:buttons-properties="buttonsProperties"
       v-on:childClicked="goToDevice"
     >
       <template v-slot:icon>
@@ -69,6 +71,27 @@ export default {
         },
       },
       ifHubDeletedRoute: { name: "hubs" },
+      newDeviceProperties: [
+        {
+          type: "text",
+          initialValue: "",
+          label: "name",
+        },
+        {
+          type: "select",
+          initialValue: "",
+          label: "deviceType",
+          options: [
+            { label: "Controlled Device", value: "CONTROLLED_DEVICE" }, //because label can differ from value
+            { label: "Generator", value: "GENERATOR" },
+            { label: "Both", value: "BOTH" },
+          ],
+        },
+      ],
+      buttonsProperties: {
+        isEditVisible: false,
+        isDeleteVisible: true,
+      },
     };
   },
 

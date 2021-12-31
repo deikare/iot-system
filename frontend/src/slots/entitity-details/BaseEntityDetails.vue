@@ -14,6 +14,10 @@
     </base-entity-header>
 
     <main>
+      <entity-creator
+        v-bind:entity-properties="newChildProperties"
+        v-bind:parent-id="id"
+      ></entity-creator>
       <div class="first-column">
         <base-entity-properties
           class="properties"
@@ -30,6 +34,7 @@
           v-bind:page="getChildrenPage"
           v-bind:is-error="areChildrenError"
           v-bind:is-loaded="areChildrenLoaded"
+          v-bind:buttons-properties="buttonsProperties"
           v-on:changeChildrenPage="changeChildrenPage"
           v-on:childClicked="emitChildClicked"
           v-on:deleteChild="deleteChildAndReload"
@@ -63,10 +68,12 @@ import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties"
 import { mapState, mapActions } from "vuex";
 import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
 import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
+import EntityCreator from "@/slots/entities-creator/EntityCreator";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    EntityCreator,
     BaseEntityHeader,
     ChildrenListWithPaginator,
     BaseEntityProperties,
@@ -126,6 +133,25 @@ export default {
       default() {
         return {
           name: "",
+        };
+      },
+    },
+
+    newChildProperties: {
+      type: Array,
+      required: true,
+      default() {
+        return [];
+      },
+    },
+
+    buttonsProperties: {
+      type: Object,
+      required: false,
+      default() {
+        return {
+          isEditVisible: true,
+          isDeleteVisible: true,
         };
       },
     },
