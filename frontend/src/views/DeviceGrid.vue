@@ -1,6 +1,20 @@
 <template>
   <div>
     <main>
+      <teleport to=".main-with-margin">
+        <entity-creator
+          class="device-creator"
+          v-if="isAddDeviceVisible"
+          v-bind:entity-properties="newDeviceProperties"
+          v-bind:transaction-mappings="addDeviceTransactionMappings"
+          v-click-outside="closeAddDevice"
+          v-on:closeComponent="closeAddDevice"
+          v-on:newEntityCreated="refresh"
+        >
+          <template v-slot:entityType> device </template>
+          <template v-slot:parentType> Hub </template>
+        </entity-creator>
+      </teleport>
       <base-entity-page
         v-bind:transaction-mappings="transactionMappings"
         v-bind:entity-link-generator-function="getDeviceLink"
@@ -10,7 +24,10 @@
         v-on:deactivateFilter="deactivateFilter"
       >
         <template v-slot:filter-form>
-          <device-search-bar v-on:newQuery="newQuery"></device-search-bar>
+          <device-search-bar
+            v-on:newQuery="newQuery"
+            v-on:openAddDevice="openAddDevice"
+          ></device-search-bar>
         </template>
       </base-entity-page>
     </main>
@@ -20,10 +37,11 @@
 <script>
 import BaseEntityPage from "@/slots/entities-grid/BaseEntityPage";
 import DeviceSearchBar from "@/components/entities-grid/devices/DeviceSearchBar";
+import EntityCreator from "@/slots/entities-creator/EntityCreator";
 
 export default {
   name: "DeviceGrid",
-  components: { DeviceSearchBar, BaseEntityPage },
+  components: { EntityCreator, DeviceSearchBar, BaseEntityPage },
 
   props: {
     page: {
@@ -61,6 +79,7 @@ export default {
 
   data() {
     return {
+      isAddDeviceVisible: false,
       transactionMappings: {
         getters: {
           namespace: "devices",
@@ -72,10 +91,56 @@ export default {
           loader: "loadEntities",
         },
       },
+
+      addDeviceTransactionMappings: {
+        entity: {
+          namespace: "devices",
+          actions: {
+            sender: "createDevice",
+          },
+        },
+
+        parents: {
+          namespace: "hubs",
+          getters: {
+            entities: "getEntitiesAsParents",
+            page: "getPage",
+          },
+          actions: {
+            loader: "loadEntities",
+          },
+        },
+      },
+
+      newDeviceProperties: [
+        {
+          type: "text",
+          initialValue: "",
+          label: "name",
+        },
+        {
+          type: "select",
+          initialValue: "",
+          label: "deviceType",
+          options: [
+            { label: "Controlled Device", value: "CONTROLLED_DEVICE" }, //because label can differ from value
+            { label: "Generator", value: "GENERATOR" },
+            { label: "Both", value: "BOTH" },
+          ],
+        },
+      ],
     };
   },
 
   methods: {
+    closeAddDevice() {
+      this.isAddDeviceVisible = false;
+    },
+
+    openAddDevice() {
+      this.isAddDeviceVisible = true;
+    },
+
     getDeviceLink(id) {
       return { name: "device", params: { id: id } };
     },
@@ -119,8 +184,18 @@ export default {
 
       this.$router.push(route);
     },
+
+    refresh() {
+      this.$router.go(0);
+    },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.device-creator {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+</style>

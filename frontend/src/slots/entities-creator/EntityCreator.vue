@@ -292,7 +292,8 @@ export default {
         }
       }
 
-      if (isAnyFieldEmpty) this.areEmptyErrorsVisible = true;
+      if (isAnyFieldEmpty || this.newParentId === "")
+        this.areEmptyErrorsVisible = true;
       else if (
         !(
           newData &&
