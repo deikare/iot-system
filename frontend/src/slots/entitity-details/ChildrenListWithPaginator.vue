@@ -36,23 +36,6 @@
       v-on:deleteEntity="emitDeleteChild"
       v-on:changePage="emitChangeChildrenPage"
     ></entity-list-with-paginator>
-
-    <!--    <loading-spinner v-if="displayLoading"> </loading-spinner>-->
-
-    <!--    <entities-error v-else-if="isError"></entities-error>-->
-    <!--    <div class="children-list-with-paginator" v-else>-->
-    <!--      <entity-list-->
-    <!--        v-bind:entities-properties="childrenProperties"-->
-    <!--        v-bind:buttons-properties="buttonsProperties"-->
-    <!--        v-on:entityClicked="emitChildClicked"-->
-    <!--        v-on:editEntity="emitEditChild"-->
-    <!--        v-on:deleteEntity="emitDeleteChild"-->
-    <!--      ></entity-list>-->
-    <!--      <two-way-paginator-->
-    <!--        v-bind:page="page"-->
-    <!--        v-on:changePage="emitChangeChildrenPage"-->
-    <!--      ></two-way-paginator>-->
-    <!--    </div>-->
   </base-card>
 </template>
 
