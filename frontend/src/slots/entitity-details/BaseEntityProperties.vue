@@ -37,7 +37,7 @@
           </select>
         </div>
 
-        <div class="buttons" v-if="displayButtons">
+        <div class="control-buttons" v-if="displayButtons">
           <button class="submit-button" v-on:click="reset">Reset</button>
           <button class="submit-button" v-on:click="submit">Submit</button>
         </div>
@@ -192,7 +192,7 @@ export default {
   border: 2px solid var(--main-color);
 }
 
-.buttons {
+.control-buttons {
   display: flex;
   align-items: center;
   justify-content: center;

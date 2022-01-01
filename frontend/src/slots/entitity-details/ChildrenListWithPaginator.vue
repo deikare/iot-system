@@ -4,7 +4,7 @@
       <div class="flexbox">
         <slot name="children-header"></slot>
 
-        <div class="buttons">
+        <div class="control-buttons">
           <button v-on:click="emitAddChild" class="control-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +142,7 @@ export default {
   gap: 0.8rem;
 }
 
-.buttons {
+.control-buttons {
   display: flex;
   align-items: center;
   justify-content: center;

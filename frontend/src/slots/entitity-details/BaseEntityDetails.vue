@@ -23,7 +23,14 @@
           v-bind:initial-parent-id="id"
           v-click-outside="closeAddChild"
           v-on:closeComponent="closeAddChild"
-        ></entity-creator>
+        >
+          <template v-slot:entityType>
+            <slot name="childType"></slot>
+          </template>
+          <template v-slot:parentType>
+            <slot name="parentOfChildType"></slot>
+          </template>
+        </entity-creator>
       </teleport>
 
       <div class="first-column">
@@ -365,8 +372,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
-
-  /*position: relative;*/
 }
 
 main {
