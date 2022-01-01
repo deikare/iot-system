@@ -28,6 +28,8 @@
       </template>
       <template v-slot:entityId> hub {{ id }}</template>
       <template v-slot:children-header>Devices</template>
+      <template v-slot:childType>device</template>
+      <template v-slot:parentOfChildType>Hub</template>
     </base-entity-details>
   </div>
 </template>

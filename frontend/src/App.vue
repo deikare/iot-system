@@ -47,6 +47,7 @@ GREY COLOR: #343a40
   --toast-color: #f8f9fa;
   --success-color: #0ca678;
   --warning-color: #fab005;
+  --underline-color: #495057;
 }
 
 html {
