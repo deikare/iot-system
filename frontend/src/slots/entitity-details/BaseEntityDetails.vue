@@ -278,9 +278,7 @@ export default {
         ifSuccessHandler: () => {
           this.$router.push(this.ifBaseDeletedRoute);
         },
-        ifErrorHandler: () => {
-          //TODO add custom toasts
-        },
+        ifErrorHandler: () => {},
       };
 
       this.deleteBaseEntity(payload);
@@ -293,10 +291,7 @@ export default {
         ifSuccessHandler: () => {
           this.fetchBaseEntity();
         },
-        ifErrorHandler: (error) => {
-          console.log(error);
-          //TODO - case if there is no entity which mod was requested
-        },
+        ifErrorHandler: () => {},
       };
 
       this.patchBaseEntity(payload);
@@ -306,17 +301,10 @@ export default {
       this.areChildrenLoaded = false;
       this.areChildrenError = false;
 
-      const queryParams = {
-        page: page,
-        hubId: this.id, //TODO
-      };
-
-      console.log(queryParams);
-
       this.loadChildren({
         queryParams: {
           page: page,
-          hubId: this.id, //TODO
+          parentId: this.id,
         },
         ifSuccessHandler: () => {
           this.areChildrenLoaded = true;
@@ -343,13 +331,8 @@ export default {
         id: childId,
         ifSuccessHandler: () => {
           this.fetchChildrenEntities(this.getChildrenPage.currentPage - 1);
-          //TODO add custom toasts
         },
-        ifErrorHandler: (error) => {
-          console.log(error);
-          //TODO add custom toasts
-          console.log("error");
-        },
+        ifErrorHandler: () => {},
       };
 
       this.deleteChild(payload);

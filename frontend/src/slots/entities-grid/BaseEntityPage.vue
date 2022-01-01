@@ -150,10 +150,9 @@ export default {
           this.isBaseError = false;
         },
 
-        ifErrorHandler: (error) => {
+        ifErrorHandler: () => {
           this.isBaseLoaded = true;
           this.isBaseError = true;
-          console.log(error); //TODO add custom toast
         },
       });
     },

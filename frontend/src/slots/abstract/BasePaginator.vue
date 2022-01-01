@@ -184,8 +184,6 @@ export default {
       this.$emit("changePage", page);
     },
   },
-
-  //TODO split buttons to different components
 };
 </script>
 

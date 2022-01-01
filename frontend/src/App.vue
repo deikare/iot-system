@@ -124,9 +124,6 @@ a:visited {
   position: fixed;
 }
 
-.main-view {
-}
-
 .footer {
   grid-column: 2;
   grid-row: 2;

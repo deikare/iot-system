@@ -128,14 +128,9 @@ const axiosDeleteWithHandlers = function (
 const axiosPost = function (url, data, queryParams) {
   const config = { params: { ...queryParams }, timeout: 5000 };
 
-  console.log(config);
-
-  console.log(data);
-
   return axios.post(url, data, config);
 };
 
-// eslint-disable-next-line no-unused-vars
 const axiosPostWithHandlers = function (
   url,
   data,
@@ -294,6 +289,12 @@ const devicesPageModule = {
         commit("messages/add", message, { root: true });
       };
 
+      if (payload.queryParams["parentId"] !== undefined) {
+        const parentId = payload.queryParams["parentId"];
+        delete payload.queryParams["parentId"];
+        payload.queryParams["hubId"] = parentId;
+      }
+
       loadEntities(
         "http://localhost:8080/devices",
         payload.queryParams,
@@ -304,7 +305,6 @@ const devicesPageModule = {
       );
     },
 
-    //TODO check if delete
     deleteAllEntities({ commit }, payload) {
       console.log(commit, payload);
 
@@ -391,6 +391,156 @@ const devicesPageModule = {
       return getEntities(state.entitiesPage.entities, mapperFunction);
     },
 
+    getEntitiesAsParents(state) {
+      const mapperFunction = (device) => {
+        return [
+          { key: "name", value: device.name },
+          { key: "id", value: device["_links"].self.href.split("/").at(-1) },
+        ];
+      };
+
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
+    getPage(state) {
+      return getPage(state.entitiesPage.page);
+    },
+  },
+};
+
+const controlSignalsPageModule = {
+  namespaced: true,
+  state() {
+    return {
+      entitiesPage: {
+        entities: [],
+        links: {},
+        page: {},
+      },
+    };
+  },
+  mutations: {
+    saveEntitiesPage(state, data) {
+      saveEntitiesPage(state, data, "controlSignals");
+    },
+  },
+  actions: {
+    loadEntities({ commit }, payload) {
+      const commitHandler = (data) => commit("saveEntitiesPage", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      if (payload.queryParams["parentId"] !== undefined) {
+        const parentId = payload.queryParams["parentId"];
+        delete payload.queryParams["parentId"];
+        payload.queryParams["deviceId"] = parentId;
+      }
+
+      loadEntities(
+        "http://localhost:8080/controlSignals",
+        payload.queryParams,
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    deleteAllEntities({ commit }, payload) {
+      console.log(commit, payload);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosDeleteWithHandlers(
+        "http://localhost:8080/controlSignals",
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    deleteControlSignal({ commit }, payload) {
+      const url = `http://localhost:8080/controlSignals/${payload.id}`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosDeleteWithHandlers(
+        url,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    createControlSignal({ commit }, payload) {
+      const url = `http://localhost:8080/controlSignals`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      const queryParams = {
+        deviceId: payload.parentId,
+      };
+
+      axiosPostWithHandlers(
+        url,
+        payload.entity,
+        queryParams,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+
+  getters: {
+    getEntities(state) {
+      const mapperFunction = (controlSignal) => {
+        return {
+          type: "ControlSignal",
+          name: controlSignal.name,
+          id: controlSignal["_links"].self.href.split("/").at(-1),
+          properties: [
+            {
+              key: "Id",
+              value: controlSignal["_links"].self.href.split("/").at(-1),
+            },
+            {
+              key: "MessageContent",
+              value: controlSignal.messageContent,
+            },
+          ],
+        };
+      };
+
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
+    getEntitiesAsChildren(state) {
+      const mapperFunction = (controlSignal) => {
+        return [
+          { key: "name", value: controlSignal.name },
+          {
+            key: "id",
+            value: controlSignal["_links"].self.href.split("/").at(-1),
+          },
+          {
+            key: "messageContent",
+            value: controlSignal.messageContent,
+          },
+        ];
+      };
+
+      return getEntities(state.entitiesPage.entities, mapperFunction);
+    },
+
     getPage(state) {
       return getPage(state.entitiesPage.page);
     },
@@ -405,7 +555,6 @@ const hubModule = {
         name: "",
         id: "",
         status: "",
-        devices: [],
       },
     };
   },
@@ -416,7 +565,6 @@ const hubModule = {
         name: data.name,
         id: data["_links"].self.href.split("/").at(-1),
         status: "Started",
-        devices: [],
       };
 
       console.log("Successfully saved state", state);
@@ -439,22 +587,8 @@ const hubModule = {
         payload.ifSuccessHandler,
         payload.ifErrorHandler
       );
-
-      // axiosLoad(url, {})
-      //   .then((response) => {
-      //     console.log(response.data);
-      //     commit("saveHub", response.data);
-      //     return axiosLoad(
-      //       response.data["_links"].devices.href.split("{").at(0),
-      //       {}
-      //     );
-      //   })
-      //   .then((response) => {
-      //     console.log(response.data);
-      //   });
     },
 
-    // eslint-disable-next-line no-unused-vars
     deleteHub({ commit }, payload) {
       const url = `http://localhost:8080/hubs/${payload.id}`;
 
@@ -470,7 +604,6 @@ const hubModule = {
       );
     },
 
-    // eslint-disable-next-line no-unused-vars
     patchHub({ commit }, payload) {
       const url = `http://localhost:8080/hubs/${payload.id}`;
 
@@ -507,6 +640,105 @@ const hubModule = {
         },
       ];
       console.log("returning properties of hub", result);
+      return result;
+    },
+  },
+};
+
+const deviceModule = {
+  namespaced: true,
+  state() {
+    return {
+      device: {
+        name: "",
+        id: "",
+        deviceType: "",
+      },
+    };
+  },
+  mutations: {
+    saveDevice(state, data) {
+      state.device = {
+        ...state.device,
+        name: data.name,
+        id: data["_links"].self.href.split("/").at(-1),
+        deviceType: data.deviceType,
+      };
+
+      console.log("Successfully saved state", state);
+    },
+  },
+  actions: {
+    loadDevice({ commit }, payload) {
+      const url = `http://localhost:8080/devices/${payload.id}`;
+      const commitHandler = (data) => commit("saveDevice", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      loadEntities(
+        url,
+        {},
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    deleteDevice({ commit }, payload) {
+      const url = `http://localhost:8080/devices/${payload.id}`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosDeleteWithHandlers(
+        url,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    patchDevice({ commit }, payload) {
+      const url = `http://localhost:8080/devices/${payload.id}`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosPatchWithHandlers(
+        url,
+        payload.data,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+
+  getters: {
+    getProperties(state) {
+      const result = [
+        {
+          type: "text",
+          initialValue: state.device.name,
+          label: "name",
+        },
+        {
+          type: "select",
+          initialValue: state.device.deviceType,
+          label: "deviceType",
+          options: [
+            { label: "Controlled device", value: "CONTROLLED_DEVICE" }, //because label can differ from value
+            { label: "Generator", value: "GENERATOR" },
+            { label: "Both", value: "BOTH" },
+          ],
+        },
+      ];
+      console.log("returning properties of device", result);
       return result;
     },
   },
@@ -561,13 +793,13 @@ const messagesModule = {
   },
 };
 
-//TODO add module for creating storing toasts - module should produce ids
-
 export default createStore({
   modules: {
     hubs: hubsPageModule,
     hub: hubModule,
     devices: devicesPageModule,
+    device: deviceModule,
+    controlSignals: controlSignalsPageModule,
     messages: messagesModule,
   },
 });
