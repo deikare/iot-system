@@ -36,7 +36,9 @@
     </template>
 
     <template v-slot:additional-buttons>
-      <button class="additional-button">Add device</button>
+      <button class="additional-button" v-on:click="emitOpenAddDevice">
+        Add device
+      </button>
     </template>
   </base-search-form>
 </template>
@@ -46,7 +48,7 @@ import BaseSearchForm from "@/slots/abstract/BaseSearchForm";
 export default {
   name: "DeviceFiltering",
   components: { BaseSearchForm },
-  emits: ["newQuery"],
+  emits: ["newQuery", "openAddDevice"],
 
   data() {
     return {
@@ -107,6 +109,9 @@ export default {
     uncheckDeviceType(clickedValue) {
       if (this.deviceTypeQuery === clickedValue) this.deviceTypeQuery = null;
       else this.deviceTypeQuery = clickedValue;
+    },
+    emitOpenAddDevice() {
+      this.$emit("openAddDevice");
     },
   },
 
