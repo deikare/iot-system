@@ -19,10 +19,11 @@
           class="entity-creator"
           v-if="isAddChildVisible"
           v-bind:entity-properties="newChildProperties"
-          v-bind:parents-transaction-mappings="parentsTransactionMappings"
+          v-bind:transaction-mappings="addChildTransactionMappings"
           v-bind:initial-parent-id="id"
           v-click-outside="closeAddChild"
           v-on:closeComponent="closeAddChild"
+          v-on:newEntityCreated="fetchChildrenEntities(0)"
         >
           <template v-slot:entityType>
             <slot name="childType"></slot>
@@ -138,6 +139,7 @@ export default {
             actions: {
               loader: "",
               deleter: "",
+              sender: "",
             },
           },
           parents: {
@@ -205,8 +207,16 @@ export default {
       },
     }),
 
-    parentsTransactionMappings() {
-      return this.transactionMappings.parents;
+    addChildTransactionMappings() {
+      return {
+        parents: { ...this.transactionMappings.parents },
+        entity: {
+          namespace: this.transactionMappings.children.namespace,
+          actions: {
+            sender: this.transactionMappings.children.actions.sender,
+          },
+        },
+      };
     },
   },
 
