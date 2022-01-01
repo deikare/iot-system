@@ -14,10 +14,18 @@
     </base-entity-header>
 
     <main>
-      <entity-creator
-        v-bind:entity-properties="newChildProperties"
-        v-bind:parents-transaction-mappings="parentsTransactionMappings"
-      ></entity-creator>
+      <teleport to=".main-with-margin">
+        <entity-creator
+          class="entity-creator"
+          v-if="isAddChildVisible"
+          v-bind:entity-properties="newChildProperties"
+          v-bind:parents-transaction-mappings="parentsTransactionMappings"
+          v-bind:initial-parent-id="id"
+          v-click-outside="closeAddChild"
+          v-on:closeComponent="closeAddChild"
+        ></entity-creator>
+      </teleport>
+
       <div class="first-column">
         <base-entity-properties
           class="properties"
@@ -36,6 +44,7 @@
           v-bind:is-loaded="areChildrenLoaded"
           v-bind:buttons-properties="buttonsProperties"
           v-on:changeChildrenPage="changeChildrenPage"
+          v-on:addChild="showAddChild"
           v-on:childClicked="emitChildClicked"
           v-on:deleteChild="deleteChildAndReload"
         >
@@ -86,6 +95,7 @@ export default {
       isBaseError: false,
       areChildrenLoaded: false,
       areChildrenError: false,
+      isAddChildVisible: false,
     };
   },
 
@@ -327,6 +337,14 @@ export default {
 
       this.deleteChild(payload);
     },
+
+    showAddChild() {
+      this.isAddChildVisible = true;
+    },
+
+    closeAddChild() {
+      this.isAddChildVisible = false;
+    },
   },
 
   created() {
@@ -347,6 +365,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 2.4rem;
+
+  /*position: relative;*/
 }
 
 main {
@@ -385,5 +405,11 @@ header {
 }
 
 .children-list-with-paginator {
+}
+
+.entity-creator {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 </style>

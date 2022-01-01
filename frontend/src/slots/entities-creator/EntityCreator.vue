@@ -1,5 +1,8 @@
 <template>
-  <div class="creator">
+  <div class="creator" ref="creator">
+    <!--    ref is used to enable focus after component is mounted-->
+    <button v-on:click="emitCloseComponent">close</button>
+    <header>Add new <slot name="entityType"></slot></header>
     <div class="properties-modifier">
       <div
         class="property-container"
@@ -31,12 +34,18 @@
         </select>
       </div>
     </div>
+    <button v-on:click="displayParents">
+      Choose <slot name="parentType"></slot> id: {{ newParentId }}
+    </button>
     <entity-list-with-paginator
+      v-if="areParentsVisible"
       v-bind:buttons-properties="buttonsProperties"
       v-bind:entities-properties="getParentsProperties"
       v-bind:page="getParentsPage"
       v-bind:is-error="areParentsError"
       v-bind:is-loaded="areParentsLoaded"
+      v-on:changePage="changeParentsPage"
+      v-on:entityClicked="setNewParentId"
     ></entity-list-with-paginator>
     <div class="buttons"></div>
   </div>
@@ -60,8 +69,8 @@ export default {
       },
       areParentsLoaded: false,
       areParentsError: false,
-      newParentProperties: this.initialParentProperties,
-      isParentChosen: this.initialParentProperties.length > 0,
+      newParentId: this.initialParentId,
+      areParentsVisible: this.initialParentId === "",
     };
   },
 
@@ -73,12 +82,10 @@ export default {
         return [];
       },
     },
-    initialParentProperties: {
-      type: Array,
+    initialParentId: {
+      type: String,
       required: false,
-      default() {
-        return [];
-      },
+      default: "",
     },
     parentsTransactionMappings: {
       type: Object,
@@ -98,7 +105,7 @@ export default {
     },
   },
 
-  emits: ["newEntity"],
+  emits: ["newEntity", "closeComponent"],
 
   computed: {
     ...mapState({
@@ -125,6 +132,10 @@ export default {
       },
     }),
 
+    displayParents() {
+      this.areParentsVisible = !this.areParentsVisible;
+    },
+
     submit() {
       let newData = {};
 
@@ -149,7 +160,7 @@ export default {
     },
 
     //TODO make getEntities as one implementation in store
-    //TODO add changePage, saving parent, style a bit more
+    //TODO saving parent, style a bit more
 
     reset() {
       for (const key in Object.keys(this.newValues))
@@ -173,6 +184,19 @@ export default {
         },
       });
     },
+
+    changeParentsPage(page) {
+      this.fetchParents(page - 1);
+    },
+
+    setNewParentId(newParentId) {
+      this.newParentId = newParentId;
+      this.areParentsVisible = false;
+    },
+
+    emitCloseComponent() {
+      this.$emit("closeComponent");
+    },
   },
 
   created() {
@@ -192,6 +216,12 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+
+  background: var(--toast-color);
+  border-radius: 5px;
+
+  box-shadow: 0 2rem 3rem 0 rgba(18, 20, 40, 0.1);
+  border: 2px solid var(--main-color);
 }
 
 .properties-modifier {
