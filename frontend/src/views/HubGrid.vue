@@ -63,8 +63,6 @@ export default {
     };
   },
 
-  //TODO button delete hub
-
   methods: {
     getHubLink(id) {
       return { name: "hub", params: { id: id } };

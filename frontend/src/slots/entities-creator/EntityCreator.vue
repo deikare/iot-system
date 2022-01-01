@@ -299,22 +299,9 @@ export default {
           Object.keys(newData).length === 0 &&
           Object.getPrototypeOf(newData) === Object.prototype
         )
-      ) {
-        console.log({
-          entity: newData,
-          parentId: this.newParentId,
-        });
-        this.$emit("newEntity", {
-          entity: newData,
-          parentId: this.newParentId,
-        });
-
+      )
         this.createEntityAndShowLoadingBar(newData, this.newParentId);
-      }
     },
-
-    //TODO make getEntities as one implementation in store
-    //TODO saving parent
 
     reset() {
       for (const key in Object.keys(this.newValues))
@@ -540,7 +527,6 @@ export default {
 
 .parent-selector-header-text-clicked {
   color: var(--background-color);
-  /*font-size: 2rem;*/
 }
 
 .arrow-container {
