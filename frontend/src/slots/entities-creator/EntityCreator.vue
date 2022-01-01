@@ -20,7 +20,12 @@
       </button>
     </header>
 
-    <div class="properties-modifier default-margin">
+    <loading-spinner v-if="isSenderLoadingVisible"></loading-spinner>
+
+    <div
+      class="properties-modifier default-margin"
+      v-if="!isSenderLoadingVisible"
+    >
       <div
         class="property-container"
         v-for="(property, index) in entityProperties"
@@ -55,7 +60,7 @@
       </div>
     </div>
 
-    <div class="parents-selector-container">
+    <div class="parents-selector-container" v-if="!isSenderLoadingVisible">
       <div v-bind:class="parentsSelectorStyle">
         <div
           v-on:click="displayParents"
@@ -119,7 +124,7 @@
       ></empty-field-error>
     </div>
 
-    <div class="control-buttons">
+    <div class="control-buttons" v-if="!isSenderLoadingVisible">
       <button class="create-button" v-on:click="submit">Create</button>
     </div>
   </div>
@@ -129,10 +134,11 @@
 import EntityListWithPaginator from "@/components/entity-list/EntityListWithPaginator";
 import { mapState, mapActions } from "vuex";
 import EmptyFieldError from "@/slots/entities-creator/EmptyFieldError";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default {
   name: "EntityCreator",
-  components: { EmptyFieldError, EntityListWithPaginator },
+  components: { LoadingSpinner, EmptyFieldError, EntityListWithPaginator },
   data() {
     return {
       newValues: this.entityProperties.map((property) => {
@@ -147,6 +153,8 @@ export default {
       areEmptyErrorsVisible: false,
       newParentId: this.initialParentId,
       areParentsVisible: this.initialParentId === "",
+      hasEntityCreationStarted: false,
+      hasEntityCreationEnded: false,
     };
   },
 
@@ -163,36 +171,44 @@ export default {
       required: false,
       default: "",
     },
-    parentsTransactionMappings: {
+    transactionMappings: {
       type: Object,
       required: true,
       default() {
         return {
-          namespace: "",
-          getters: {
-            entities: "",
-            page: "",
+          entity: {
+            namespace: "",
+            actions: {
+              sender: "",
+            },
           },
-          actions: {
-            loader: "",
+          parents: {
+            namespace: "",
+            getters: {
+              entities: "",
+              page: "",
+            },
+            actions: {
+              loader: "",
+            },
           },
         };
       },
     },
   },
 
-  emits: ["newEntity", "closeComponent"],
+  emits: ["newEntityCreated", "closeComponent"],
 
   computed: {
     ...mapState({
       getParentsProperties(state, getters) {
         return getters[
-          `${this.parentsTransactionMappings.namespace}/${this.parentsTransactionMappings.getters.entities}`
+          `${this.transactionMappings.parents.namespace}/${this.transactionMappings.parents.getters.entities}`
         ];
       },
       getParentsPage(state, getters) {
         return getters[
-          `${this.parentsTransactionMappings.namespace}/${this.parentsTransactionMappings.getters.page}`
+          `${this.transactionMappings.parents.namespace}/${this.transactionMappings.parents.getters.page}`
         ];
       },
     }),
@@ -230,13 +246,27 @@ export default {
     isNewParentEmpty() {
       return this.newParentId.length === 0;
     },
+
+    isSenderLoadingVisible() {
+      return (
+        this.hasEntityCreationStarted === true &&
+        this.hasEntityCreationEnded === false
+      );
+    },
   },
 
   methods: {
     ...mapActions({
       loadParents(dispatch, payload) {
         return dispatch(
-          `${this.parentsTransactionMappings.namespace}/${this.parentsTransactionMappings.actions.loader}`,
+          `${this.transactionMappings.parents.namespace}/${this.transactionMappings.parents.actions.loader}`,
+          payload
+        );
+      },
+
+      sendEntity(dispatch, payload) {
+        return dispatch(
+          `${this.transactionMappings.entity.namespace}/${this.transactionMappings.entity.actions.sender}`,
           payload
         );
       },
@@ -278,10 +308,10 @@ export default {
           entity: newData,
           parentId: this.newParentId,
         });
+
+        this.createEntityAndShowLoadingBar(newData, this.newParentId);
       }
     },
-
-    validateData() {},
 
     //TODO make getEntities as one implementation in store
     //TODO saving parent
@@ -309,6 +339,28 @@ export default {
       });
     },
 
+    createEntityAndShowLoadingBar(entity, parentId) {
+      this.hasEntityCreationStarted = true;
+      this.hasEntityCreationEnded = false;
+
+      const payload = {
+        entity: entity,
+        parentId: parentId,
+        ifSuccessHandler: () => {
+          this.hasEntityCreationStarted = false;
+          this.hasEntityCreationEnded = true;
+          this.emitNewEntityCreated();
+          this.emitCloseComponent();
+        },
+        ifErrorHandler: () => {
+          this.hasEntityCreationStarted = true;
+          this.hasEntityCreationEnded = true;
+        },
+      };
+
+      this.sendEntity(payload);
+    },
+
     changeParentsPage(page) {
       this.fetchParents(page - 1);
     },
@@ -320,6 +372,10 @@ export default {
 
     emitCloseComponent() {
       this.$emit("closeComponent");
+    },
+
+    emitNewEntityCreated() {
+      this.$emit("newEntityCreated");
     },
   },
 
@@ -528,5 +584,6 @@ export default {
 
 .create-button {
   font-size: 1.4rem;
+  color: var(--main-color);
 }
 </style>

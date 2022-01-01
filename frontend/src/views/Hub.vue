@@ -69,6 +69,7 @@ export default {
           actions: {
             loader: "loadEntities",
             deleter: "deleteDevice",
+            sender: "createDevice",
           },
         },
 

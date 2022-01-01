@@ -73,9 +73,10 @@ body {
 
   display: grid;
   grid-template-columns: fit-content(20rem) 1fr;
-  grid-template-rows: fit-content(400rem) fit-content(20rem);
+  grid-template-rows: 1fr fit-content(20rem);
 
-  align-content: space-between;
+  /*align-content: space-between;*/
+  align-items: stretch;
 
   min-width: 100vm;
 

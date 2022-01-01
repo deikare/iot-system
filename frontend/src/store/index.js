@@ -4,7 +4,7 @@ import axios from "axios";
 const sendErrorMessage = (messageCommitHandler, error) => {
   const message = { type: "error", content: "" };
   if (error.response)
-    message.content = `Server responded with: ${error.response.data}`;
+    message.content = `Server responded with: ${error.response.data.error}`;
   else if (error.request) message.content = `Server not responding`;
   else message.content = "Unexpected error, please refresh";
 
@@ -116,6 +116,44 @@ const axiosDeleteWithHandlers = function (
     .catch((error) => {
       console.log(
         "Error occurred during delete",
+        error,
+        error.response,
+        error.request
+      );
+      sendErrorMessage(messageCommitHandler, error);
+      ifErrorHandler(error);
+    });
+};
+
+const axiosPost = function (url, data, queryParams) {
+  const config = { params: { ...queryParams }, timeout: 5000 };
+
+  console.log(config);
+
+  console.log(data);
+
+  return axios.post(url, data, config);
+};
+
+// eslint-disable-next-line no-unused-vars
+const axiosPostWithHandlers = function (
+  url,
+  data,
+  queryParams,
+  messageCommitHandler,
+  ifSuccessHandler,
+  ifErrorHandler
+) {
+  axiosPost(url, data, queryParams)
+    .then((response) => {
+      console.log("Successfully posted", response.data);
+      messageCommitHandler({ type: "info", content: "Successfully posted" });
+
+      ifSuccessHandler();
+    })
+    .catch((error) => {
+      console.log(
+        "Error occurred during post",
         error,
         error.response,
         error.request
@@ -283,8 +321,6 @@ const devicesPageModule = {
     },
 
     deleteDevice({ commit }, payload) {
-      console.log(commit, payload);
-
       const url = `http://localhost:8080/devices/${payload.id}`;
 
       const messageCommitHandler = (message) => {
@@ -293,6 +329,27 @@ const devicesPageModule = {
 
       axiosDeleteWithHandlers(
         url,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    createDevice({ commit }, payload) {
+      const url = `http://localhost:8080/devices`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      const queryParams = {
+        hubId: payload.parentId,
+      };
+
+      axiosPostWithHandlers(
+        url,
+        payload.entity,
+        queryParams,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -328,7 +385,6 @@ const devicesPageModule = {
         return [
           { key: "name", value: device.name },
           { key: "id", value: device["_links"].self.href.split("/").at(-1) },
-          // { key: "type", value: device.deviceType },
         ];
       };
 
@@ -456,42 +512,12 @@ const hubModule = {
   },
 };
 
-// eslint-disable-next-line no-unused-vars
-const dummyMessages = () => {
-  let map = new Map();
-  let counter = 0;
-
-  const lorems =
-    "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid asperiores cum deleniti enim eum fuga, itaque natus porro quia quos repellat repudiandae sed voluptate. At consectetur nobis praesentium repellendus sit.".split(
-      /[,|.]+/
-    );
-
-  console.log(lorems);
-
-  for (const message of lorems) {
-    map.set(Date.now().toString(36) + Math.random().toString(36).substr(2), {
-      type: "info",
-      content: message,
-    });
-    console.log(message);
-    counter++;
-  }
-
-  return {
-    map: map,
-    counter: counter,
-  };
-};
-
 const messagesModule = {
   namespaced: true,
   state() {
     return {
       messages: new Map(),
       messagesChangeTracker: 0, //so vue sees map for reactivity
-
-      // messages: newMap.map,
-      // messagesChangeTracker: newMap.counter, //so vue sees map for reactivity
     };
   },
 
