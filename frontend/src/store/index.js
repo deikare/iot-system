@@ -45,6 +45,7 @@ const axiosLoadWithHandlers = function (
 const loadEntities = function (
   url,
   queryParams,
+  size,
   commitHandler,
   messageCommitHandler,
   ifSuccessHandler,
@@ -52,7 +53,7 @@ const loadEntities = function (
 ) {
   const queryParamsWithSize = {
     ...queryParams,
-    size: 16,
+    size: size,
   };
 
   axiosLoadWithHandlers(
@@ -217,6 +218,7 @@ const hubsPageModule = {
       loadEntities(
         "http://localhost:8080/hubs",
         payload.queryParams,
+        payload.size,
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -298,6 +300,7 @@ const devicesPageModule = {
       loadEntities(
         "http://localhost:8080/devices",
         payload.queryParams,
+        payload.size,
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -441,6 +444,7 @@ const controlSignalsPageModule = {
       loadEntities(
         "http://localhost:8080/control_signals",
         payload.queryParams,
+        payload.size,
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -582,6 +586,7 @@ const hubModule = {
       loadEntities(
         url,
         {},
+        null,
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -680,6 +685,7 @@ const deviceModule = {
       loadEntities(
         url,
         {},
+        null,
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -779,6 +785,7 @@ const controlSignalModule = {
       loadEntities(
         url,
         {},
+        null,
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,

@@ -7,11 +7,8 @@
           v-for="(property, index) in entityProperties"
           v-bind:key="index"
         >
-          {{
-            index === entityProperties.length - 1
-              ? `${property.key}: ${property.value}`
-              : `${property.key}: ${property.value}, `
-          }}
+          {{ property.key }}: {{ property.value }}
+          <!--          TODO add word wrap-->
         </div>
       </div>
 
@@ -147,6 +144,8 @@ export default {
 
 .entity-properties {
   display: flex;
+  flex-direction: column;
+  font-size: 1.6rem;
 }
 
 .entity-property {

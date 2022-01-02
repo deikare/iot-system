@@ -200,6 +200,7 @@ export default {
 
       this.loadEntity({
         id: this.id,
+        size: 10,
         ifSuccessHandler: () => {
           this.initializeNewValues();
           this.isEntityLoaded = true;

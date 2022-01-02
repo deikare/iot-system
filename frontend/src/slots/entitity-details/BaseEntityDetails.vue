@@ -342,6 +342,7 @@ export default {
           page: page,
           parentId: this.id,
         },
+        size: 10,
         ifSuccessHandler: () => {
           this.areChildrenLoaded = true;
           this.areChildrenError = false;
