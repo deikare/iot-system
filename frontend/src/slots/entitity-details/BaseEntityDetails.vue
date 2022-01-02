@@ -34,6 +34,22 @@
         </entity-creator>
       </teleport>
 
+      <teleport to=".main-with-margin">
+        <entity-modifier
+          class="entity-creator"
+          v-if="isEditChildVisible && !isAddChildVisible"
+          v-bind:transaction-mappings="editChildTransactionMappings"
+          v-bind:id="editedChildId"
+          v-click-outside="closeEditChild"
+          v-on:closeComponent="closeEditChild"
+          v-on:entityUpdated="fetchChildrenEntities(0)"
+        >
+          <template v-slot:entityType>
+            <slot name="childType"></slot>
+          </template>
+        </entity-modifier>
+      </teleport>
+
       <div class="first-column">
         <base-entity-properties
           class="properties"
@@ -53,6 +69,7 @@
           v-bind:buttons-properties="buttonsProperties"
           v-on:changeChildrenPage="changeChildrenPage"
           v-on:addChild="showAddChild"
+          v-on:editChild="editChild"
           v-on:childClicked="emitChildClicked"
           v-on:deleteChild="deleteChildAndReload"
         >
@@ -86,10 +103,12 @@ import { mapState, mapActions } from "vuex";
 import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
 import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
 import EntityCreator from "@/slots/entities-creator/EntityCreator";
+import EntityModifier from "@/slots/entities-modifier/EntityModifier";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    EntityModifier,
     EntityCreator,
     BaseEntityHeader,
     ChildrenListWithPaginator,
@@ -104,6 +123,9 @@ export default {
       areChildrenLoaded: false,
       areChildrenError: false,
       isAddChildVisible: false,
+      isEditChildVisible: false,
+
+      editedChildId: "",
     };
   },
 
@@ -150,6 +172,16 @@ export default {
             },
             actions: {
               loader: "",
+            },
+          },
+          child: {
+            namespace: "",
+            getters: {
+              entity: "",
+            },
+            actions: {
+              loader: "",
+              patcher: "",
             },
           },
         };
@@ -217,6 +249,10 @@ export default {
           },
         },
       };
+    },
+
+    editChildTransactionMappings() {
+      return this.transactionMappings.child;
     },
   },
 
@@ -342,8 +378,18 @@ export default {
       this.isAddChildVisible = true;
     },
 
+    editChild(childId) {
+      this.editedChildId = childId;
+      this.isEditChildVisible = true;
+    },
+
     closeAddChild() {
       this.isAddChildVisible = false;
+    },
+
+    closeEditChild() {
+      this.editedChildId = "";
+      this.isEditChildVisible = false;
     },
   },
 
