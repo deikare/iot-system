@@ -5,7 +5,7 @@
       v-bind:is-base-loaded="isDeviceLoaded"
       v-bind:is-base-error="isErrorInDevice"
       v-bind:transaction-mappings="transactionMappings"
-      v-bind:if-base-deleted-route="iDeviceDeletedRoute"
+      v-bind:if-base-deleted-route="isDeviceDeletedRoute"
       v-bind:new-child-properties="newControlSignalProperties"
       v-bind:buttons-properties="buttonsProperties"
     >
@@ -79,9 +79,20 @@ export default {
             loader: "loadEntities",
           },
         },
+
+        child: {
+          namespace: "controlSignal",
+          getters: {
+            entity: "getProperties",
+          },
+          actions: {
+            loader: "loadControlSignal",
+            patcher: "patchControlSignal",
+          },
+        },
       },
 
-      iDeviceDeletedRoute: { name: "devices" },
+      isDeviceDeletedRoute: { name: "devices" },
 
       newControlSignalProperties: [
         {

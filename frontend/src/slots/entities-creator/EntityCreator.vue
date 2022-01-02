@@ -1,133 +1,135 @@
 <template>
-  <div class="creator">
-    <header class="creator-header header-margin">
-      <h2 class="header-text">Add new <slot name="entityType"></slot></h2>
-      <button class="close-button" v-on:click="emitCloseComponent">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="close-icon"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-    </header>
-
-    <loading-spinner v-if="isSenderLoadingVisible"></loading-spinner>
-
-    <div
-      class="properties-modifier default-margin"
-      v-if="!isSenderLoadingVisible"
-    >
-      <div
-        class="property-container"
-        v-for="(property, index) in entityProperties"
-        v-bind:key="property.label"
-      >
-        <div class="property-label">{{ property.label }}:</div>
-
-        <input
-          class="property-modifier text-modifier"
-          type="text"
-          v-if="property.type === `text`"
-          v-model="newValues[index].value"
-          size="15"
-        />
-        <select
-          class="property-modifier select-modifier"
-          v-else-if="property.type === `select`"
-          v-model="newValues[index].value"
-        >
-          <option disabled value="">Please select one</option>
-          <option
-            v-for="option in property.options"
-            v-bind:key="option.value"
-            v-bind:value="option.value"
+  <base-shadowed-card class="modifier">
+    <template v-slot:default>
+      <header class="modifier-header header-margin">
+        <h2 class="header-text">Add new <slot name="entityType"></slot></h2>
+        <button class="close-button" v-on:click="emitCloseComponent">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="close-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            {{ option.label }}
-          </option>
-        </select>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </header>
+
+      <loading-spinner v-if="isSenderLoadingVisible"></loading-spinner>
+
+      <div
+        class="properties-modifier default-margin"
+        v-if="!isSenderLoadingVisible"
+      >
+        <div
+          class="property-container"
+          v-for="(property, index) in entityProperties"
+          v-bind:key="property.label"
+        >
+          <div class="property-label">{{ property.label }}:</div>
+
+          <input
+            class="property-modifier text-modifier"
+            type="text"
+            v-if="property.type === `text`"
+            v-model="newValues[index].value"
+            size="15"
+          />
+          <select
+            class="property-modifier select-modifier"
+            v-else-if="property.type === `select`"
+            v-model="newValues[index].value"
+          >
+            <option disabled value="">Please select one</option>
+            <option
+              v-for="option in property.options"
+              v-bind:key="option.value"
+              v-bind:value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+          <empty-field-error
+            v-if="areNewValuesEmpty[index] && areEmptyErrorsVisible"
+          ></empty-field-error>
+        </div>
+      </div>
+
+      <div class="parents-selector-container" v-if="!isSenderLoadingVisible">
+        <div v-bind:class="parentsSelectorStyle">
+          <div
+            v-on:click="displayParents"
+            v-bind:class="parentsSelectorHeaderStyle"
+          >
+            <span v-bind:class="parentsSelectorHeaderTextStyle">
+              <slot name="parentType"></slot> id: {{ newParentId }}
+            </span>
+            <div class="arrow-container" v-if="!areParentsVisible">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="arrow-icon"
+                v-bind:class="parentsSelectorHeaderIconStyle"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+
+            <div class="arrow-container" v-if="areParentsVisible">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="arrow-icon"
+                v-bind:class="parentsSelectorHeaderIconStyle"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 15l7-7 7 7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <entity-list-with-paginator
+            class="parents-list"
+            v-show="areParentsVisible"
+            v-bind:buttons-properties="buttonsProperties"
+            v-bind:entities-properties="getParentsProperties"
+            v-bind:page="getParentsPage"
+            v-bind:is-error="areParentsError"
+            v-bind:is-loaded="areParentsLoaded"
+            v-on:changePage="changeParentsPage"
+            v-on:entityClicked="setNewParentId"
+          ></entity-list-with-paginator>
+        </div>
         <empty-field-error
-          v-if="areNewValuesEmpty[index] && areEmptyErrorsVisible"
+          v-bind:class="parentsSelectorErrorStyle"
+          v-if="isNewParentEmpty && areEmptyErrorsVisible"
         ></empty-field-error>
       </div>
-    </div>
 
-    <div class="parents-selector-container" v-if="!isSenderLoadingVisible">
-      <div v-bind:class="parentsSelectorStyle">
-        <div
-          v-on:click="displayParents"
-          v-bind:class="parentsSelectorHeaderStyle"
-        >
-          <span v-bind:class="parentsSelectorHeaderTextStyle">
-            <slot name="parentType"></slot> id: {{ newParentId }}
-          </span>
-          <div class="arrow-container" v-if="!areParentsVisible">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="arrow-icon"
-              v-bind:class="parentsSelectorHeaderIconStyle"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-
-          <div class="arrow-container" v-if="areParentsVisible">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="arrow-icon"
-              v-bind:class="parentsSelectorHeaderIconStyle"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 15l7-7 7 7"
-              />
-            </svg>
-          </div>
-        </div>
-
-        <entity-list-with-paginator
-          class="parents-list"
-          v-show="areParentsVisible"
-          v-bind:buttons-properties="buttonsProperties"
-          v-bind:entities-properties="getParentsProperties"
-          v-bind:page="getParentsPage"
-          v-bind:is-error="areParentsError"
-          v-bind:is-loaded="areParentsLoaded"
-          v-on:changePage="changeParentsPage"
-          v-on:entityClicked="setNewParentId"
-        ></entity-list-with-paginator>
+      <div class="control-buttons" v-if="!isSenderLoadingVisible">
+        <button class="create-button" v-on:click="submit">Create</button>
       </div>
-      <empty-field-error
-        v-bind:class="parentsSelectorErrorStyle"
-        v-if="isNewParentEmpty && areEmptyErrorsVisible"
-      ></empty-field-error>
-    </div>
-
-    <div class="control-buttons" v-if="!isSenderLoadingVisible">
-      <button class="create-button" v-on:click="submit">Create</button>
-    </div>
-  </div>
+    </template>
+  </base-shadowed-card>
 </template>
 
 <script>
@@ -135,10 +137,16 @@ import EntityListWithPaginator from "@/components/entity-list/EntityListWithPagi
 import { mapState, mapActions } from "vuex";
 import EmptyFieldError from "@/slots/entities-creator/EmptyFieldError";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import BaseShadowedCard from "@/slots/abstract/BaseShadowedCard";
 
 export default {
   name: "EntityCreator",
-  components: { LoadingSpinner, EmptyFieldError, EntityListWithPaginator },
+  components: {
+    BaseShadowedCard,
+    LoadingSpinner,
+    EmptyFieldError,
+    EntityListWithPaginator,
+  },
   data() {
     return {
       newValues: this.entityProperties.map((property) => {
@@ -380,25 +388,17 @@ export default {
 </script>
 
 <style scoped>
-.creator {
+.modifier {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-
-  background: var(--toast-color);
-  border-radius: 5px;
-
-  padding: 0.2rem 1.2rem;
-
-  box-shadow: 0 2rem 3rem 0 rgba(18, 20, 40, 0.1);
-  border: 2px solid var(--main-color);
 }
 
 .default-margin {
   margin: 0 1.2rem;
 }
 
-.creator-header {
+.modifier-header {
   display: flex;
   justify-content: center;
   align-items: center;

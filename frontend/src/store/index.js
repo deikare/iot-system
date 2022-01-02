@@ -439,7 +439,7 @@ const controlSignalsPageModule = {
       }
 
       loadEntities(
-        "http://localhost:8080/controlSignals",
+        "http://localhost:8080/control_signals",
         payload.queryParams,
         commitHandler,
         messageCommitHandler,
@@ -456,7 +456,7 @@ const controlSignalsPageModule = {
       };
 
       axiosDeleteWithHandlers(
-        "http://localhost:8080/controlSignals",
+        "http://localhost:8080/control_signals",
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -464,7 +464,7 @@ const controlSignalsPageModule = {
     },
 
     deleteControlSignal({ commit }, payload) {
-      const url = `http://localhost:8080/controlSignals/${payload.id}`;
+      const url = `http://localhost:8080/control_signals/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
@@ -479,7 +479,7 @@ const controlSignalsPageModule = {
     },
 
     createControlSignal({ commit }, payload) {
-      const url = `http://localhost:8080/controlSignals`;
+      const url = `http://localhost:8080/control_signals`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
@@ -744,6 +744,85 @@ const deviceModule = {
   },
 };
 
+const controlSignalModule = {
+  namespaced: true,
+  state() {
+    return {
+      controlSignal: {
+        name: "",
+        id: "",
+        messageContent: "",
+      },
+    };
+  },
+  mutations: {
+    saveControlSignal(state, data) {
+      state.controlSignal = {
+        ...state.controlSignal,
+        name: data.name,
+        id: data["_links"].self.href.split("/").at(-1),
+        messageContent: data.messageContent,
+      };
+
+      console.log("Successfully saved state", state);
+    },
+  },
+  actions: {
+    loadControlSignal({ commit }, payload) {
+      const url = `http://localhost:8080/control_signals/${payload.id}`;
+      const commitHandler = (data) => commit("saveControlSignal", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      loadEntities(
+        url,
+        {},
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    patchControlSignal({ commit }, payload) {
+      const url = `http://localhost:8080/control_signals/${payload.id}`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosPatchWithHandlers(
+        url,
+        payload.data,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+
+  getters: {
+    getProperties(state) {
+      const result = [
+        {
+          type: "text",
+          initialValue: state.controlSignal.name,
+          label: "name",
+        },
+        {
+          type: "text",
+          initialValue: state.controlSignal.messageContent,
+          label: "messageContent",
+        },
+      ];
+      console.log("returning properties of control signal", result);
+      return result;
+    },
+  },
+};
+
 const messagesModule = {
   namespaced: true,
   state() {
@@ -800,6 +879,7 @@ export default createStore({
     devices: devicesPageModule,
     device: deviceModule,
     controlSignals: controlSignalsPageModule,
+    controlSignal: controlSignalModule,
     messages: messagesModule,
   },
 });
