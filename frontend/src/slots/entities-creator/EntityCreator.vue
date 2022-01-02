@@ -324,6 +324,7 @@ export default {
 
       this.loadParents({
         queryParams: { page: page },
+        size: 10,
         ifSuccessHandler: () => {
           this.areParentsLoaded = true;
           this.areParentsError = false;

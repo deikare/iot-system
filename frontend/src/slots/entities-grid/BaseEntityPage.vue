@@ -144,6 +144,7 @@ export default {
 
       this.loadEntitiesPage({
         queryParams: queryParams,
+        size: 16,
 
         ifSuccessHandler: () => {
           this.isBaseLoaded = true;
