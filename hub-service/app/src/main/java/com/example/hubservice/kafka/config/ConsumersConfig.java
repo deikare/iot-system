@@ -28,7 +28,7 @@ public class ConsumersConfig {
 
     private final HubManagementService hubManagementService;
 
-    private final String serverFQDN = "iot.switzerlandnorth.cloudapp.azure.com"; //TODO get kafka adress from env variable
+    private final String serverFQDN = "iot-server.germanywestcentral.cloudapp.azure.com"; //TODO get kafka adress from env variable
     private final String [] ports = {"9092", "9093", "9094"};
     private final String bootstrapServers = getServerListWithPorts(serverFQDN, ports);
 
