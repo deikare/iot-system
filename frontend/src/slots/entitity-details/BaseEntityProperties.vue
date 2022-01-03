@@ -39,7 +39,7 @@
 
         <div class="control-buttons" v-if="displayButtons">
           <button class="submit-button" v-on:click="reset">Reset</button>
-          <button class="submit-button" v-on:click="submit">Submit</button>
+          <button class="submit-button" v-on:click="submit">Update</button>
         </div>
       </div>
     </template>

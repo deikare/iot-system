@@ -110,6 +110,7 @@ const axiosDelete = function (path) {
 
 const axiosDeleteWithHandlers = function (
   path,
+  ifSuccessMessage,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
@@ -117,7 +118,7 @@ const axiosDeleteWithHandlers = function (
   axiosDelete(path)
     .then(() => {
       console.log("Successfully deleted");
-      messageCommitHandler({ type: "info", content: "Successfully deleted" });
+      messageCommitHandler({ type: "info", content: ifSuccessMessage });
       ifSuccessHandler();
     })
     .catch((error) => {
@@ -142,6 +143,7 @@ const axiosPostWithHandlers = function (
   path,
   data,
   queryParams,
+  ifSuccessMessage,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
@@ -149,7 +151,7 @@ const axiosPostWithHandlers = function (
   axiosPost(path, data, queryParams)
     .then((response) => {
       console.log("Successfully posted", response.data);
-      messageCommitHandler({ type: "info", content: "Successfully posted" });
+      messageCommitHandler({ type: "info", content: ifSuccessMessage });
 
       ifSuccessHandler();
     })
@@ -174,6 +176,7 @@ const axiosPatch = function (path, data) {
 const axiosPatchWithHandlers = function (
   path,
   data,
+  ifSuccessMessage,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
@@ -181,7 +184,7 @@ const axiosPatchWithHandlers = function (
   axiosPatch(path, data)
     .then((response) => {
       console.log("Successfully patched", response.data);
-      messageCommitHandler({ type: "info", content: "Successfully patched" });
+      messageCommitHandler({ type: "info", content: ifSuccessMessage });
 
       ifSuccessHandler();
     })
@@ -314,21 +317,6 @@ const devicesPageModule = {
       );
     },
 
-    deleteAllEntities({ commit }, payload) {
-      console.log(commit, payload);
-
-      const messageCommitHandler = (message) => {
-        commit("messages/add", message, { root: true });
-      };
-
-      axiosDeleteWithHandlers(
-        "devices",
-        messageCommitHandler,
-        payload.ifSuccessHandler,
-        payload.ifErrorHandler
-      );
-    },
-
     deleteDevice({ commit }, payload) {
       const path = `devices/${payload.id}`;
 
@@ -338,6 +326,7 @@ const devicesPageModule = {
 
       axiosDeleteWithHandlers(
         path,
+        `Successfully deleted device ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -359,6 +348,7 @@ const devicesPageModule = {
         path,
         payload.entity,
         queryParams,
+        `Successfully created device`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -458,21 +448,6 @@ const controlSignalsPageModule = {
       );
     },
 
-    deleteAllEntities({ commit }, payload) {
-      console.log(commit, payload);
-
-      const messageCommitHandler = (message) => {
-        commit("messages/add", message, { root: true });
-      };
-
-      axiosDeleteWithHandlers(
-        "control_signals",
-        messageCommitHandler,
-        payload.ifSuccessHandler,
-        payload.ifErrorHandler
-      );
-    },
-
     deleteControlSignal({ commit }, payload) {
       const path = `control_signals/${payload.id}`;
 
@@ -482,6 +457,7 @@ const controlSignalsPageModule = {
 
       axiosDeleteWithHandlers(
         path,
+        `Successfully deleted control signal ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -503,6 +479,7 @@ const controlSignalsPageModule = {
         path,
         payload.entity,
         queryParams,
+        `Successfully created control signal`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -609,6 +586,7 @@ const hubModule = {
 
       axiosDeleteWithHandlers(
         path,
+        `Successfully deleted hub ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -625,6 +603,7 @@ const hubModule = {
       axiosPatchWithHandlers(
         path,
         payload.data,
+        `Successfully updated hub ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -645,8 +624,8 @@ const hubModule = {
           initialValue: state.hub.status,
           label: "status",
           options: [
-            { label: "Started", value: "Started" }, //because label can differ from value
-            { label: "Stopped", value: "Stopped" },
+            { label: "Started", value: "STARTED" }, //because label can differ from value
+            { label: "Stopped", value: "STOPPED" },
           ],
         },
       ];
@@ -708,6 +687,7 @@ const deviceModule = {
 
       axiosDeleteWithHandlers(
         path,
+        `Successfully deleted device ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -724,6 +704,7 @@ const deviceModule = {
       axiosPatchWithHandlers(
         path,
         payload.data,
+        `Successfully updated device ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -809,6 +790,7 @@ const controlSignalModule = {
       axiosPatchWithHandlers(
         path,
         payload.data,
+        `Successfully updated control signal ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -826,6 +808,7 @@ const controlSignalModule = {
         path,
         {},
         {},
+        `Successfully sent control signal ${payload.id}`,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
