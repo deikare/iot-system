@@ -103,7 +103,7 @@ public class Device implements MasterAndDependentTypeInterface<Device, ControlSi
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.hub, this.deviceType, this.controlSignals);
+        return Objects.hash(this.id);
     }
 
     @Override

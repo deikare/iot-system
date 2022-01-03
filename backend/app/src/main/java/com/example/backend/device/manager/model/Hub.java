@@ -83,7 +83,7 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.devices, this.status);
+        return Objects.hash(this.id);
     }
 
 

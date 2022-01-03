@@ -65,7 +65,7 @@ public class ControlSignal implements DependentTypeInterface<ControlSignal, Devi
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.messageContent, this.device);
+        return Objects.hash(this.id);
     }
 
     public Long getId() {
