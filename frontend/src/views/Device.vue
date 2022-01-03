@@ -8,6 +8,7 @@
       v-bind:if-base-deleted-route="isDeviceDeletedRoute"
       v-bind:new-child-properties="newControlSignalProperties"
       v-bind:buttons-properties="buttonsProperties"
+      v-on:childClicked="onControlSignalClicked"
     >
       <template v-slot:icon>
         <svg
@@ -35,6 +36,8 @@
 
 <script>
 import BaseEntityDetails from "@/slots/entitity-details/BaseEntityDetails";
+import { mapActions } from "vuex";
+
 export default {
   name: "Device",
   components: { BaseEntityDetails },
@@ -122,9 +125,16 @@ export default {
   },
 
   methods: {
-    // goToDevice(deviceId) {
-    //   this.$router.push({ name: "device", params: { id: deviceId } });
-    // },
+    ...mapActions("controlSignal", ["sendControlSignal"]),
+
+    onControlSignalClicked(controlSignalId) {
+      console.log("CHUJ", controlSignalId);
+      this.sendControlSignal({
+        id: controlSignalId,
+        ifSuccessHandler: () => {},
+        ifErrorHandler: () => {},
+      });
+    },
   },
 };
 </script>
