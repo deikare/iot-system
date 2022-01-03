@@ -128,7 +128,6 @@ export default {
     ...mapActions("controlSignal", ["sendControlSignal"]),
 
     onControlSignalClicked(controlSignalId) {
-      console.log("CHUJ", controlSignalId);
       this.sendControlSignal({
         id: controlSignalId,
         ifSuccessHandler: () => {},
