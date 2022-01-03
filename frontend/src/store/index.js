@@ -12,7 +12,7 @@ const sendErrorMessage = (messageCommitHandler, error) => {
 };
 
 const getFullUrl = function (path) {
-  const serverFQDN = "backend";
+  const serverFQDN = "/backend";
 
   return `${serverFQDN}/${path}`;
 };
@@ -246,7 +246,7 @@ const hubsPageModule = {
             },
             {
               key: "Status",
-              value: "Started",
+              value: hub.status,
               //  TODO add proper value in final backend
             },
           ],
@@ -574,7 +574,7 @@ const hubModule = {
         ...state.hub,
         name: data.name,
         id: data["_links"].self.href.split("/").at(-1),
-        status: "Started",
+        status: data.status,
       };
 
       console.log("Successfully saved state", state);
@@ -809,6 +809,23 @@ const controlSignalModule = {
       axiosPatchWithHandlers(
         path,
         payload.data,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    sendControlSignal({ commit }, payload) {
+      const path = `send_device_control/${payload.id}`;
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosPostWithHandlers(
+        path,
+        {},
+        {},
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
