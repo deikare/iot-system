@@ -11,20 +11,27 @@ const sendErrorMessage = (messageCommitHandler, error) => {
   messageCommitHandler(message);
 };
 
-const axiosLoad = function (url, queryParams) {
+const getFullUrl = function (path) {
+  const serverFQDN =
+    "https://iot-server.germanywestcentral.cloudapp.azure.com/backend";
+
+  return `${serverFQDN}/${path}`;
+};
+
+const axiosLoad = function (path, queryParams) {
   const config = { params: { ...queryParams }, timeout: 5000 };
-  return axios.get(url, config);
+  return axios.get(getFullUrl(path), config);
 };
 
 const axiosLoadWithHandlers = function (
-  url,
+  path,
   queryParams,
   commitHandler,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
-  axiosLoad(url, queryParams)
+  axiosLoad(path, queryParams)
     .then((response) => {
       commitHandler(response.data);
       console.log("Successfully fetched", response.data);
@@ -43,7 +50,7 @@ const axiosLoadWithHandlers = function (
 };
 
 const loadEntities = function (
-  url,
+  path,
   queryParams,
   size,
   commitHandler,
@@ -57,7 +64,7 @@ const loadEntities = function (
   };
 
   axiosLoadWithHandlers(
-    url,
+    path,
     queryParamsWithSize,
     commitHandler,
     messageCommitHandler,
@@ -97,18 +104,18 @@ const saveEntitiesPage = function (state, data, entitiesContainerName) {
   console.log("Successfully saved", state.entitiesPage);
 };
 
-const axiosDelete = function (url) {
+const axiosDelete = function (path) {
   const config = { timeout: 5000 };
-  return axios.delete(url, config);
+  return axios.delete(getFullUrl(path), config);
 };
 
 const axiosDeleteWithHandlers = function (
-  url,
+  path,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
-  axiosDelete(url)
+  axiosDelete(path)
     .then(() => {
       console.log("Successfully deleted");
       messageCommitHandler({ type: "info", content: "Successfully deleted" });
@@ -126,21 +133,21 @@ const axiosDeleteWithHandlers = function (
     });
 };
 
-const axiosPost = function (url, data, queryParams) {
+const axiosPost = function (path, data, queryParams) {
   const config = { params: { ...queryParams }, timeout: 5000 };
 
-  return axios.post(url, data, config);
+  return axios.post(getFullUrl(path), data, config);
 };
 
 const axiosPostWithHandlers = function (
-  url,
+  path,
   data,
   queryParams,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
-  axiosPost(url, data, queryParams)
+  axiosPost(path, data, queryParams)
     .then((response) => {
       console.log("Successfully posted", response.data);
       messageCommitHandler({ type: "info", content: "Successfully posted" });
@@ -159,20 +166,20 @@ const axiosPostWithHandlers = function (
     });
 };
 
-const axiosPatch = function (url, data) {
+const axiosPatch = function (path, data) {
   const config = { timeout: 5000 };
 
-  return axios.patch(url, data, config);
+  return axios.patch(getFullUrl(path), data, config);
 };
 
 const axiosPatchWithHandlers = function (
-  url,
+  path,
   data,
   messageCommitHandler,
   ifSuccessHandler,
   ifErrorHandler
 ) {
-  axiosPatch(url, data)
+  axiosPatch(path, data)
     .then((response) => {
       console.log("Successfully patched", response.data);
       messageCommitHandler({ type: "info", content: "Successfully patched" });
@@ -216,7 +223,7 @@ const hubsPageModule = {
       };
 
       loadEntities(
-        "http://localhost:8080/hubs",
+        "hubs",
         payload.queryParams,
         payload.size,
         commitHandler,
@@ -298,7 +305,7 @@ const devicesPageModule = {
       }
 
       loadEntities(
-        "http://localhost:8080/devices",
+        "devices",
         payload.queryParams,
         payload.size,
         commitHandler,
@@ -316,7 +323,7 @@ const devicesPageModule = {
       };
 
       axiosDeleteWithHandlers(
-        "http://localhost:8080/devices",
+        "devices",
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -324,14 +331,14 @@ const devicesPageModule = {
     },
 
     deleteDevice({ commit }, payload) {
-      const url = `http://localhost:8080/devices/${payload.id}`;
+      const path = `devices/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosDeleteWithHandlers(
-        url,
+        path,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -339,7 +346,7 @@ const devicesPageModule = {
     },
 
     createDevice({ commit }, payload) {
-      const url = `http://localhost:8080/devices`;
+      const path = `devices`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
@@ -350,7 +357,7 @@ const devicesPageModule = {
       };
 
       axiosPostWithHandlers(
-        url,
+        path,
         payload.entity,
         queryParams,
         messageCommitHandler,
@@ -442,7 +449,7 @@ const controlSignalsPageModule = {
       }
 
       loadEntities(
-        "http://localhost:8080/control_signals",
+        "control_signals",
         payload.queryParams,
         payload.size,
         commitHandler,
@@ -460,7 +467,7 @@ const controlSignalsPageModule = {
       };
 
       axiosDeleteWithHandlers(
-        "http://localhost:8080/control_signals",
+        "control_signals",
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -468,14 +475,14 @@ const controlSignalsPageModule = {
     },
 
     deleteControlSignal({ commit }, payload) {
-      const url = `http://localhost:8080/control_signals/${payload.id}`;
+      const path = `control_signals/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosDeleteWithHandlers(
-        url,
+        path,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -483,7 +490,7 @@ const controlSignalsPageModule = {
     },
 
     createControlSignal({ commit }, payload) {
-      const url = `http://localhost:8080/control_signals`;
+      const path = `control_signals`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
@@ -494,7 +501,7 @@ const controlSignalsPageModule = {
       };
 
       axiosPostWithHandlers(
-        url,
+        path,
         payload.entity,
         queryParams,
         messageCommitHandler,
@@ -576,7 +583,7 @@ const hubModule = {
   },
   actions: {
     loadHub({ commit }, payload) {
-      const url = `http://localhost:8080/hubs/${payload.id}`;
+      const path = `hubs/${payload.id}`;
       const commitHandler = (data) => commit("saveHub", data);
 
       const messageCommitHandler = (message) => {
@@ -584,7 +591,7 @@ const hubModule = {
       };
 
       loadEntities(
-        url,
+        path,
         {},
         null,
         commitHandler,
@@ -595,14 +602,14 @@ const hubModule = {
     },
 
     deleteHub({ commit }, payload) {
-      const url = `http://localhost:8080/hubs/${payload.id}`;
+      const path = `hubs/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosDeleteWithHandlers(
-        url,
+        path,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -610,14 +617,14 @@ const hubModule = {
     },
 
     patchHub({ commit }, payload) {
-      const url = `http://localhost:8080/hubs/${payload.id}`;
+      const path = `hubs/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosPatchWithHandlers(
-        url,
+        path,
         payload.data,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -675,7 +682,7 @@ const deviceModule = {
   },
   actions: {
     loadDevice({ commit }, payload) {
-      const url = `http://localhost:8080/devices/${payload.id}`;
+      const path = `devices/${payload.id}`;
       const commitHandler = (data) => commit("saveDevice", data);
 
       const messageCommitHandler = (message) => {
@@ -683,7 +690,7 @@ const deviceModule = {
       };
 
       loadEntities(
-        url,
+        path,
         {},
         null,
         commitHandler,
@@ -694,14 +701,14 @@ const deviceModule = {
     },
 
     deleteDevice({ commit }, payload) {
-      const url = `http://localhost:8080/devices/${payload.id}`;
+      const path = `devices/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosDeleteWithHandlers(
-        url,
+        path,
         messageCommitHandler,
         payload.ifSuccessHandler,
         payload.ifErrorHandler
@@ -709,14 +716,14 @@ const deviceModule = {
     },
 
     patchDevice({ commit }, payload) {
-      const url = `http://localhost:8080/devices/${payload.id}`;
+      const path = `devices/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosPatchWithHandlers(
-        url,
+        path,
         payload.data,
         messageCommitHandler,
         payload.ifSuccessHandler,
@@ -775,7 +782,7 @@ const controlSignalModule = {
   },
   actions: {
     loadControlSignal({ commit }, payload) {
-      const url = `http://localhost:8080/control_signals/${payload.id}`;
+      const path = `control_signals/${payload.id}`;
       const commitHandler = (data) => commit("saveControlSignal", data);
 
       const messageCommitHandler = (message) => {
@@ -783,7 +790,7 @@ const controlSignalModule = {
       };
 
       loadEntities(
-        url,
+        path,
         {},
         null,
         commitHandler,
@@ -794,14 +801,14 @@ const controlSignalModule = {
     },
 
     patchControlSignal({ commit }, payload) {
-      const url = `http://localhost:8080/control_signals/${payload.id}`;
+      const path = `control_signals/${payload.id}`;
 
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
 
       axiosPatchWithHandlers(
-        url,
+        path,
         payload.data,
         messageCommitHandler,
         payload.ifSuccessHandler,
