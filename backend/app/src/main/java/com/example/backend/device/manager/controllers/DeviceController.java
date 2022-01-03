@@ -123,7 +123,7 @@ public class DeviceController {
             throw e;
         }
 
-//        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "device", result);
 
@@ -147,7 +147,7 @@ public class DeviceController {
             throw e;
         }
 
-//        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "device", result);
 
@@ -168,7 +168,7 @@ public class DeviceController {
             throw e;
         }
 
-//        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
+        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "device", result);
 
@@ -179,7 +179,7 @@ public class DeviceController {
     void deleteDevice(@PathVariable Long id) {
         try {
             Device deletedDevice = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
-//            hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(deletedDevice));
+            hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnDevice(deletedDevice));
         }
         catch (DeviceNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());

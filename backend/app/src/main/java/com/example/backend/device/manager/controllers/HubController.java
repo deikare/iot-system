@@ -89,7 +89,7 @@ public class HubController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newHub);
-//            hubSender.postUpdate(result);
+            hubSender.postUpdate(result);
             CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "hub", result);
         }
         catch (HubNotFoundException | EntityNotModifiedException e) {
@@ -108,7 +108,7 @@ public class HubController {
 
         try {
             result = crudServiceImplementation.updateObjectById(id, newHub);
-//            hubSender.postUpdate(result);
+            hubSender.postUpdate(result);
         }
         catch (HubNotFoundException | EntityNotModifiedException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.PATCH, e.getMessage());
@@ -124,7 +124,7 @@ public class HubController {
     void deleteHub(@PathVariable String id) {
         try {
             Hub result = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id); //TODO add difference between change of hub and delete of hub
-//            hubSender.postRemove(result);
+            hubSender.postRemove(result);
         }
         catch (HubNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
