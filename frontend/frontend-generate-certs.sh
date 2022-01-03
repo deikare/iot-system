@@ -36,7 +36,7 @@ openssl x509 -req -CA $CA_CERT -CAkey $CA_KEY -in $CERTS_PATH/frontend.csr -out 
 openssl pkcs12 -export -out $CERTS_PATH/frontend.pfx -inkey $CERTS_PATH/frontend.key -in $CERTS_PATH/frontend.crt
 
 rm $CERTS_PATH/frontend.csr
-rm $CERTS_PATH/frontend.key
-rm $CERTS_PATH/frontend.crt
+# rm $CERTS_PATH/frontend.key
+# rm $CERTS_PATH/frontend.crt
 
 cp $CA_CERT $CERTS_PATH/ca.crt
