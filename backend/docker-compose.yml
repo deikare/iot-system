@@ -280,7 +280,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres-db
     volumes:
-      - ./mounts/posgres/data:/var/lib/postgresql/data
+      - ./mounts/postgres/data:/var/lib/postgresql/data
 
   backend:
     image: backend:0.0.1-SNAPSHOT
