@@ -12,8 +12,7 @@ const sendErrorMessage = (messageCommitHandler, error) => {
 };
 
 const getFullUrl = function (path) {
-  const serverFQDN =
-    "https://iot-server.germanywestcentral.cloudapp.azure.com/backend";
+  const serverFQDN = "backend";
 
   return `${serverFQDN}/${path}`;
 };
