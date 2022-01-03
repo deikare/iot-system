@@ -120,7 +120,7 @@ public class ControlSignalController {
             throw e;
         }
 
-        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
+//        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.POST, "controlSignal", result);
 
@@ -144,7 +144,7 @@ public class ControlSignalController {
             throw e;
         }
 
-        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
+//        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PUT, "controlSignal", result);
 
@@ -165,7 +165,7 @@ public class ControlSignalController {
             throw e;
         }
 
-        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
+//        hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(result));
 
         CrudControllerLogger.produceCrudControllerLog(logger, HttpMethodType.PATCH, "controlSignal", result);
 
@@ -176,7 +176,7 @@ public class ControlSignalController {
     void deleteControlSignal(@PathVariable Long id) {
         try {
             ControlSignal deletedControlSignal = crudServiceImplementation.deleteObjectByIdAndReturnDeletedObject(id);
-            hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(deletedControlSignal));
+//            hubSender.postUpdate(entityLazilyFetchedFieldsInitializer.generateFetchedHubBasedOnControlSignal(deletedControlSignal));
         }
         catch (ControlSignalNotFoundException e) {
             CrudControllerLogger.produceErrorLog(logger, HttpMethodType.DELETE, e.getMessage());
