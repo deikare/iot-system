@@ -30,6 +30,7 @@
     <entity-list
       v-bind:entities-properties="getProperties"
       v-bind:buttons-properties="buttonsProperties"
+      v-bind:highlight-items="highlightItems"
       v-else
     >
     </entity-list>
@@ -54,6 +55,7 @@ export default {
       },
       isLoaded: false,
       isError: false,
+      highlightItems: false,
     };
   },
 

@@ -31,6 +31,7 @@
       v-bind:entities-properties="childrenProperties"
       v-bind:buttons-properties="buttonsProperties"
       v-bind:page="page"
+      v-bind:highlight-items="highlightItems"
       v-on:entityClicked="emitChildClicked"
       v-on:editEntity="emitEditChild"
       v-on:deleteEntity="emitDeleteChild"
@@ -52,6 +53,7 @@ export default {
   data() {
     return {
       shortListLength: 2,
+      highlightItems: true,
     };
   },
 
