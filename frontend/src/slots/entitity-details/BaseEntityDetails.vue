@@ -80,10 +80,10 @@
       </div>
 
       <div class="second-column">
-        <base-card class="logs">
-          <template v-slot:header>Logs</template>
-          <template v-slot:default>asd</template>
-        </base-card>
+        <logs-list
+          v-bind:transaction-mappings="logsTransactionMappings"
+          v-bind:query-entity="queryEntity"
+        ></logs-list>
       </div>
 
       <div class="third-column">
@@ -104,10 +104,12 @@ import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWith
 import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
 import EntityCreator from "@/slots/entities-creator/EntityCreator";
 import EntityModifier from "@/slots/entities-modifier/EntityModifier";
+import LogsList from "@/slots/entity-logs-list/LogsList";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    LogsList,
     EntityModifier,
     EntityCreator,
     BaseEntityHeader,
@@ -184,6 +186,11 @@ export default {
               patcher: "",
             },
           },
+          logs: {
+            namespace: "",
+            loader: "",
+            getter: "",
+          },
         };
       },
     },
@@ -213,6 +220,17 @@ export default {
         return {
           isEditVisible: true,
           isDeleteVisible: true,
+        };
+      },
+    },
+
+    queryEntity: {
+      type: Object,
+      required: true,
+      default() {
+        return {
+          id: "",
+          idName: "",
         };
       },
     },
@@ -249,6 +267,10 @@ export default {
           },
         },
       };
+    },
+
+    logsTransactionMappings() {
+      return this.transactionMappings.logs;
     },
 
     editChildTransactionMappings() {

@@ -8,6 +8,7 @@
       v-bind:if-base-deleted-route="isDeviceDeletedRoute"
       v-bind:new-child-properties="newControlSignalProperties"
       v-bind:buttons-properties="buttonsProperties"
+      v-bind:query-entity="queryEntity"
       v-on:childClicked="onControlSignalClicked"
     >
       <template v-slot:icon>
@@ -26,9 +27,9 @@
           />
         </svg>
       </template>
-      <template v-slot:entityId> device {{ id }}</template>
-      <template v-slot:children-header>ControlSignals</template>
-      <template v-slot:childType>controlSignal</template>
+      <template v-slot:entityId> Device {{ id }}</template>
+      <template v-slot:children-header>Control signals</template>
+      <template v-slot:childType>control signal</template>
       <template v-slot:parentOfChildType>Device</template>
     </base-entity-details>
   </div>
@@ -93,6 +94,12 @@ export default {
             patcher: "patchControlSignal",
           },
         },
+
+        logs: {
+          namespace: "logs",
+          getter: "getLogsInDevice",
+          loader: "loadLogs",
+        },
       },
 
       isDeviceDeletedRoute: { name: "devices" },
@@ -112,6 +119,10 @@ export default {
       buttonsProperties: {
         isEditVisible: true,
         isDeleteVisible: true,
+      },
+      queryEntity: {
+        id: this.id,
+        idName: "deviceIds",
       },
     };
   },

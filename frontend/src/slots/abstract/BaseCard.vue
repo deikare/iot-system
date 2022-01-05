@@ -3,7 +3,9 @@
     <header>
       <h2><slot name="header"></slot></h2>
     </header>
-    <slot></slot>
+    <div class="text-left">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -16,9 +18,10 @@ export default {
 <style scoped>
 div {
   background-color: var(--card-color);
-  border: 2px solid var(--main-color);
+  border: 1px solid var(--main-color);
   display: flex;
   flex-direction: column;
+  /*text-align: left;*/
 }
 
 h2 {
@@ -26,5 +29,9 @@ h2 {
   background-color: var(--main-color);
   color: var(--card-color);
   padding: 0.2rem 0;
+}
+
+.text-left {
+  text-align: left;
 }
 </style>

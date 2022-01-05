@@ -53,7 +53,7 @@ li {
   display: flex;
   text-align: left;
   justify-content: space-between;
-  padding-left: 0.8rem;
+  padding: 0.2rem 0.8rem;
 }
 
 .bold {
