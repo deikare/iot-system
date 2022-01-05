@@ -3,8 +3,10 @@
     <template v-slot:header> Properties </template>
 
     <template v-slot:default>
-      <entities-error v-if="isError"></entities-error>
-      <loading-spinner v-else-if="displayLoading"></loading-spinner>
+      <div class="center" v-if="isError || displayLoading">
+        <entities-error v-if="isError"></entities-error>
+        <loading-spinner v-else-if="displayLoading"></loading-spinner>
+      </div>
 
       <div class="properties-modifier" v-else-if="displayProperties">
         <div
@@ -149,6 +151,12 @@ export default {
 </script>
 
 <style scoped>
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .properties-modifier {
   padding-left: 0.2rem;
   display: flex;

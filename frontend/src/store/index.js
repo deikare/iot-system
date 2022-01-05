@@ -250,7 +250,6 @@ const hubsPageModule = {
             {
               key: "Status",
               value: hub.status,
-              //  TODO add proper value in final backend
             },
           ],
         };
@@ -836,6 +835,75 @@ const controlSignalModule = {
   },
 };
 
+const logseriesModule = {
+  namespaced: true,
+  state() {
+    return {
+      logsPage: {
+        logs: [],
+        links: {},
+      },
+    };
+  },
+  mutations: {
+    saveLogsPage(state, data) {
+      state.logsPage = {
+        ...state.logsPage,
+        logs:
+          Object.prototype.hasOwnProperty.call(data, "logseries") &&
+          Object.prototype.hasOwnProperty.call(data["logseries"], "logs")
+            ? data.logseries.logs
+            : [],
+        links: data["_links"],
+      };
+
+      console.log("Successfully saved", state.logsPage);
+    },
+  },
+  actions: {
+    loadLogs({ commit }, payload) {
+      const commitHandler = (data) => commit("saveLogsPage", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      console.log("CHUJ", payload.queryParams);
+
+      axiosLoadWithHandlers(
+        "logs",
+        payload.queryParams,
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+  getters: {
+    getLogsInHub(state) {
+      return state.logsPage.logs.map((log) => {
+        return [
+          { key: "time", value: log.time },
+          { key: "deviceId", value: log.deviceId },
+          { key: "value", value: log.value },
+        ];
+      });
+    },
+
+    getLogsInDevice(state) {
+      return state.logsPage.logs.map((log) => {
+        return [
+          { key: "time", value: log.time },
+          { key: "hubId", value: log.hubId },
+          { key: "deviceId", value: log.deviceId },
+          { key: "value", value: log.value },
+        ];
+      });
+    },
+  },
+};
+
 const messagesModule = {
   namespaced: true,
   state() {
@@ -893,6 +961,7 @@ export default createStore({
     device: deviceModule,
     controlSignals: controlSignalsPageModule,
     controlSignal: controlSignalModule,
+    logs: logseriesModule,
     messages: messagesModule,
   },
 });

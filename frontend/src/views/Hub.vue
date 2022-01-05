@@ -8,6 +8,7 @@
       v-bind:if-base-deleted-route="ifHubDeletedRoute"
       v-bind:new-child-properties="newDeviceProperties"
       v-bind:buttons-properties="buttonsProperties"
+      v-bind:query-entity="queryEntity"
       v-on:childClicked="goToDevice"
     >
       <template v-slot:icon>
@@ -26,7 +27,7 @@
           />
         </svg>
       </template>
-      <template v-slot:entityId> hub {{ id }}</template>
+      <template v-slot:entityId> Hub {{ id }}</template>
       <template v-slot:children-header>Devices</template>
       <template v-slot:childType>device</template>
       <template v-slot:parentOfChildType>Hub</template>
@@ -35,7 +36,6 @@
 </template>
 
 <script>
-// import { mapActions } from "vuex";
 import BaseEntityDetails from "@/slots/entitity-details/BaseEntityDetails";
 
 export default {
@@ -83,6 +83,12 @@ export default {
             loader: "loadEntities",
           },
         },
+
+        logs: {
+          namespace: "logs",
+          getter: "getLogsInHub",
+          loader: "loadLogs",
+        },
       },
 
       ifHubDeletedRoute: { name: "hubs" },
@@ -107,6 +113,10 @@ export default {
       buttonsProperties: {
         isEditVisible: false,
         isDeleteVisible: true,
+      },
+      queryEntity: {
+        id: this.id,
+        idName: "hubIds",
       },
     };
   },
