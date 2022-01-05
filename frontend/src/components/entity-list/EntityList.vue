@@ -6,6 +6,7 @@
         v-bind:key="entityProperty"
         v-bind:entity-properties="entityProperty"
         v-bind:buttons-properties="buttonsProperties"
+        v-bind:highlight-items="highlightItems"
         v-on:entityClicked="emitEntityClicked"
         v-on:editEntity="emitEditEntity"
         v-on:deleteEntity="emitDeleteEntity"
@@ -37,6 +38,11 @@ export default {
           isDeleteVisible: true,
         };
       },
+    },
+    highlightItems: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
 

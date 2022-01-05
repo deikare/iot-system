@@ -7,6 +7,7 @@
       <entity-list
         v-bind:entities-properties="entitiesProperties"
         v-bind:buttons-properties="buttonsProperties"
+        v-bind:highlight-items="highlightItems"
         v-on:entityClicked="emitEntityClicked"
         v-on:editEntity="emitEditEntity"
         v-on:deleteEntity="emitDeleteEntity"
@@ -28,6 +29,7 @@ import TwoWayPaginator from "@/components/entitity-details/TwoWayPaginator";
 export default {
   name: "EntityListWithPaginator",
   components: { TwoWayPaginator, EntityList, EntitiesError, LoadingSpinner },
+
   props: {
     isError: {
       type: Boolean,
@@ -67,6 +69,12 @@ export default {
           isDeleteVisible: true,
         };
       },
+    },
+
+    highlightItems: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
 

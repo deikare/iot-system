@@ -1,5 +1,5 @@
 <template>
-  <div class="entity-item" v-on:click="emitEntityEvent(`entityClicked`)">
+  <div v-bind:class="entityClass" v-on:click="emitEntityEvent(`entityClicked`)">
     <div class="entity-content">
       <div class="entity-properties">
         <div
@@ -82,6 +82,11 @@ export default {
         };
       },
     },
+    highlightItems: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
 
   computed: {
@@ -89,13 +94,18 @@ export default {
       return this.entityProperties.find((property) => property.key === "id")
         .value;
     },
+    entityClass() {
+      return this.highlightItems
+        ? "entity-item-highlightable entity-item"
+        : "entity-item";
+    },
   },
 
   emits: ["entityClicked", "editEntity", "deleteEntity"],
 
   methods: {
     emitEntityEvent(eventName) {
-      this.$emit(eventName, this.entityId);
+      if (this.highlightItems) this.$emit(eventName, this.entityId);
     },
   },
 };
@@ -119,15 +129,32 @@ export default {
   font-size: 1.6rem;
 }
 
-.entity-item:hover,
-.entity-item:active {
+/*.entity-item-highlightable {*/
+/*  list-style-type: none;*/
+/*  display: inline-flex;*/
+/*  width: 100%;*/
+/*  align-items: center;*/
+/*  justify-content: space-between;*/
+
+/*  gap: 0.8rem;*/
+
+/*  background: transparent;*/
+
+/*  border: 2px solid transparent;*/
+/*  border-bottom: 1px solid var(--main-color);*/
+
+/*  font-size: 1.6rem;*/
+/*}*/
+
+.entity-item-highlightable:hover,
+.entity-item-highlightable:active {
   border-bottom: 2px solid var(--main-color);
   border-top: 1px solid var(--main-color);
   cursor: pointer;
 }
 
-.entity-item:first-child:hover,
-.entity-item:first-child:active {
+.entity-item-highlightable:first-child:hover,
+.entity-item-highlightable:first-child:active {
   border-top: 2px solid var(--main-color);
 }
 
