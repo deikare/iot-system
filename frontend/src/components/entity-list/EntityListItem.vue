@@ -129,6 +129,10 @@ export default {
   font-size: 1.6rem;
 }
 
+.entity-item:last-child {
+  border-bottom: none;
+}
+
 /*.entity-item-highlightable {*/
 /*  list-style-type: none;*/
 /*  display: inline-flex;*/
@@ -155,7 +159,12 @@ export default {
 
 .entity-item-highlightable:first-child:hover,
 .entity-item-highlightable:first-child:active {
-  border-top: 2px solid var(--main-color);
+  border-top: none;
+}
+
+.entity-item-highlightable:last-child:hover,
+.entity-item-highlightable:last-child:active {
+  border-bottom: none;
 }
 
 .entity-content {

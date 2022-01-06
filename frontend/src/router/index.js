@@ -3,8 +3,9 @@ import NotFoundView from "../views/NotFoundView";
 import Hub from "@/views/Hub";
 import HubGrid from "@/views/HubGrid";
 import Device from "@/views/Device";
-import Plots from "@/views/Plots";
 import DeviceGrid from "@/views/DeviceGrid";
+import Data from "@/views/Data";
+import Logs from "@/views/Logs";
 
 const routes = [
   {
@@ -12,8 +13,6 @@ const routes = [
     redirect: "/hubs",
     name: "home",
   },
-  //TODO add regexes to filter page query param in hubs and devices
-  //TODO add redirect in routing when from /hubs to /hubs?page=1
   {
     path: "/hubs",
     name: "hubs",
@@ -61,9 +60,66 @@ const routes = [
     props: true,
   },
   {
-    path: "/plot",
-    name: "plot",
-    component: Plots,
+    path: "/data",
+    name: "data",
+    props: (route) => ({
+      queriedBucket: route.query.bucket,
+      queriedStart: route.query.start,
+      queriedEnd: route.query.end,
+      queriedDescending: route.query.desc,
+      queriedLimit: route.query.limit,
+      queriedHubIds: route.query.hubIds,
+      queriedDeviceIds: route.query.deviceIds,
+      queriedMeasurementTypes: route.query.measurementTypes,
+      activeQuery: {
+        ...(typeof route.query.bucket !== "undefined" &&
+          route.query.bucket !== "" && { bucket: route.query.bucket }),
+        ...(typeof route.query.start !== "undefined" &&
+          route.query.start !== "" && { start: route.query.start }),
+        ...(typeof route.query.end !== "undefined" &&
+          route.query.end !== "" && { end: route.query.end }),
+        ...(typeof route.query.desc !== "undefined" &&
+          route.query.desc !== "" && { desc: route.query.desc }),
+        ...(typeof route.query.limit !== "undefined" &&
+          route.query.limit !== "" && { limit: route.query.limit }),
+        ...(typeof route.query.hubIds !== "undefined" &&
+          route.query.hubIds !== "" && { hubIds: route.query.hubIds }),
+        ...(typeof route.query.deviceIds !== "undefined" &&
+          route.query.deviceIds !== "" && { deviceIds: route.query.deviceIds }),
+        ...(typeof route.query.measurementTypes !== "undefined" &&
+          route.query.measurementTypes !== "" && {
+            measurementTypes: route.query.measurementTypes,
+          }),
+      },
+    }),
+    component: Data,
+  },
+  {
+    path: "/logs",
+    name: "logs",
+    props: (route) => ({
+      queriedStart: route.query.start,
+      queriedEnd: route.query.end,
+      queriedDescending: route.query.desc,
+      queriedLimit: route.query.limit,
+      queriedHubIds: route.query.hubIds,
+      queriedDeviceIds: route.query.deviceIds,
+      // activeQuery: {
+      //   ...(typeof route.query.start !== "undefined" &&
+      //     route.query.start !== "" && { start: route.query.start }),
+      //   ...(typeof route.query.end !== "undefined" &&
+      //     route.query.end !== "" && { end: route.query.end }),
+      //   ...(typeof route.query.desc !== "undefined" &&
+      //     route.query.desc !== "" && { desc: route.query.desc }),
+      //   ...(typeof route.query.limit !== "undefined" &&
+      //     route.query.limit !== "" && { limit: route.query.limit }),
+      //   ...(typeof route.query.hubIds !== "undefined" &&
+      //     route.query.hubIds !== "" && { hubIds: route.query.hubIds }),
+      //   ...(typeof route.query.deviceIds !== "undefined" &&
+      //     route.query.deviceIds !== "" && { deviceIds: route.query.deviceIds }),
+      // },
+    }),
+    component: Logs,
   },
   {
     path: "/:notFound(.*)",
@@ -94,6 +150,21 @@ router.beforeEach((to, from, next) => {
 
   if (to.name === "devices")
     allowedQuery.push("page", "name", "hubId", "deviceType");
+
+  if (to.name === "data")
+    allowedQuery.push(
+      "bucket",
+      "start",
+      "stop",
+      "desc",
+      "limit",
+      "hubIds",
+      "deviceIds",
+      "measurementTypes"
+    );
+
+  if (to.name === "logs")
+    allowedQuery.push("start", "stop", "desc", "limit", "hubIds", "deviceIds");
 
   if (!isQueryValid(to.query, allowedQuery)) {
     console.log("Invalid query params, routing to not found");

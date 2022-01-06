@@ -852,7 +852,7 @@ const logseriesModule = {
         logs:
           Object.prototype.hasOwnProperty.call(data, "logseries") &&
           Object.prototype.hasOwnProperty.call(data["logseries"], "logs")
-            ? data.logseries.logs
+            ? data["logseries"]["logs"]
             : [],
         links: data["_links"],
       };
@@ -867,8 +867,6 @@ const logseriesModule = {
       const messageCommitHandler = (message) => {
         commit("messages/add", message, { root: true });
       };
-
-      console.log("CHUJ", payload.queryParams);
 
       axiosLoadWithHandlers(
         "logs",
@@ -900,6 +898,157 @@ const logseriesModule = {
           { key: "value", value: log.value },
         ];
       });
+    },
+
+    getLogs(state) {
+      return state.logsPage.logs.map((log) => {
+        return [
+          { key: "time", value: log.time },
+          { key: "hubId", value: log.hubId },
+          { key: "deviceId", value: log.deviceId },
+          { key: "value", value: log.value },
+        ];
+      });
+    },
+  },
+};
+
+const deviceTagsModule = {
+  namespaced: true,
+  state() {
+    return {
+      tags: {
+        hubIds: [],
+        deviceIds: [],
+        measurementTypes: [],
+      },
+    };
+  },
+  mutations: {
+    saveTags(state, data) {
+      state.tags = {
+        ...state.tags,
+        hubIds:
+          Object.prototype.hasOwnProperty.call(data, "bucket") &&
+          Object.prototype.hasOwnProperty.call(data["bucket"], "tagMap") &&
+          Object.prototype.hasOwnProperty.call(
+            data["bucket"]["tagMap"],
+            "InfluxTagKey{name='hubId'}"
+          )
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='hubId'}"]
+            : [],
+        deviceIds:
+          Object.prototype.hasOwnProperty.call(data, "bucket") &&
+          Object.prototype.hasOwnProperty.call(data["bucket"], "tagMap") &&
+          Object.prototype.hasOwnProperty.call(
+            data["bucket"]["tagMap"],
+            "InfluxTagKey{name='deviceId'}"
+          )
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='deviceId'}"]
+            : [],
+        measurementTypes:
+          Object.prototype.hasOwnProperty.call(data, "bucket") &&
+          Object.prototype.hasOwnProperty.call(data["bucket"], "tagMap") &&
+          Object.prototype.hasOwnProperty.call(
+            data["bucket"]["tagMap"],
+            "InfluxTagKey{name='type'}"
+          )
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='type'}"]
+            : [],
+      };
+
+      console.log("Successfully saved", state.tags);
+    },
+  },
+
+  actions: {
+    loadTags({ commit }, payload) {
+      const path = `buckets/${payload.dataBucket}`;
+      const commitHandler = (data) => commit("saveTags", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosLoadWithHandlers(
+        path,
+        {},
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+
+  getters: {
+    getTags(state) {
+      return state.tags;
+    },
+  },
+};
+
+const logTagsModule = {
+  namespaced: true,
+  state() {
+    return {
+      tags: {
+        hubIds: [],
+        deviceIds: [],
+      },
+    };
+  },
+  mutations: {
+    saveTags(state, data) {
+      state.tags = {
+        ...state.tags,
+        hubIds:
+          Object.prototype.hasOwnProperty.call(data, "bucket") &&
+          Object.prototype.hasOwnProperty.call(data["bucket"], "tagMap") &&
+          Object.prototype.hasOwnProperty.call(
+            data["bucket"]["tagMap"],
+            "InfluxTagKey{name='hubId'}"
+          )
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='hubId'}"].values
+            : [],
+        deviceIds:
+          Object.prototype.hasOwnProperty.call(data, "bucket") &&
+          Object.prototype.hasOwnProperty.call(data["bucket"], "tagMap") &&
+          Object.prototype.hasOwnProperty.call(
+            data["bucket"]["tagMap"],
+            "InfluxTagKey{name='deviceId'}"
+          )
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='deviceId'}"].values
+            : [],
+      };
+
+      console.log("Successfully saved", state.tags);
+    },
+  },
+
+  actions: {
+    loadTags({ commit }, payload) {
+      const path = "buckets/logs";
+      const commitHandler = (data) => commit("saveTags", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      axiosLoadWithHandlers(
+        path,
+        {},
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+
+  getters: {
+    getTags(state) {
+      return state.tags;
     },
   },
 };
@@ -962,6 +1111,8 @@ export default createStore({
     controlSignals: controlSignalsPageModule,
     controlSignal: controlSignalModule,
     logs: logseriesModule,
+    logTags: logTagsModule,
+    deviceTags: deviceTagsModule,
     messages: messagesModule,
   },
 });
