@@ -1,8 +1,8 @@
-<template>Plots</template>
+<template></template>
 
 <script>
 export default {
-  name: "Plots",
+  name: "LogsList",
 };
 </script>
 
