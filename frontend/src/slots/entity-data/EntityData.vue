@@ -2,10 +2,10 @@
   <base-card>
     <template v-slot:header class="header">
       <div class="flexbox">
-        <header>Logs</header>
+        <header>Data</header>
 
         <div class="control-buttons">
-          <button v-on:click="fetchLogs" class="control-button">
+          <button v-on:click="fetchData" class="control-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="control-icon"
@@ -27,36 +27,31 @@
 
     <loading-spinner class="flexbox" v-if="isLoadingVisible"></loading-spinner>
     <entities-error class="flexbox" v-else-if="isError"></entities-error>
-    <entity-list
-      class="entity-logs-list"
-      v-bind:entities-properties="getProperties"
-      v-bind:buttons-properties="buttonsProperties"
-      v-bind:highlight-items="highlightItems"
-      v-else
-    >
-    </entity-list>
+    <!--    <entity-list-->
+    <!--      class="entity-logs-list"-->
+    <!--      v-bind:entities-properties="getProperties"-->
+    <!--      v-bind:buttons-properties="buttonsProperties"-->
+    <!--      v-bind:highlight-items="highlightItems"-->
+    <!--      v-else-->
+    <!--    >-->
+    <!--    </entity-list>-->
   </base-card>
 </template>
 
 <script>
-import BaseCard from "@/slots/abstract/BaseCard";
-import EntityList from "@/components/entity-list/EntityList";
-import { mapState, mapActions } from "vuex";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import BaseCard from "@/slots/abstract/BaseCard";
 import EntitiesError from "@/slots/abstract/EntitiesError";
+import { mapActions, mapState } from "vuex";
+
 export default {
-  name: "LogsList",
-  components: { EntitiesError, LoadingSpinner, EntityList, BaseCard },
+  name: "EntityData",
+  components: { EntitiesError, BaseCard, LoadingSpinner },
 
   data() {
     return {
-      buttonsProperties: {
-        isEditVisible: false,
-        isDeleteVisible: false,
-      },
       isLoaded: false,
       isError: false,
-      highlightItems: false,
     };
   },
 
@@ -87,7 +82,7 @@ export default {
 
   computed: {
     ...mapState({
-      getProperties(state, getters) {
+      getData(state, getters) {
         return getters[
           `${this.transactionMappings.namespace}/${this.transactionMappings.getter}`
         ];
@@ -101,7 +96,7 @@ export default {
 
   methods: {
     ...mapActions({
-      loadLogs(dispatch, payload) {
+      loadData(dispatch, payload) {
         return dispatch(
           `${this.transactionMappings.namespace}/${this.transactionMappings.loader}`,
           payload
@@ -109,11 +104,11 @@ export default {
       },
     }),
 
-    fetchLogs() {
+    fetchData() {
       this.isLoaded = false;
       this.isError = false;
 
-      const queryParams = { start: "1970-01-01T00:00:00Z" }; //TODO delete this
+      const queryParams = { start: "1970-01-01T00:00:00Z" };
 
       queryParams[this.queryEntity.idName] = this.queryEntity.id;
 
@@ -122,6 +117,7 @@ export default {
         ifSuccessHandler: () => {
           this.isLoaded = true;
           this.isError = false;
+          console.log(this.getData);
         },
         ifErrorHandler: () => {
           this.isLoaded = true;
@@ -129,7 +125,7 @@ export default {
         },
       };
 
-      this.loadLogs(payload);
+      this.loadData(payload);
     },
   },
 
@@ -137,7 +133,7 @@ export default {
     this.$watch(
       () => this.queryEntity,
       () => {
-        this.fetchLogs();
+        this.fetchData();
       },
       { immediate: true, deep: true }
     );

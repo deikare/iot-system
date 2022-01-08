@@ -87,17 +87,17 @@
       </div>
 
       <div class="third-column">
-        <base-card class="data">
-          <template v-slot:header>Data</template>
-          <template v-slot:default>asd</template>
-        </base-card>
+        <entity-data
+          v-bind:transaction-mappings="dataSeriesTransactionMappings"
+          v-bind:query-entity="queryEntity"
+        >
+        </entity-data>
       </div>
     </main>
   </div>
 </template>
 
 <script>
-import BaseCard from "@/slots/abstract/BaseCard";
 import BaseEntityProperties from "@/slots/entitity-details/BaseEntityProperties";
 import { mapState, mapActions } from "vuex";
 import ChildrenListWithPaginator from "@/slots/entitity-details/ChildrenListWithPaginator";
@@ -105,17 +105,18 @@ import BaseEntityHeader from "@/slots/entitity-details/BaseEntityHeader";
 import EntityCreator from "@/slots/entities-creator/EntityCreator";
 import EntityModifier from "@/slots/entities-modifier/EntityModifier";
 import LogsList from "@/slots/entity-logs-list/LogsList";
+import EntityData from "@/slots/entity-data/EntityData";
 
 export default {
   name: "BaseEntityDetails",
   components: {
+    EntityData,
     LogsList,
     EntityModifier,
     EntityCreator,
     BaseEntityHeader,
     ChildrenListWithPaginator,
     BaseEntityProperties,
-    BaseCard,
   },
 
   data() {
@@ -187,6 +188,12 @@ export default {
             },
           },
           logs: {
+            namespace: "",
+            loader: "",
+            getter: "",
+          },
+
+          dataSeries: {
             namespace: "",
             loader: "",
             getter: "",
@@ -271,6 +278,10 @@ export default {
 
     logsTransactionMappings() {
       return this.transactionMappings.logs;
+    },
+
+    dataSeriesTransactionMappings() {
+      return this.transactionMappings.dataSeries;
     },
 
     editChildTransactionMappings() {
