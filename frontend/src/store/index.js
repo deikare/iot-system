@@ -18,7 +18,10 @@ const getFullUrl = function (path) {
 };
 
 const axiosLoad = function (path, queryParams) {
-  const config = { params: { ...queryParams }, timeout: 5000 };
+  const config = {
+    params: { ...queryParams },
+    timeout: 5000,
+  };
   return axios.get(getFullUrl(path), config);
 };
 
@@ -868,6 +871,8 @@ const logseriesModule = {
         commit("messages/add", message, { root: true });
       };
 
+      console.log(payload.queryParams);
+
       axiosLoadWithHandlers(
         "logs",
         payload.queryParams,
@@ -882,7 +887,7 @@ const logseriesModule = {
     getLogsInHub(state) {
       return state.logsPage.logs.map((log) => {
         return [
-          { key: "time", value: log.time },
+          { key: "time", value: new Date(log.time).toLocaleString() },
           { key: "deviceId", value: log.deviceId },
           { key: "value", value: log.value },
         ];
@@ -892,7 +897,7 @@ const logseriesModule = {
     getLogsInDevice(state) {
       return state.logsPage.logs.map((log) => {
         return [
-          { key: "time", value: log.time },
+          { key: "time", value: new Date(log.time).toLocaleString() },
           { key: "hubId", value: log.hubId },
           { key: "deviceId", value: log.deviceId },
           { key: "value", value: log.value },
@@ -903,7 +908,7 @@ const logseriesModule = {
     getLogs(state) {
       return state.logsPage.logs.map((log) => {
         return [
-          { key: "time", value: log.time },
+          { key: "time", value: new Date(log.time).toLocaleString() },
           { key: "hubId", value: log.hubId },
           { key: "deviceId", value: log.deviceId },
           { key: "value", value: log.value },
@@ -913,7 +918,89 @@ const logseriesModule = {
   },
 };
 
-const deviceTagsModule = {
+const dataSeriesModule = {
+  namespaced: true,
+  state() {
+    return {
+      dataSeries: {
+        allSeries: {},
+        links: {},
+        // series: [{ hubId: "", deviceId: "", measurementType: "", data: [] }],
+      },
+    };
+  },
+  mutations: {
+    saveDataSeries(state, data) {
+      state.dataSeries = {
+        ...state.dataSeries,
+        allDataSeries:
+          Object.prototype.hasOwnProperty.call(data, "timeseriesList") &&
+          Object.prototype.hasOwnProperty.call(
+            data["timeseriesList"],
+            "timeseriesList"
+          )
+            ? data["timeseriesList"]["timeseriesList"]
+            : {},
+        links: data["_links"],
+      };
+
+      console.log("Successfully saved", state.dataSeries);
+    },
+  },
+  actions: {
+    loadDataSeries({ commit }, payload) {
+      const commitHandler = (data) => commit("saveDataSeries", data);
+
+      const messageCommitHandler = (message) => {
+        commit("messages/add", message, { root: true });
+      };
+
+      console.log(payload.queryParams);
+
+      axiosLoadWithHandlers(
+        "data",
+        payload.queryParams,
+        commitHandler,
+        messageCommitHandler,
+        payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+  },
+  getters: {
+    getDataInHub(state) {
+      return state.logsPage.logs.map((log) => {
+        return [
+          { key: "time", value: log.time },
+          { key: "deviceId", value: log.deviceId },
+          { key: "value", value: log.value },
+        ];
+      });
+    },
+
+    getDataInDevice(state) {
+      return state.logsPage.logs.map((log) => {
+        return [
+          { key: "time", value: new Date(log.time).toLocaleString() },
+          { key: "value", value: log.value },
+        ];
+      });
+    },
+
+    getData(state) {
+      return state.logsPage.logs.map((log) => {
+        return [
+          { key: "time", value: new Date(log.time).toLocaleString() },
+          { key: "hubId", value: log.hubId },
+          { key: "deviceId", value: log.deviceId },
+          { key: "value", value: log.value },
+        ];
+      });
+    },
+  },
+};
+
+const dataTagsModule = {
   namespaced: true,
   state() {
     return {
@@ -1112,7 +1199,8 @@ export default createStore({
     controlSignal: controlSignalModule,
     logs: logseriesModule,
     logTags: logTagsModule,
-    deviceTags: deviceTagsModule,
+    data: dataSeriesModule,
+    dataTags: dataTagsModule,
     messages: messagesModule,
   },
 });

@@ -104,20 +104,6 @@ const routes = [
       queriedLimit: route.query.limit,
       queriedHubIds: route.query.hubIds,
       queriedDeviceIds: route.query.deviceIds,
-      // activeQuery: {
-      //   ...(typeof route.query.start !== "undefined" &&
-      //     route.query.start !== "" && { start: route.query.start }),
-      //   ...(typeof route.query.end !== "undefined" &&
-      //     route.query.end !== "" && { end: route.query.end }),
-      //   ...(typeof route.query.desc !== "undefined" &&
-      //     route.query.desc !== "" && { desc: route.query.desc }),
-      //   ...(typeof route.query.limit !== "undefined" &&
-      //     route.query.limit !== "" && { limit: route.query.limit }),
-      //   ...(typeof route.query.hubIds !== "undefined" &&
-      //     route.query.hubIds !== "" && { hubIds: route.query.hubIds }),
-      //   ...(typeof route.query.deviceIds !== "undefined" &&
-      //     route.query.deviceIds !== "" && { deviceIds: route.query.deviceIds }),
-      // },
     }),
     component: Logs,
   },
@@ -163,8 +149,10 @@ router.beforeEach((to, from, next) => {
       "measurementTypes"
     );
 
+  console.log("query", to.query);
+
   if (to.name === "logs")
-    allowedQuery.push("start", "stop", "desc", "limit", "hubIds", "deviceIds");
+    allowedQuery.push("start", "end", "desc", "limit", "hubIds", "deviceIds");
 
   if (!isQueryValid(to.query, allowedQuery)) {
     console.log("Invalid query params, routing to not found");
