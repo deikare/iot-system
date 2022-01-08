@@ -987,14 +987,21 @@ const dataSeriesModule = {
       return {
         labels: [state.dataSeries.start, state.dataSeries.end], //TODO - add interval,
         datasets: state.dataSeries.allSeries.map((series) => {
+          const tagsSplit = series[0].split(/[,{}=]/);
+
           return {
-            label: `deviceId=${null},measurement=${null}`, //TODO
-            data: series[1].points.map((point) => {
-              return {
-                x: point.time,
-                y: point.value,
-              };
-            }),
+            label: `hubId=${tagsSplit[4]},deviceId=${tagsSplit[8]},measurement=${tagsSplit[6]}`,
+            data: series[1].points
+              .map((point) => {
+                return {
+                  x: point.time,
+                  y: point.value.toFixed(3),
+                };
+              })
+              .reverse(),
+            fill: true,
+            borderColor: "rgb(75, 192, 192)",
+            tension: 0.1,
           };
         }),
       };

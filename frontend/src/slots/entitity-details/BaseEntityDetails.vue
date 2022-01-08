@@ -477,7 +477,11 @@ header {
   flex-basis: 20%;
 }
 
-.second-column,
+.second-column {
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 25%;
+}
 .third-column {
   flex: 1;
 }
