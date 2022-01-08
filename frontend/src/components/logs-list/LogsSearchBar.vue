@@ -1,44 +1,75 @@
 <template>
   <loading-spinner v-if="isLoadingVisible"></loading-spinner>
-  <form v-else-if="areTagsLoaded" v-on:submit.prevent="emitNewQuery">
-    <input type="datetime-local" v-model="filters.start" />
-    <input type="datetime-local" v-model="filters.end" />
-    <select v-model="filters.descending">
-      <option value="true">yes</option>
-      <option value="false">no</option>
-    </select>
-    <input type="number" v-model="filters.limit" />
-    <div class="hub-ids">
-      <div class="hub-id" v-for="hubId in getTags.hubIds" v-bind:key="hubId">
-        <input
-          type="checkbox"
-          name="hub-id"
-          v-bind:id="hubId"
-          v-bind:value="hubId"
-          v-model="filters.hubIds"
-        />
-        <label v-bind:for="hubId">{{ hubId }}</label>
+  <form
+    class="filters-container"
+    v-else-if="areTagsLoaded"
+    v-on:submit.prevent="emitNewQuery"
+  >
+    <div class="filter-container">
+      <div class="filter-label">Start</div>
+      <input
+        type="datetime-local"
+        v-model="filters.start"
+        placeholder="Start"
+      />
+    </div>
+
+    <div class="filter-container">
+      <div class="filter-label">End</div>
+      <input type="datetime-local" v-model="filters.end" />
+    </div>
+
+    <div class="filter-container">
+      <div class="filter-label">Direction</div>
+
+      <select v-model="filters.descending">
+        <option value="true">Descending</option>
+        <option value="false">Ascending</option>
+      </select>
+    </div>
+
+    <div class="filter-container">
+      <div class="filter-label">Limit</div>
+      <input type="number" v-model="filters.limit" min="1" />
+    </div>
+
+    <div class="filter-container hub-ids-container">
+      <div class="filter-label">Hub ids</div>
+      <div class="hub-ids-interior">
+        <div class="hub-id" v-for="hubId in getTags.hubIds" v-bind:key="hubId">
+          <input
+            type="checkbox"
+            name="hub-id"
+            v-bind:id="hubId"
+            v-bind:value="hubId"
+            v-model="filters.hubIds"
+          />
+          <label v-bind:for="hubId">{{ hubId }}</label>
+        </div>
       </div>
     </div>
 
-    <div class="device-ids">
-      <div
-        class="device-id"
-        v-for="deviceId in getTags.deviceIds"
-        v-bind:key="deviceId"
-      >
-        <input
-          type="checkbox"
-          name="device-id"
-          v-bind:id="deviceId"
-          v-bind:value="deviceId"
-          v-model="filters.deviceIds"
-        />
-        <label v-bind:for="deviceId">{{ deviceId }}</label>
+    <div class="filter-container device-ids-container">
+      <div class="filter-label">Device ids</div>
+      <div class="device-ids-interior">
+        <div
+          class="device-id"
+          v-for="deviceId in getTags.deviceIds"
+          v-bind:key="deviceId"
+        >
+          <input
+            type="checkbox"
+            name="device-id"
+            v-bind:id="deviceId"
+            v-bind:value="deviceId"
+            v-model="filters.deviceIds"
+          />
+          <label v-bind:for="deviceId">{{ deviceId }}</label>
+        </div>
       </div>
     </div>
 
-    <button>Submit</button>
+    <button class="submit-button">Submit</button>
   </form>
 </template>
 
@@ -94,9 +125,15 @@ export default {
   methods: {
     emitNewQuery() {
       const newFilters = {
-        ...(this.filters.start !== "" && { start: this.filters.start }),
-        ...(this.filters.end !== "" && { end: this.filters.end }),
-        ...(this.filters.descending !== "" && { desc: this.filters.desc }),
+        ...(this.filters.start !== "" && {
+          start: this.filters.start,
+        }),
+        ...(this.filters.end !== "" && {
+          end: this.filters.end,
+        }),
+        ...(this.filters.descending !== "" && {
+          desc: this.filters.descending,
+        }),
         ...(this.filters.limit !== "" && { limit: this.filters.limit }),
         ...(this.filters.hubIds !== [] && { hubIds: this.filters.hubIds }),
         ...(this.filters.deviceIds !== [] && {
@@ -134,32 +171,40 @@ export default {
 
     areInitialTagsValid() {
       if (
-        this.initialQuery.start.match(
-          "^\\d{4}-\\d{2}-\\d{2}T\\d{2}%3A\\d{2}%3A\\d{2}(?:%2E\\d+)?[A-Z]?(?:[+.-](?:08%3A\\d{2}|\\d{2}[A-Z]))?$"
+        this.initialQuery.start !== "" &&
+        !this.initialQuery.start.match(
+          "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d"
         )
-      )
+      ) {
         return false;
+      }
 
       if (
-        this.initialQuery.end.match(
-          "^\\d{4}-\\d{2}-\\d{2}T\\d{2}%3A\\d{2}%3A\\d{2}(?:%2E\\d+)?[A-Z]?(?:[+.-](?:08%3A\\d{2}|\\d{2}[A-Z]))?$"
+        this.initialQuery.end !== "" &&
+        !this.initialQuery.end.match(
+          "\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d"
         )
-      )
+      ) {
         return false;
+      }
 
       if (
-        !this.getTags.hubIds.some(
-          (hubId) => this.initialQuery.hubIds.indexOf(hubId) >= 0
+        this.initialQuery.hubIds.length > 0 &&
+        !this.initialQuery.hubIds.every((hubId) =>
+          this.getTags.hubIds.includes(hubId)
         )
-      )
+      ) {
         return false;
+      }
 
       if (
-        !this.getTags.deviceIds.some(
-          (deviceId) => this.initialQuery.deviceIds.indexOf(deviceId) >= 0
+        this.initialQuery.deviceIds.length > 0 &&
+        !this.initialQuery.deviceIds.every((deviceId) =>
+          this.getTags.deviceIds.includes(deviceId)
         )
-      )
-        return false; //TODO there is error
+      ) {
+        return false;
+      }
 
       return true;
     },
@@ -174,9 +219,21 @@ export default {
     },
   },
 
+  watch: {
+    filters() {
+      console.log(this.filters);
+    },
+  },
+
   created() {
-    console.log("CHUJ WEWQEQWE", this.initialQuery);
-    this.fetchTags();
+    this.$watch(
+      () => this.initialQuery,
+      () => {
+        this.fetchTags();
+      },
+      { immediate: true, deep: true }
+    );
+
     this.$watch(
       () => this.filters,
       () => {
@@ -188,4 +245,67 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.filters-container {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+input {
+  font-size: 1.4rem;
+  min-height: 1.86rem;
+}
+
+input::-webkit-calendar-picker-indicator {
+}
+
+select {
+  padding: 1px;
+  font-size: 1.4rem;
+  min-height: 2.46rem;
+}
+
+option {
+  font-size: 1.4rem;
+}
+
+.filter-label {
+  background-color: var(--main-color);
+  color: var(--background-color);
+  font-size: 1.8rem;
+
+  padding: 0.2rem 0.4rem;
+}
+
+.hub-ids-container {
+  background-color: var(--card-color);
+}
+
+.hub-ids-interior {
+  height: 8rem;
+  padding-right: 0.4rem;
+  overflow-y: scroll;
+  background-color: var(--card-color);
+}
+
+.device-ids-container {
+  background-color: var(--card-color);
+}
+
+.device-ids-interior {
+  height: 8rem;
+  padding-right: 0.4rem;
+  overflow-y: scroll;
+}
+
+.submit-button {
+  font-size: 1.6rem;
+}
+</style>

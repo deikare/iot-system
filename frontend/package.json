@@ -10,12 +10,15 @@
   "dependencies": {
     "axios": "^0.24.0",
     "browserify": "^17.0.0",
+    "chart.js": "^3.7.0",
     "click-outside-vue3": "^4.0.1",
     "core-js": "^3.6.5",
+    "qs": "^6.10.2",
     "vue": "^3.0.0",
     "vue-click-outside-component": "^1.0.3",
     "vue-click-outside-element": "^1.0.15",
     "vue-router": "^4.0.0-0",
+    "vue3-chart-v2": "^0.8.3",
     "vue3-loading-overlay": "^0.0.0",
     "vuex": "^4.0.0-0"
   },

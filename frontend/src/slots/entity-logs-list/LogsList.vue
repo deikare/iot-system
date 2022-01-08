@@ -28,6 +28,7 @@
     <loading-spinner class="flexbox" v-if="isLoadingVisible"></loading-spinner>
     <entities-error v-else-if="isError"></entities-error>
     <entity-list
+      class="entity-logs-list"
       v-bind:entities-properties="getProperties"
       v-bind:buttons-properties="buttonsProperties"
       v-bind:highlight-items="highlightItems"
@@ -185,5 +186,10 @@ export default {
 .control-button:active {
   cursor: pointer;
   border: 2px solid var(--card-color);
+}
+
+.entity-logs-list {
+  height: 100%;
+  overflow-y: scroll;
 }
 </style>
