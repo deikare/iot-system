@@ -923,7 +923,9 @@ const dataSeriesModule = {
   state() {
     return {
       dataSeries: {
-        allSeries: {},
+        allSeries: [],
+        start: "",
+        end: "",
         links: {},
         // series: [{ hubId: "", deviceId: "", measurementType: "", data: [] }],
       },
@@ -933,14 +935,27 @@ const dataSeriesModule = {
     saveDataSeries(state, data) {
       state.dataSeries = {
         ...state.dataSeries,
-        allDataSeries:
+        allSeries:
           Object.prototype.hasOwnProperty.call(data, "timeseriesList") &&
           Object.prototype.hasOwnProperty.call(
             data["timeseriesList"],
             "timeseriesList"
           )
-            ? data["timeseriesList"]["timeseriesList"]
-            : {},
+            ? Object.entries(data["timeseriesList"]["timeseriesList"])
+            : [],
+
+        start:
+          Object.prototype.hasOwnProperty.call(data, "timeseriesList") &&
+          Object.prototype.hasOwnProperty.call(data["timeseriesList"], "start")
+            ? data["timeseriesList"].start
+            : "",
+
+        end:
+          Object.prototype.hasOwnProperty.call(data, "timeseriesList") &&
+          Object.prototype.hasOwnProperty.call(data["timeseriesList"], "end")
+            ? data["timeseriesList"].end
+            : "",
+
         links: data["_links"],
       };
 
@@ -969,13 +984,20 @@ const dataSeriesModule = {
   },
   getters: {
     getDataInHub(state) {
-      return state.logsPage.logs.map((log) => {
-        return [
-          { key: "time", value: log.time },
-          { key: "deviceId", value: log.deviceId },
-          { key: "value", value: log.value },
-        ];
-      });
+      return {
+        labels: [state.dataSeries.start, state.dataSeries.end], //TODO - add interval,
+        datasets: state.dataSeries.allSeries.map((series) => {
+          return {
+            label: `deviceId=${null},measurement=${null}`, //TODO
+            data: series[1].points.map((point) => {
+              return {
+                x: point.time,
+                y: point.value,
+              };
+            }),
+          };
+        }),
+      };
     },
 
     getDataInDevice(state) {

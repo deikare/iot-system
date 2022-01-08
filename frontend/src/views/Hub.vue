@@ -89,6 +89,12 @@ export default {
           getter: "getLogsInHub",
           loader: "loadLogs",
         },
+
+        dataSeries: {
+          namespace: "data",
+          getter: "getDataInHub",
+          loader: "loadDataSeries",
+        },
       },
 
       ifHubDeletedRoute: { name: "hubs" },
