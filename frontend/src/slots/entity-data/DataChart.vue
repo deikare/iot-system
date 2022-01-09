@@ -1,19 +1,36 @@
+<template>
+  <div>
+    <canvas id="dataseries-chart" height="100%"></canvas>
+  </div>
+</template>
+
 <script>
-import { Line } from "vue3-chart-v2";
+import Chart from "chart.js/auto";
+// import { enUS } from "date-fns/locale";
+import "chartjs-adapter-luxon";
 
 export default {
   name: "DataChart",
-  extends: Line,
   data() {
     return {
       chartOptions: {
         scales: {
-          xAxis: {
+          x: {
             type: "time",
           },
+          y: {
+            beginAtZero: true,
+          },
         },
-        // data: this.plotData,
       },
+
+      chartConfig: {
+        type: "line",
+        data: this.plotData,
+        options: {},
+      },
+
+      myChart: {},
     };
   },
   props: {
@@ -22,10 +39,34 @@ export default {
       required: true,
       default() {
         return {
-          labels: [],
+          start: {},
+          end: {},
           datasets: [],
         };
       },
+    },
+
+    xLabelsNumber: {
+      type: Number,
+      required: false,
+      default: 5,
+    },
+  },
+
+  computed: {
+    dividedLabels() {
+      const result = [this.plotData.start];
+      const delta = Math.round(
+        (this.plotData.end - this.plotData.start) / this.xLabelsNumber
+      );
+
+      for (let i = 1; i < this.xLabelsNumber - 1; i++)
+        result.push(this.plotData.start + delta * i);
+
+      result.push(this.plotData.end);
+
+      for (const x of result) console.log(new Date(x));
+      return result;
     },
   },
   mounted() {
@@ -474,38 +515,29 @@ export default {
     //   },
     // ];
 
-    this.renderChart(
-      {
-        labels: this.plotData.datasets[0].data.map((point) => point.x),
-        // labels: this.plotData.labels,
-        datasets: [this.plotData.datasets[0]],
+    this.myChart = new Chart(document.getElementById("dataseries-chart"), {
+      type: "line",
+      data: {
+        datasets: this.plotData.datasets,
+        labels: this.dividedLabels,
       },
-      this.chartOptions
-    );
-
-    // this.renderChart({
-    //   labels: [
-    //     "January",
-    //     "February",
-    //     "March",
-    //     "April",
-    //     "May",
-    //     "June",
-    //     "July",
-    //     "August",
-    //     "September",
-    //     "October",
-    //     "November",
-    //     "December",
-    //   ],
-    //   datasets: [
-    //     {
-    //       label: "GitHub Commits",
-    //       backgroundColor: "#f87979",
-    //       data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11],
-    //     },
-    //   ],
-    // });
+      options: {
+        scales: {
+          x: {
+            type: "time",
+            time: {
+              unit: "second",
+              displayFormats: {
+                second: "D H:mm:ss",
+              },
+            },
+            ticks: {
+              source: "labels",
+            },
+          },
+        },
+      },
+    });
   },
 };
 </script>

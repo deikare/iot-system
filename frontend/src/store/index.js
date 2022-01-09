@@ -918,6 +918,34 @@ const logseriesModule = {
   },
 };
 
+const getChartTime = (isoTime) => {
+  // const localDate = new Date(isoTime);
+  // const dateSplit = localDate.toLocaleDateString().split("/");
+  // const timeSplit = localDate.toLocaleTimeString().split(/[: ]/);
+  //
+  // const year = dateSplit[2];
+  // const month = dateSplit[0].length > 1 ? dateSplit[0] : `0${dateSplit[0]}`;
+  // const day = dateSplit[1].length > 1 ? dateSplit[1] : `0${dateSplit[1]}`;
+  //
+  // const date = [year, month, day].join("-");
+  //
+  // let hours =
+  //   timeSplit[3] === "AM"
+  //     ? timeSplit[0]
+  //     : (Number(timeSplit[0]) + 12).toString();
+  //
+  // if (hours.length === 1) hours = "0".concat(hours);
+  //
+  // const minutes = timeSplit[1];
+  // const seconds = timeSplit[2];
+  //
+  // const time = [hours, minutes, seconds].join(":");
+  //
+  // return [date, time].join(" ");
+
+  return new Date(isoTime).getTime();
+};
+
 const dataSeriesModule = {
   namespaced: true,
   state() {
@@ -982,10 +1010,16 @@ const dataSeriesModule = {
       );
     },
   },
+
   getters: {
     getDataInHub(state) {
       return {
-        labels: [state.dataSeries.start, state.dataSeries.end], //TODO - add interval,
+        start: getChartTime(state.dataSeries.start),
+        end: getChartTime(state.dataSeries.end),
+        labels: [
+          getChartTime(state.dataSeries.start),
+          getChartTime(state.dataSeries.end),
+        ],
         datasets: state.dataSeries.allSeries.map((series) => {
           const tagsSplit = series[0].split(/[,{}=]/);
 
@@ -994,7 +1028,7 @@ const dataSeriesModule = {
             data: series[1].points
               .map((point) => {
                 return {
-                  x: point.time,
+                  x: getChartTime(point.time),
                   y: point.value.toFixed(3),
                 };
               })
