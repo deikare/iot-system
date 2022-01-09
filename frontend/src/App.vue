@@ -113,7 +113,6 @@ a:visited {
   height: 100%;
 
   margin-left: 1.6rem;
-  margin-right: 1.6rem;
 
   margin-top: 3.2rem;
 
