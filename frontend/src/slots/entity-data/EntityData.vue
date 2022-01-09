@@ -1222,6 +1222,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 0.8rem;
+  text-align: center;
 }
 
 .control-buttons {

@@ -23,7 +23,7 @@
 
       <loading-spinner v-if="isPatcherLoadingVisible"></loading-spinner>
 
-      <entities-error v-else-if="isError"></entities-error>
+      <entities-error v-else-if="isError" class="center"></entities-error>
       <loading-spinner v-else-if="!isEntityLoaded"></loading-spinner>
 
       <div
@@ -308,6 +308,13 @@ export default {
 
   width: 2.4rem;
   height: 2.4rem;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .properties-modifier {

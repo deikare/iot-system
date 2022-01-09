@@ -4,7 +4,7 @@
 
     <template v-slot:default>
       <div class="center" v-if="isError || displayLoading">
-        <entities-error v-if="isError"></entities-error>
+        <entities-error class="center" v-if="isError"></entities-error>
         <loading-spinner v-else-if="displayLoading"></loading-spinner>
       </div>
 
