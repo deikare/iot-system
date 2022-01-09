@@ -28,14 +28,6 @@
     <loading-spinner class="flexbox" v-if="isLoadingVisible"></loading-spinner>
     <entities-error class="flexbox" v-else-if="isError"></entities-error>
     <data-chart v-bind:plot-data="getData" v-else></data-chart>
-    <!--    <entity-list-->
-    <!--      class="entity-logs-list"-->
-    <!--      v-bind:entities-properties="getProperties"-->
-    <!--      v-bind:buttons-properties="buttonsProperties"-->
-    <!--      v-bind:highlight-items="highlightItems"-->
-    <!--      v-else-->
-    <!--    >-->
-    <!--    </entity-list>-->
   </base-card>
 </template>
 
@@ -119,7 +111,6 @@ export default {
         ifSuccessHandler: () => {
           this.isLoaded = true;
           this.isError = false;
-          console.log("asdasdasdasd", this.getData);
         },
         ifErrorHandler: () => {
           this.isLoaded = true;
