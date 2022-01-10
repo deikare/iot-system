@@ -1269,7 +1269,7 @@ const dataSeriesModule = {
           const tagsSplit = series[0].split(/[,{}=]/);
 
           return {
-            label: `hubId=${tagsSplit[4]},deviceId=${tagsSplit[8]},measurement=${tagsSplit[6]}`,
+            label: `deviceId=${tagsSplit[8]}, ${tagsSplit[6]}`,
             data: series[1].points
               .map((point) => {
                 return {
@@ -1286,23 +1286,61 @@ const dataSeriesModule = {
     },
 
     getDataInDevice(state) {
-      return state.logsPage.logs.map((log) => {
-        return [
-          { key: "time", value: new Date(log.time).toLocaleString() },
-          { key: "value", value: log.value },
-        ];
-      });
+      const shuffledColors = shuffleColors();
+      return {
+        start: getChartTime(state.dataSeries.start),
+        end: getChartTime(state.dataSeries.end),
+        labels: [
+          getChartTime(state.dataSeries.start),
+          getChartTime(state.dataSeries.end),
+        ],
+        datasets: state.dataSeries.allSeries.map((series, index) => {
+          const tagsSplit = series[0].split(/[,{}=]/);
+
+          return {
+            label: `${tagsSplit[6]}`,
+            data: series[1].points
+              .map((point) => {
+                return {
+                  x: getChartTime(point.time),
+                  y: point.value.toFixed(3),
+                };
+              })
+              .reverse(),
+            borderColor: getColor(shuffledColors, index),
+            tension: 0.1,
+          };
+        }),
+      };
     },
 
     getData(state) {
-      return state.logsPage.logs.map((log) => {
-        return [
-          { key: "time", value: new Date(log.time).toLocaleString() },
-          { key: "hubId", value: log.hubId },
-          { key: "deviceId", value: log.deviceId },
-          { key: "value", value: log.value },
-        ];
-      });
+      const shuffledColors = shuffleColors();
+      return {
+        start: getChartTime(state.dataSeries.start),
+        end: getChartTime(state.dataSeries.end),
+        labels: [
+          getChartTime(state.dataSeries.start),
+          getChartTime(state.dataSeries.end),
+        ],
+        datasets: state.dataSeries.allSeries.map((series, index) => {
+          const tagsSplit = series[0].split(/[,{}=]/);
+
+          return {
+            label: `hubId=${tagsSplit[4]}, deviceId=${tagsSplit[8]}, ${tagsSplit[6]}`,
+            data: series[1].points
+              .map((point) => {
+                return {
+                  x: getChartTime(point.time),
+                  y: point.value.toFixed(3),
+                };
+              })
+              .reverse(),
+            borderColor: getColor(shuffledColors, index),
+            tension: 0.1,
+          };
+        }),
+      };
     },
   },
 };
@@ -1329,7 +1367,7 @@ const dataTagsModule = {
             data["bucket"]["tagMap"],
             "InfluxTagKey{name='hubId'}"
           )
-            ? data["bucket"]["tagMap"]["InfluxTagKey{name='hubId'}"]
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='hubId'}"].values
             : [],
         deviceIds:
           Object.prototype.hasOwnProperty.call(data, "bucket") &&
@@ -1338,7 +1376,7 @@ const dataTagsModule = {
             data["bucket"]["tagMap"],
             "InfluxTagKey{name='deviceId'}"
           )
-            ? data["bucket"]["tagMap"]["InfluxTagKey{name='deviceId'}"]
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='deviceId'}"].values
             : [],
         measurementTypes:
           Object.prototype.hasOwnProperty.call(data, "bucket") &&
@@ -1347,7 +1385,7 @@ const dataTagsModule = {
             data["bucket"]["tagMap"],
             "InfluxTagKey{name='type'}"
           )
-            ? data["bucket"]["tagMap"]["InfluxTagKey{name='type'}"]
+            ? data["bucket"]["tagMap"]["InfluxTagKey{name='type'}"].values
             : [],
       };
 
@@ -1377,7 +1415,10 @@ const dataTagsModule = {
 
   getters: {
     getTags(state) {
-      return state.tags;
+      return {
+        buckets: ["data", "data-downsampled", "data-downsampled2"],
+        ...state.tags,
+      };
     },
   },
 };

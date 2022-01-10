@@ -113,7 +113,7 @@ export default {
       this.isLoaded = false;
       this.isError = false;
 
-      const queryParams = { start: "1970-01-01T00:00:00Z" }; //TODO delete this
+      const queryParams = { start: "1970-01-01T00:00:00Z" };
 
       queryParams[this.queryEntity.idName] = this.queryEntity.id;
 

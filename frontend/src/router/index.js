@@ -66,31 +66,10 @@ const routes = [
       queriedBucket: route.query.bucket,
       queriedStart: route.query.start,
       queriedEnd: route.query.end,
-      queriedDescending: route.query.desc,
       queriedLimit: route.query.limit,
       queriedHubIds: route.query.hubIds,
       queriedDeviceIds: route.query.deviceIds,
       queriedMeasurementTypes: route.query.measurementTypes,
-      activeQuery: {
-        ...(typeof route.query.bucket !== "undefined" &&
-          route.query.bucket !== "" && { bucket: route.query.bucket }),
-        ...(typeof route.query.start !== "undefined" &&
-          route.query.start !== "" && { start: route.query.start }),
-        ...(typeof route.query.end !== "undefined" &&
-          route.query.end !== "" && { end: route.query.end }),
-        ...(typeof route.query.desc !== "undefined" &&
-          route.query.desc !== "" && { desc: route.query.desc }),
-        ...(typeof route.query.limit !== "undefined" &&
-          route.query.limit !== "" && { limit: route.query.limit }),
-        ...(typeof route.query.hubIds !== "undefined" &&
-          route.query.hubIds !== "" && { hubIds: route.query.hubIds }),
-        ...(typeof route.query.deviceIds !== "undefined" &&
-          route.query.deviceIds !== "" && { deviceIds: route.query.deviceIds }),
-        ...(typeof route.query.measurementTypes !== "undefined" &&
-          route.query.measurementTypes !== "" && {
-            measurementTypes: route.query.measurementTypes,
-          }),
-      },
     }),
     component: Data,
   },
@@ -142,7 +121,6 @@ router.beforeEach((to, from, next) => {
       "bucket",
       "start",
       "stop",
-      "desc",
       "limit",
       "hubIds",
       "deviceIds",
