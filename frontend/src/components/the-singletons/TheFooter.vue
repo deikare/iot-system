@@ -1,9 +1,5 @@
 <template>
-  <footer>
-    Footer \Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut error
-    itaque laborum maxime neque provident quas sequi suscipit totam! Alias
-    aliquam commodi ea esse est iure labore porro rem, velit?
-  </footer>
+  <footer>Created by Bartosz Goławski</footer>
 </template>
 
 <script>
@@ -12,4 +8,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+footer {
+  padding: 0.4rem 0;
+}
+</style>

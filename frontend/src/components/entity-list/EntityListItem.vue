@@ -8,7 +8,6 @@
           v-bind:key="index"
         >
           {{ property.key }}: {{ property.value }}
-          <!--          TODO add word wrap-->
         </div>
       </div>
 

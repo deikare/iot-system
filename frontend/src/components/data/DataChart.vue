@@ -1,25 +1,22 @@
 <template>
-  <div v-if="isChartVisible">
-    <canvas id="dataseries-chart" height="300"></canvas>
+  <div v-if="isChartVisible" class="chart-container">
+    <canvas v-if="isChartVisible" id="dataseries-chart"></canvas>
   </div>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 import "chartjs-adapter-luxon";
-// import "chartjs-adapter-date-fns";
-// import { pl } from "date-fns/locale";
-// import { Line } from "vue3-chart-v2";
 
 export default {
   name: "DataChart",
-  // extends: Line,
   data() {
     return {
       chartOptions: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: "bottom",
+            position: this.labelsPosition,
           },
         },
         layout: {
@@ -37,11 +34,6 @@ export default {
             ticks: {
               source: "labels",
             },
-            // adapters: {
-            //   date: {
-            //     locale: pl,
-            //   },
-            // },
           },
         },
       },
@@ -66,6 +58,14 @@ export default {
       type: Number,
       required: false,
       default: 4,
+    },
+
+    labelsPosition: {
+      type: String,
+      required: false,
+      default() {
+        return "bottom";
+      },
     },
   },
 
@@ -102,20 +102,17 @@ export default {
     if (this.isChartVisible) {
       this.myChart = new Chart(document.getElementById("dataseries-chart"), {
         type: "line",
-        data: {
-          datasets: this.plotData.datasets,
-          labels: this.dividedLabels,
-        },
+        data: this.chartData,
         options: this.chartOptions,
       });
-      // this.renderChart(this.chartData, this.chartOptions);
     }
   },
 };
 </script>
 
 <style scoped>
-#dataseries-chart {
-  min-height: 1vh;
+.chart-container {
+  height: 100rem;
+  width: 100%;
 }
 </style>

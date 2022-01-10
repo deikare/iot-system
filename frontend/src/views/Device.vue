@@ -100,6 +100,12 @@ export default {
           getter: "getLogsInDevice",
           loader: "loadLogs",
         },
+
+        dataSeries: {
+          namespace: "data",
+          getter: "getDataInDevice",
+          loader: "loadDataSeries",
+        },
       },
 
       isDeviceDeletedRoute: { name: "devices" },

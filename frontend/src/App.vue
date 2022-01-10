@@ -112,8 +112,8 @@ a:visited {
 
   height: 100%;
 
-  margin-left: 1.6rem;
-
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
   margin-top: 3.2rem;
 
   position: relative;

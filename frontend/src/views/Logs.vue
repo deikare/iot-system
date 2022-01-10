@@ -1,5 +1,5 @@
 <template>
-  <div class="logs-container">
+  <div class="data-container">
     <logs-search-bar
       v-bind:initial-query="initialQuery"
       v-on:newQuery="goToNewQuery"
@@ -9,7 +9,7 @@
     <loading-spinner v-if="isLoadingVisible"></loading-spinner>
     <entities-error v-else-if="isError"></entities-error>
 
-    <div class="logs-list" v-else>
+    <div class="data-view" v-else>
       <entity-list
         v-bind:highlight-items="highlightItems"
         v-bind:buttons-properties="buttonsProperties"
@@ -139,8 +139,6 @@ export default {
         });
       }
 
-      console.log("CHUJ w computed", result);
-
       return result;
     },
 
@@ -213,14 +211,14 @@ export default {
 </script>
 
 <style scoped>
-.logs-container {
+.data-container {
   display: flex;
   flex-direction: column;
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-.logs-list {
+.data-view {
   width: 50%;
   border-top: 1px solid var(--main-color);
 }
