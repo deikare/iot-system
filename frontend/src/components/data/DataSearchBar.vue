@@ -157,7 +157,7 @@ export default {
           start: this.filters.start,
         }),
         ...(this.filters.end !== "" && {
-          end: this.filters.end,
+          stop: this.filters.end,
         }),
         ...(this.filters.limit !== "" && { limit: this.filters.limit }),
         ...(this.filters.hubIds !== [] && { hubIds: this.filters.hubIds }),
