@@ -65,7 +65,7 @@ const routes = [
     props: (route) => ({
       queriedBucket: route.query.bucket,
       queriedStart: route.query.start,
-      queriedEnd: route.query.end,
+      queriedEnd: route.query.stop,
       queriedLimit: route.query.limit,
       queriedHubIds: route.query.hubIds,
       queriedDeviceIds: route.query.deviceIds,

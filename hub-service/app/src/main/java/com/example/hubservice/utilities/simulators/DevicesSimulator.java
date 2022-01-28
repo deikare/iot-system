@@ -25,7 +25,7 @@ public class DevicesSimulator {
     private final int mqttServerPort = 8883;
 
     private final String[] logValues = {"OK", "NOT_OK"};
-    private static final String[] measurementTypes = {"temperature_[K]", "humidity_[%]", "pressure_[hPa]"};
+    private static final String[] measurementTypes = {"temperature_K", "humidity_%", "pressure_hPa"};
 
 
     private final Logger logger = LoggerFactory.getLogger(DevicesSimulator.class);
