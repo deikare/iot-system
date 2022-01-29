@@ -89,10 +89,10 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     echo "CN = $CN_ITERATION" >> $ZOOKEEPER_PATH/zoo-cert.conf
     echo "" >> $ZOOKEEPER_PATH/zoo-cert.conf
 
-    echo "[v3_req]" >> $ZOOKEEPER_PATH/zoo-cert.conf
-    echo "keyUsage = keyEncipherment, dataEncipherment, digitalSignature" >> $KAFKA_PATH/kafka-cert.conf
-    echo "extendedKeyUsage = serverAuth, clientAuth" >> $KAFKA_PATH/kafka-cert.conf
-    echo "basicConstraints = CA:false" >> $KAFKA_PATH/kafka-cert.conf
+echo "[v3_req]" >> $ZOOKEEPER_PATH/zoo-cert.conf
+    echo "keyUsage = keyEncipherment, dataEncipherment, digitalSignature" >> $ZOOKEEPER_PATH/kafka-cert.conf
+    echo "extendedKeyUsage = serverAuth, clientAuth" >> $ZOOKEEPER_PATH/kafka-cert.conf
+    echo "basicConstraints = CA:false" >> $ZOOKEEPER_PATH/kafka-cert.conf
     echo "subjectAltName = @alt_names" >> $ZOOKEEPER_PATH/zoo-cert.conf
     echo "" >> $ZOOKEEPER_PATH/zoo-cert.conf
 
