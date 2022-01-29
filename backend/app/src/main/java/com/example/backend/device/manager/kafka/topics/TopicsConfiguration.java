@@ -32,16 +32,6 @@ public class TopicsConfiguration {
     }
 
     @Bean
-    public NewTopic hubsControlTopic() {
-        return TopicBuilder.name("sent_hub_controls")
-                .partitions(10)
-                .replicas(3)
-                .config(TopicConfig.MIN_IN_SYNC_REPLICAS_CONFIG, "2")
-                .compact()
-                .build();
-    }
-
-    @Bean
     public NewTopic deviceControlTopic() {
         return TopicBuilder.name("sent_device_controls")
                 .partitions(10)

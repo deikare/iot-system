@@ -2,8 +2,6 @@ package com.example.backend.device.manager.kafka.producer.config;
 
 import com.example.backend.device.manager.kafka.producer.KafkaControlSignalProducer;
 import com.example.backend.device.manager.kafka.producer.KafkaCrudEntityProducer;
-import com.example.backend.device.manager.kafka.producer.KafkaHubControlProducer;
-import com.example.backend.device.manager.kafka.record.control.hub.KafkaHubControlRecordWrapper;
 import com.example.backend.device.manager.kafka.record.crud.KafkaEntityControlRecordWrapper;
 import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Hub;
@@ -42,35 +40,12 @@ public class ProducerConfig {
 
     @Bean
     public ProducerFactory<String, KafkaEntityControlRecordWrapper<Hub>> hubProducerFactory() {
-        ProducerFactory<String, KafkaEntityControlRecordWrapper<Hub>> result = new DefaultKafkaProducerFactory<>(hubProperties());
+        ProducerFactory<String, KafkaEntityControlRecordWrapper<Hub>> result = new DefaultKafkaProducerFactory<>(hubSenderProperties());
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubProducerFactory");
         return result;
     }
 
-    // for hub control sending
-    @Bean
-    public KafkaHubControlProducer hubControlProducer() {
-        KafkaHubControlProducer result = new KafkaHubControlProducer(hubControlSenderKafkaTemplate());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSender");
-        return result;
-    }
 
-    @Bean
-    public KafkaTemplate<String, KafkaHubControlRecordWrapper> hubControlSenderKafkaTemplate() {
-        KafkaTemplate<String, KafkaHubControlRecordWrapper> result = new KafkaTemplate<>(hubControlSenderProducerFactory());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSenderKafkaTemplate");
-        return result;
-    }
-
-    @Bean
-    public ProducerFactory<String, KafkaHubControlRecordWrapper> hubControlSenderProducerFactory() {
-        ProducerFactory<String, KafkaHubControlRecordWrapper> result = new DefaultKafkaProducerFactory<>(hubProperties());
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSenderProducerFactory");
-        return result;
-    }
-
-
-    //for control signal sending
     @Bean
     public KafkaControlSignalProducer controlSignalProducer() {
         KafkaControlSignalProducer result = new KafkaControlSignalProducer(controlSignalSenderKafkaTemplate());
@@ -87,13 +62,13 @@ public class ProducerConfig {
 
     @Bean
     public ProducerFactory<Long, ControlSignal> controlSignalSenderProducerFactory() {
-        ProducerFactory<Long, ControlSignal> result = new DefaultKafkaProducerFactory<>(othersProperties());
+        ProducerFactory<Long, ControlSignal> result = new DefaultKafkaProducerFactory<>(controlSignalSenderProperties());
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalSenderProducerFactory");
         return result;
     }
 
     @Bean
-    public Map<String, Object> hubProperties() {
+    public Map<String, Object> hubSenderProperties() {
         Map<String, Object> result = new HashMap<>();
 
         String bootstrapServers = "kafka1:8092,kafka2:8093,kafka3:8094";
@@ -117,7 +92,7 @@ public class ProducerConfig {
     }
 
     @Bean
-    public Map<String, Object> othersProperties() {
+    public Map<String, Object> controlSignalSenderProperties() {
         Map<String, Object> result = new HashMap<>();
 
         String bootstrapServers = "kafka1:8092,kafka2:8093,kafka3:8094";
