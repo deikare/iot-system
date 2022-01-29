@@ -7,12 +7,14 @@ const httpsAgent = new https.Agent({
   key: fs.readFileSync("./certs/frontend.key"),
 });
 
+const serverFQDN = process.env.SERVER_FQDN;
+
 module.exports = {
   devServer: {
     host: "localhost",
     proxy: {
       "^/backend": {
-        target: "https://iot-server.germanywestcentral.cloudapp.azure.com",
+        target: `https://${serverFQDN}`,
         agent: httpsAgent,
         changeOrigin: true,
       },
