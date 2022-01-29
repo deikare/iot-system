@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres-db
+    volumes:
+      - ./mounts/postgres/data:/var/lib/postgresql/data
 
   mqtt:
     image: eclipse-mosquitto:2.0.11
@@ -25,10 +27,16 @@ services:
     volumes:
       - ./configs/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
       - ./certs/telegraf:/etc/telegraf/secrets
-      - ./volumes/telegraf:/tmp
+      - ./mounts/telegraf:/tmp
 
   hub:
     image: hub-service:0.0.1-SNAPSHOT
     hostname: hub
+    environment:
+      - KAFKA_SERVERS_FQDN=${SERVER_FQDN}
     volumes:
       - ./certs/kafka-client:/etc/secrets/kafka-client
+    depends_on:
+      - postgres
+      - mqtt
+      - telegraf

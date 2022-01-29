@@ -31,8 +31,24 @@ export default {
                 second: "D H:mm:ss",
               },
             },
+            title: {
+              display: true,
+              text: "time",
+              font: {
+                size: 14,
+              },
+            },
             ticks: {
               source: "labels",
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: "value",
+              font: {
+                size: 14,
+              },
             },
           },
         },
