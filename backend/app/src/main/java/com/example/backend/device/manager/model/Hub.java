@@ -20,7 +20,6 @@ public class Hub implements MasterTypeInterface<Hub, Device>, KafkaRecordInterfa
     @Enumerated(EnumType.STRING)
     private InfluxHubStatusValue status;
 
-    //TODO use transactional in service layer to assure correct items management
     @OneToMany(mappedBy = "hub", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final Set<Device> devices = new HashSet<>();
 

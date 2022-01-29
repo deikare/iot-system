@@ -8,7 +8,6 @@ import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.repositories.ControlSignalRepository;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
-import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +34,6 @@ public class ControlSignalServiceImplementationConfig {
     DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> controlSignalDependentServiceImplementation() {
         DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> result = new DependentServiceImplementation<>(controlSignalRepository, builder, deviceMasterServiceImplementation);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalDependentAuxiliaryServiceImplementation");
-        return result;
-    }
-
-    @Bean
-    ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> controlSignalFilteringServiceImplementation() {
-        ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> result = new ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<>(controlSignalRepository);
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "ControlSignalFilteringServiceImplementation");
         return result;
     }
 }

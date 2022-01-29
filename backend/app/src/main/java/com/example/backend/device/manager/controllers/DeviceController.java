@@ -9,8 +9,8 @@ import com.example.backend.device.manager.model.ControlSignal;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.DeviceType;
 import com.example.backend.device.manager.model.Hub;
+import com.example.backend.device.manager.repositories.DeviceRepository;
 import com.example.backend.device.manager.service.implementation.crud.MasterAndDependentServiceImplementation;
-import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation;
 import com.example.backend.device.manager.service.implementation.utilities.EntityLazilyFetchedFieldsInitializer;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
@@ -32,7 +32,7 @@ import java.util.List;
 public class DeviceController {
     private final DeviceModelAssembler modelAssembler;
     private final PagedResourcesAssembler<Device> pagedResourcesAssembler;
-    private final ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation;
+    private final DeviceRepository filteringServiceImplementation;
     private final MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation;
 
     private final EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer;
@@ -41,7 +41,7 @@ public class DeviceController {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
-    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, ByMasterAndDeviceTypePaginationAndFilteringServiceImplementation<Device, Long, String> filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
+    public DeviceController(DeviceModelAssembler modelAssembler, PagedResourcesAssembler<Device> pagedResourcesAssembler, DeviceRepository filteringServiceImplementation, MasterAndDependentServiceImplementation<Device, ControlSignal, Hub, Long, String, DeviceNotFoundException, HubNotFoundException> crudServiceImplementation, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
@@ -65,24 +65,24 @@ public class DeviceController {
             if (hubId == null) {
                 if (deviceType == null)
                     result = filteringServiceImplementation.findAll(pageable);
-                else result = filteringServiceImplementation.findAllByDeviceType(deviceType, pageable);
+                else result = filteringServiceImplementation.findByDeviceType(deviceType, pageable);
             }
             else { //hubId not null
                 if (deviceType == null)
-                    result = filteringServiceImplementation.findAllByMaster_Id(hubId, pageable);
-                else result = filteringServiceImplementation.findAllByDeviceTypeAndMaster_Id(deviceType, hubId, pageable);
+                    result = filteringServiceImplementation.findByHub_Id(hubId, pageable);
+                else result = filteringServiceImplementation.findByDeviceTypeAndHub_Id(deviceType, hubId, pageable);
             }
         }
         else { //name not null
             if (hubId == null) {
                 if (deviceType == null)
-                    result = filteringServiceImplementation.findAllByNameContaining(name, pageable);
-                else result = filteringServiceImplementation.findAllByNameContainingAndDeviceType(name, deviceType, pageable);
+                    result = filteringServiceImplementation.findByNameContaining(name, pageable);
+                else result = filteringServiceImplementation.findByNameContainingAndDeviceType(name, deviceType, pageable);
             }
             else { //hubId not null
                 if (deviceType == null)
-                    result = filteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, hubId, pageable);
-                else result = filteringServiceImplementation.findAllByNameContainingAndDeviceTypeAndMaster_Id(name, deviceType, hubId, pageable);
+                    result = filteringServiceImplementation.findByNameContainingAndHub_Id(name, hubId, pageable);
+                else result = filteringServiceImplementation.findByNameContainingAndDeviceTypeAndHub_Id(name, deviceType, hubId, pageable);
             }
         }
 

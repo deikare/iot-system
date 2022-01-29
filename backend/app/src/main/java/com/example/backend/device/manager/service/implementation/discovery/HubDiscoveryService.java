@@ -4,7 +4,6 @@ import com.example.backend.data.model.mappers.InfluxHubLogPojo;
 import com.example.backend.data.model.mappers.InfluxHubStatusValue;
 import com.example.backend.data.service.InfluxQueryService;
 import com.example.backend.device.manager.controllers.exceptions.HubNotFoundException;
-import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
@@ -17,7 +16,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-//TODO add offset
 @Component
 public class HubDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(HubDiscoveryService.class);

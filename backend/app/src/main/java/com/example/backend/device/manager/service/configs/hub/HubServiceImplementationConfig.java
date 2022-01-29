@@ -6,7 +6,6 @@ import com.example.backend.device.manager.model.Device;
 import com.example.backend.device.manager.model.Hub;
 import com.example.backend.device.manager.repositories.HubRepository;
 import com.example.backend.device.manager.service.implementation.crud.MasterServiceImplementation;
-import com.example.backend.device.manager.service.implementation.filtering.BasePaginationAndFilteringServiceImplementation;
 import com.example.backend.utilities.loggers.abstracts.ConfigLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +28,6 @@ public class HubServiceImplementationConfig {
     public MasterServiceImplementation<Hub, Device, String, HubNotFoundException> hubServiceImplementation() {
         MasterServiceImplementation<Hub, Device, String, HubNotFoundException> result = new MasterServiceImplementation<>(repository, builder);
         ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubCrudServiceImplementation");
-        return result;
-    }
-
-    @Bean
-    public BasePaginationAndFilteringServiceImplementation<Hub, String> hubFilteringServiceImplementation() {
-        BasePaginationAndFilteringServiceImplementation<Hub, String> result = new BasePaginationAndFilteringServiceImplementation<>(repository);
-        ConfigLogger.produceConfigBeanCreationLog(logger, result, "HubFilteringServiceImplementation");
         return result;
     }
 }

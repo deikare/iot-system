@@ -4,8 +4,8 @@ import com.example.backend.device.manager.controllers.assemblers.ControlSignalMo
 import com.example.backend.device.manager.controllers.exceptions.*;
 import com.example.backend.device.manager.kafka.services.senders.EntityCrudSenderService;
 import com.example.backend.device.manager.model.*;
+import com.example.backend.device.manager.repositories.ControlSignalRepository;
 import com.example.backend.device.manager.service.implementation.crud.DependentServiceImplementation;
-import com.example.backend.device.manager.service.implementation.filtering.ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation;
 import com.example.backend.device.manager.service.implementation.utilities.EntityLazilyFetchedFieldsInitializer;
 import com.example.backend.utilities.loggers.abstracts.CrudControllerLogger;
 import com.example.backend.utilities.loggers.abstracts.HttpMethodType;
@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//TODO szyfrowanie ssl kafka - serwer, zamienić postgresa w hubie na sqlite, zrównoleglić fetch z influxa
 @RestController
 @RequestMapping("/control_signals")
 public class ControlSignalController {
     private final ControlSignalModelAssembler modelAssembler;
     private final PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler;
-    private final ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation;
+    private final ControlSignalRepository filteringServiceImplementation;
     private final DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation;
 
     private final EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer;
@@ -37,7 +36,7 @@ public class ControlSignalController {
 
     private final Logger logger = LoggerFactory.getLogger(ControlSignalController.class);
 
-    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ByMasterAndMessageContentContainingPaginationAndFilteringServiceImplementation<ControlSignal, Long, Long> filteringServiceImplementation, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
+    public ControlSignalController(ControlSignalModelAssembler modelAssembler, PagedResourcesAssembler<ControlSignal> pagedResourcesAssembler, ControlSignalRepository filteringServiceImplementation, DependentServiceImplementation<ControlSignal, Device, Long, Long, ControlSignalNotFoundException, DeviceNotFoundException> crudServiceImplementation, EntityLazilyFetchedFieldsInitializer entityLazilyFetchedFieldsInitializer, EntityCrudSenderService<String, Hub> hubSender) {
         this.modelAssembler = modelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filteringServiceImplementation = filteringServiceImplementation;
@@ -61,24 +60,24 @@ public class ControlSignalController {
             if (deviceId == null) {
                 if (messageContent == null || messageContent.isEmpty())
                     result = filteringServiceImplementation.findAll(pageable);
-                else result = filteringServiceImplementation.findAllByMessageContentContaining(messageContent, pageable);
+                else result = filteringServiceImplementation.findByMessageContentContaining(messageContent, pageable);
             }
             else { //deviceId not null
                 if (messageContent == null)
-                    result = filteringServiceImplementation.findAllByMaster_Id(deviceId, pageable);
-                else result = filteringServiceImplementation.findAllByMessageContentContainingAndMaster_Id(messageContent, deviceId, pageable);
+                    result = filteringServiceImplementation.findByDevice_Id(deviceId, pageable);
+                else result = filteringServiceImplementation.findByMessageContentContainingAndDevice_Id(messageContent, deviceId, pageable);
             }
         }
         else { //name not null
             if (deviceId == null) {
                 if (messageContent == null || messageContent.isEmpty())
-                    result = filteringServiceImplementation.findAllByNameContaining(name, pageable);
-                else result = filteringServiceImplementation.findAllByNameContainingAndMessageContentContaining(name, messageContent, pageable);
+                    result = filteringServiceImplementation.findByNameContaining(name, pageable);
+                else result = filteringServiceImplementation.findByNameContainingAndMessageContentContaining(name, messageContent, pageable);
             }
             else { //deviceId not null
                 if (messageContent == null || messageContent.isEmpty())
-                    result = filteringServiceImplementation.findAllByNameContainingAndMaster_Id(name, deviceId, pageable);
-                else result = filteringServiceImplementation.findAllByNameContainingAndMessageContentContainingAndMaster_Id(name, messageContent, deviceId, pageable);
+                    result = filteringServiceImplementation.findByNameContainingAndDevice_Id(name, deviceId, pageable);
+                else result = filteringServiceImplementation.findByNameContainingAndMessageContentContainingAndDevice_Id(name, messageContent, deviceId, pageable);
             }
         }
 
