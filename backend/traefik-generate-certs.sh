@@ -37,14 +37,13 @@ echo "" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "[v3_req]" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "keyUsage = keyEncipherment, dataEncipherment" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "extendedKeyUsage = serverAuth" >> $TRAEFIK_PATH/traefik-cert.conf
-echo "basicConstraints = critical,CA:false" >> $TRAEFIK_PATH/traefik-cert.conf
+echo "basicConstraints = CA:false" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "subjectAltName = @alt_names" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "" >> $TRAEFIK_PATH/traefik-cert.conf
 
 echo "[alt_names]" >> $TRAEFIK_PATH/traefik-cert.conf
 echo "DNS.1 = $SAN" >> $TRAEFIK_PATH/traefik-cert.conf  
-echo "DNS.2 = $SERVER_FQDN" >> $TRAEFIK_PATH/traefik-cert.conf 
-
+echo "DNS.2 = $SERVER_FQDN" >> $TRAEFIK_PATH/traefik-cert.conf
 
 openssl req -newkey rsa:2048 -nodes -keyout $TRAEFIK_PATH/traefik.key \
     -subj "/C=$COUNTRY/ST=$STATE/L=$LOCATION/O=$ORGANIZATION/OU=$ORGANIZATION_UNIT/CN=$CN" -out $TRAEFIK_PATH/traefik.csr

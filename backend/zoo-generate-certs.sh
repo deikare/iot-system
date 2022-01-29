@@ -90,9 +90,9 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     echo "" >> $ZOOKEEPER_PATH/zoo-cert.conf
 
     echo "[v3_req]" >> $ZOOKEEPER_PATH/zoo-cert.conf
-    #echo "keyUsage = keyEncipherment, dataEncipherment" >> $ZOOKEEPER_PATH/zoo-cert.conf
-    #echo "extendedKeyUsage = serverAuth" >> $ZOOKEEPER_PATH/zoo-cert.conf
-    #echo "basicConstraints = critical,CA:false" >> $ZOOKEEPER_PATH/zoo-cert.conf
+    echo "keyUsage = keyEncipherment, dataEncipherment, digitalSignature" >> $KAFKA_PATH/kafka-cert.conf
+    echo "extendedKeyUsage = serverAuth, clientAuth" >> $KAFKA_PATH/kafka-cert.conf
+    echo "basicConstraints = CA:false" >> $KAFKA_PATH/kafka-cert.conf
     echo "subjectAltName = @alt_names" >> $ZOOKEEPER_PATH/zoo-cert.conf
     echo "" >> $ZOOKEEPER_PATH/zoo-cert.conf
 
@@ -107,15 +107,11 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     keytool -keystore $ZOOKEEPER_PATH/zoo$i.keystore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     # Add signed cert to keystore
-    keytool -keystore $ZOOKEEPER_PATH/zoo$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -import -file $ZOOKEEPER_PATH/zoo$i.signed.crt -ext SAN=$SAN_ITERATION \
+    keytool -keystore $ZOOKEEPER_PATH/zoo$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -import -file $ZOOKEEPER_PATH/zoo$i.signed.crt -ext SAN=$SAN_ITERATION -ext keyUsage=keyEncipherment,dataEncipherment,digitalSignature -ext extendedKeyUsage=serverAuth,clientAuth \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     # Add CA to truststore
     keytool -keystore $ZOOKEEPER_PATH/zoo$i.truststore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
-
-    #echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_sslkey_creds        
-    #echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_keystore_creds
-    #echo "confluent${i}" > $ZOOKEEPER_PATH/${i}_truststore_creds
 
     rm $ZOOKEEPER_PATH/zoo$i.csr
     rm $ZOOKEEPER_PATH/zoo$i.signed.crt

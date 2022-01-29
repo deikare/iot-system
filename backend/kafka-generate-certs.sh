@@ -86,16 +86,16 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     echo "" >> $KAFKA_PATH/kafka-cert.conf
 
     echo "[v3_req]" >> $KAFKA_PATH/kafka-cert.conf
-    #echo "keyUsage = keyEncipherment, dataEncipherment" >> $KAFKA_PATH/kafka-cert.conf
-    #echo "extendedKeyUsage = serverAuth" >> $KAFKA_PATH/kafka-cert.conf
-    #echo "basicConstraints = critical,CA:false" >> $KAFKA_PATH/kafka-cert.conf
+    echo "keyUsage = keyEncipherment, dataEncipherment, digitalSignature" >> $KAFKA_PATH/kafka-cert.conf
+    echo "extendedKeyUsage = serverAuth, clientAuth" >> $KAFKA_PATH/kafka-cert.conf
+    echo "basicConstraints = CA:false" >> $KAFKA_PATH/kafka-cert.conf
     echo "subjectAltName = @alt_names" >> $KAFKA_PATH/kafka-cert.conf
     echo "" >> $KAFKA_PATH/kafka-cert.conf
 
     echo "[alt_names]" >> $KAFKA_PATH/kafka-cert.conf
     echo "DNS.1 = $SAN$i" >> $KAFKA_PATH/kafka-cert.conf
     echo "DNS.2 = $SERVER_FQDN" >> $KAFKA_PATH/kafka-cert.conf
-    
+
     # Sign crt
     openssl x509 -req -CA $CA_PATH/ca.crt -CAkey $CA_PATH/ca.key -in $KAFKA_PATH/kafka$i.csr -out $KAFKA_PATH/kafka$i.signed.crt -days $VALIDITY -CAcreateserial  \
     -extfile $KAFKA_PATH/kafka-cert.conf -extensions v3_req
@@ -104,7 +104,7 @@ for ((i=1;i<=NODES_NUMBER;i++)); do
     keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias CAroot -import -file $CA_PATH/ca.crt -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     # Add signed cert to keystore
-    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -import -file $KAFKA_PATH/kafka$i.signed.crt -ext SAN=$SAN_ITERATION \
+    keytool -keystore $KAFKA_PATH/kafka.broker$i.keystore.jks -storetype $STORETYPE -alias $ALIAS$i -import -file $KAFKA_PATH/kafka$i.signed.crt -ext SAN=$SAN_ITERATION -ext keyUsage=keyEncipherment,dataEncipherment,digitalSignature -ext extendedKeyUsage=serverAuth,clientAuth \
         -storepass $STOREPASS_ITERATION -keypass $KEYPASS_ITERATION
 
     # Add CA to truststore
