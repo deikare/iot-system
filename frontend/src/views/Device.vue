@@ -104,7 +104,7 @@ export default {
         dataSeries: {
           namespace: "data",
           getter: "getDataInDevice",
-          loader: "loadDataSeries",
+          loader: "loadDataSeriesInEntity",
         },
       },
 

@@ -898,8 +898,6 @@ const logseriesModule = {
       return state.logsPage.logs.map((log) => {
         return [
           { key: "time", value: new Date(log.time).toLocaleString() },
-          { key: "hubId", value: log.hubId },
-          { key: "deviceId", value: log.deviceId },
           { key: "value", value: log.value },
         ];
       });
@@ -1250,6 +1248,65 @@ const dataSeriesModule = {
         commitHandler,
         messageCommitHandler,
         payload.ifSuccessHandler,
+        payload.ifErrorHandler
+      );
+    },
+
+    loadDataSeriesInEntity(context, payload) {
+      const commitHandler = (data) => context.commit("saveDataSeries", data);
+
+      const messageCommitHandler = (message) => {
+        context.commit("messages/add", message, { root: true });
+      };
+
+      console.log(payload.queryParams);
+
+      const baseIfSuccessHandler = () => {
+        if (context.state.dataSeries.allSeries.length > 0)
+          payload.ifSuccessHandler();
+        else {
+          const downsampledQueryParameters = {
+            ...payload.queryParams,
+            bucket: "data-downsampled",
+          };
+
+          const downsampledIfSuccessHandler = () => {
+            if (context.state.dataSeries.allSeries.length > 0)
+              payload.ifSuccessHandler();
+            else {
+              const downsampled2QueryParameters = {
+                ...payload.queryParams,
+                bucket: "data-downsampled2",
+              };
+
+              axiosLoadWithHandlers(
+                "data",
+                downsampled2QueryParameters,
+                commitHandler,
+                messageCommitHandler,
+                payload.ifSuccessHandler,
+                payload.ifErrorHandler
+              );
+            }
+          };
+
+          axiosLoadWithHandlers(
+            "data",
+            downsampledQueryParameters,
+            commitHandler,
+            messageCommitHandler,
+            downsampledIfSuccessHandler,
+            payload.ifErrorHandler
+          );
+        }
+      };
+
+      axiosLoadWithHandlers(
+        "data",
+        payload.queryParams,
+        commitHandler,
+        messageCommitHandler,
+        baseIfSuccessHandler,
         payload.ifErrorHandler
       );
     },

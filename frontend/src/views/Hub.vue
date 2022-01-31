@@ -93,7 +93,7 @@ export default {
         dataSeries: {
           namespace: "data",
           getter: "getDataInHub",
-          loader: "loadDataSeries",
+          loader: "loadDataSeriesInEntity",
         },
       },
 

@@ -35,9 +35,9 @@ public class LogController {
         @RequestParam(required = false) List<String> hubIds,
         @RequestParam(required = false) List<String> deviceIds) {
         String fluxQuery = influxQueryService.produceQuery(bucket, measurement, field, start, stop, desc, hubIds, deviceIds);
-        DeviceLogseries<InfluxDeviceLogPojo> queryResult = influxQueryService.queryWithResultMappedToLogseries(fluxQuery, limit, InfluxDeviceLogPojo.class);
+        DeviceLogseries<InfluxDeviceLogPojo> result = influxQueryService.queryWithResultMappedToLogseries(fluxQuery, limit, InfluxDeviceLogPojo.class);
 
-        return assembler.toModelConsideringQueryParams(queryResult, limit, hubIds, deviceIds);
+        return assembler.toModelConsideringQueryParams(result, limit, hubIds, deviceIds);
     }
 }
 

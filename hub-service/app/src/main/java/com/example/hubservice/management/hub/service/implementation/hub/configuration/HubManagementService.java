@@ -1,7 +1,6 @@
 package com.example.hubservice.management.hub.service.implementation.hub.configuration;
 
 import com.example.hubservice.influxdb.mappers.InfluxHubStatusValue;
-import com.example.hubservice.kafka.record.control.hub.HubControlType;
 import com.example.hubservice.management.hub.exceptions.*;
 import com.example.hubservice.management.hub.model.ControlSignal;
 import com.example.hubservice.management.hub.model.Device;
@@ -148,41 +147,6 @@ public class HubManagementService {
             else logger.info("Device not present");
         }
         else logger.info("Hub is stopped");
-    }
-
-    public void changeHubStatus(HubControlType hubControlSignal) throws TooManyHubsExistException, NoHubsFoundException {
-        Hub currentHub = getHub();
-
-        try {
-            InfluxHubStatusValue statusAfterHubControl = generateProperStateAfterHubControlReceived(currentHub.getStatus(), hubControlSignal);
-            currentHub.setStatus(statusAfterHubControl);
-            Hub hubAfterStatusChange = hubService.updateObjectById(currentHub.getId(), currentHub);
-            logger.info("Changed status of hub, after operation: " + hubAfterStatusChange);
-
-            telegrafSender.sendHubLogToTelegraf(hubAfterStatusChange);
-        }
-        catch (IllegalHubControlException e) {
-            logger.info(e.getMessage());
-        }
-    }
-
-    private InfluxHubStatusValue generateProperStateAfterHubControlReceived(InfluxHubStatusValue currentStatus, HubControlType hubControlSignal) throws IllegalHubControlException {
-        InfluxHubStatusValue result;
-        switch (hubControlSignal) {
-            case START -> {
-                if (currentStatus == InfluxHubStatusValue.STARTED)
-                    throw new IllegalHubControlException(currentStatus, hubControlSignal);
-                else result = InfluxHubStatusValue.STARTED; //current status is stopped
-            }
-            case STOP -> {
-                if (currentStatus == InfluxHubStatusValue.STARTED)
-                    result = InfluxHubStatusValue.STOPPED;
-                else throw new IllegalHubControlException(currentStatus, hubControlSignal); //current status is stopped
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + hubControlSignal);
-        }
-
-        return result;
     }
 
     public void initiateShutdownOnDelete() {

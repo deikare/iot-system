@@ -81,7 +81,7 @@ public class HubController {
     }
 
     @PutMapping("/{id}")
-    public EntityModel<Hub> addOrChangeHub(
+    public EntityModel<Hub> changeHubByPut(
             @PathVariable String id,
             @RequestBody Hub newHub) {
         Hub result;

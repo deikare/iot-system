@@ -1,6 +1,5 @@
 package com.example.hubservice.kafka.config;
 
-import com.example.hubservice.kafka.record.control.hub.KafkaHubControlRecordWrapper;
 import com.example.hubservice.kafka.record.crud.KafkaHubConfigurationRecordWrapper;
 import com.example.hubservice.management.hub.model.ControlSignal;
 import com.example.hubservice.management.hub.service.implementation.hub.configuration.HubManagementService;
@@ -88,60 +87,6 @@ public class ConsumersConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, KafkaHubControlRecordWrapper> hubControlKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, KafkaHubControlRecordWrapper> result =
-                new ConcurrentKafkaListenerContainerFactory<>();
-
-        result.setConsumerFactory(hubControlConsumerFactory());
-        result.setConcurrency(1);
-        result.setRecordFilterStrategy(consumerRecord -> {
-            String dataIdFromKey = consumerRecord.key();
-            String dataIdFromValue = consumerRecord.value().getHub().getId();
-
-            boolean filterResult = !hubManagementService.isHubPresent(dataIdFromKey) && hubManagementService.isHubPresent(dataIdFromValue);
-            logger.info("Filtering message: " + consumerRecord + ", discard? = " + filterResult);
-            return filterResult;
-        });
-
-        ConfigLogger.produceConfigBeanCreationLog(logger, result);
-
-        return result;
-    }
-
-    @Bean
-    public ConsumerFactory<String, KafkaHubControlRecordWrapper> hubControlConsumerFactory() {
-        JsonDeserializer<KafkaHubControlRecordWrapper> deserializer =  new JsonDeserializer<>(KafkaHubControlRecordWrapper.class);
-        deserializer.setRemoveTypeHeaders(false);
-        deserializer.addTrustedPackages("*");
-        deserializer.setUseTypeMapperForKey(true);
-
-        Map<String, Object> properties = new HashMap<>();
-
-        properties.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-
-        properties.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
-
-        properties.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, hubManagementService.getHubId() + "_" + "hub_configuration");
-
-        properties.put("security.protocol", "SSL");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.truststore.jks");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "confluent");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "JKS");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "/etc/secrets/kafka-client/kafka.client.keystore.jks");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "confluent");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "JKS");
-        properties.put(org.apache.kafka.common.config.SslConfigs.SSL_KEY_PASSWORD_CONFIG, "confluent");
-
-        ConfigLogger.produceConfigBeanCreationLog(logger, properties);
-
-        ConsumerFactory<String, KafkaHubControlRecordWrapper> result = new DefaultKafkaConsumerFactory<>(properties, new StringDeserializer(), deserializer);
-        ConfigLogger.produceConfigBeanCreationLog(logger, result);
-
-        return result;
-    }
-
-    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, KafkaHubConfigurationRecordWrapper> hubConfigurationKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, KafkaHubConfigurationRecordWrapper> result =
                 new ConcurrentKafkaListenerContainerFactory<>();
@@ -152,7 +97,7 @@ public class ConsumersConfig {
             String dataIdFromKey = consumerRecord.key();
             String dataIdFromValue = consumerRecord.value().getObject().getId();
 
-            boolean filterResult = !hubManagementService.isHubPresent(dataIdFromKey) && hubManagementService.isHubPresent(dataIdFromValue);
+            boolean filterResult = !hubManagementService.isHubPresent(dataIdFromKey) || !hubManagementService.isHubPresent(dataIdFromValue);
             logger.info("Filtering message: " + consumerRecord + ", discard? = " + filterResult);
             return filterResult;
         });

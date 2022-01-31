@@ -47,11 +47,11 @@ public class DataTimeseriesListRepresentationAssembler
                 .all(bucket, Instant.ofEpochSecond(0), null, true, null, null,null, null))
                 .withRel("all-data"),
                 linkTo(methodOn(DataController.class) //there is little offset in beginning and end because _start <= _t < _end
-                        .all(bucket, entity.getStart().minus(2, ChronoUnit.HOURS), entity.getStart().plus(1, ChronoUnit.MILLIS),
+                        .all(bucket, entity.getStart().minus(2, ChronoUnit.HOURS), entity.getStart(),
                                 true, limit, hubIds, deviceIds, types))
                         .withRel("prev"),
                 linkTo(methodOn(DataController.class)
-                        .all(bucket, entity.getEnd().minus(1, ChronoUnit.MILLIS), entity.getEnd().plus(2, ChronoUnit.HOURS),
+                        .all(bucket, entity.getEnd(), entity.getEnd().plus(2, ChronoUnit.HOURS),
                                 false, limit, hubIds, deviceIds, types))
                         .withRel("next"));
 
